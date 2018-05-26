@@ -610,11 +610,16 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	
 	local timestamp = os.time()
 	local date = os.date("%d/%m", timestamp)
-	if (ply:Nick() == "Arack12" and date == "29/03") then
-		net.Start("TTT_Birthday")
-		net.WriteEntity(ply)
-		net.Broadcast()
-		ply:EmitSound("birthday.wav")
+	local names = { "B1andy413", "Aspirin", "The_Samarox", "Arack12", "Noxx", "Kommandos0", "FunCheetah", "Cooliew", "Lix3" }
+	local dates = { "01/01", "31/01", "01/02", "29/03", "31/07", "15/09", "05/11", "01/12", "12/12" }
+	
+	for i = 1, 9 do
+		if (ply:Nick() == names[i] and date == dates[i]) then
+			net.Start("TTT_Birthday")
+			net.WriteEntity(ply)
+			net.Broadcast()
+			ply:EmitSound("birthday.wav")
+		end
 	end
 	
 	if ply:GetNWBool("HauntedSmoke") == true then
