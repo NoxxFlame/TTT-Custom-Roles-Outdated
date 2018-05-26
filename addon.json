@@ -1,0 +1,13 @@
+{
+  "title": "More Roles (TLAN)",
+  "type": "ServerContent",
+  "ignore": [
+    ".git*",
+    "*.iml",
+    ".idea*",
+    "*.psd",
+    "*.vcproj",
+    "*.svn*",
+    "LICENSE"
+  ]
+}
