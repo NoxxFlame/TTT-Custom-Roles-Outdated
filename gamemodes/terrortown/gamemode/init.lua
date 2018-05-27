@@ -891,9 +891,7 @@ end
 function LogScore(type)
 	local playerCount = 0
 	for k, v in pairs(player.GetAll()) do
-		if v:Team() == TEAM_TERROR then
-			playerCount = playerCount + 1
-		end
+		playerCount = playerCount + 1
 	end
 	
 	local playerStats = {}
@@ -910,34 +908,32 @@ function LogScore(type)
 	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin" }
 	
 	for k, v in pairs(player.GetAll()) do
-		if v:Team() == TEAM_TERROR then
-			local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
-			
-			if not playerStats[v:Nick()] then
-				playerStats[v:Nick()] = { 0, 0, 0 } -- Wins, Deaths, Rounds
+		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
+		
+		if not playerStats[v:Nick()] then
+			playerStats[v:Nick()] = { 0, 0, 0 } -- Wins, Deaths, Rounds
+		end
+		playerStats[v:Nick()][3] = playerStats[v:Nick()][3] + 1
+		
+		if didWin then
+			playerStats[v:Nick()][1] = playerStats[v:Nick()][1] + 1
+		end
+		
+		if not v:Alive() then
+			playerStats[v:Nick()][2] = playerStats[v:Nick()][2] + 1
+		end
+		
+		if not roundRoles[v:GetRole() + 1] then
+			if not roleStats[roleNames[v:GetRole() + 1]] then
+				roleStats[roleNames[v:GetRole() + 1]] = { 0, 0 } -- Wins, Rounds
 			end
-			playerStats[v:Nick()][3] = playerStats[v:Nick()][3] + 1
+			roleStats[roleNames[v:GetRole() + 1]][2] = roleStats[roleNames[v:GetRole() + 1]][2] + 1
 			
 			if didWin then
-				playerStats[v:Nick()][1] = playerStats[v:Nick()][1] + 1
+				roleStats[roleNames[v:GetRole() + 1]][1] = roleStats[roleNames[v:GetRole() + 1]][1] + 1
 			end
 			
-			if not v:Alive() then
-				playerStats[v:Nick()][2] = playerStats[v:Nick()][2] + 1
-			end
-			
-			if not roundRoles[v:GetRole() + 1] then
-				if not roleStats[roleNames[v:GetRole() + 1]] then
-					roleStats[roleNames[v:GetRole() + 1]] = { 0, 0 } -- Wins, Rounds
-				end
-				roleStats[roleNames[v:GetRole() + 1]][2] = roleStats[roleNames[v:GetRole() + 1]][2] + 1
-				
-				if didWin then
-					roleStats[roleNames[v:GetRole() + 1]][1] = roleStats[roleNames[v:GetRole() + 1]][1] + 1
-				end
-				
-				roundRoles[v:GetRole()] = true
-			end
+			roundRoles[v:GetRole()] = true
 		end
 	end
 	

@@ -131,69 +131,69 @@ function GM:PostDrawTranslucentRenderables()
 			pos = ply:GetPos()
 			pos.z = pos.z + 74
 			local revealed = ply:GetNWBool('RoleRevealed', false)
-			if ply:IsRole(ROLE_DETECTIVE) then
+			if ply:GetRole() == ROLE_DETECTIVE then
 				render.SetMaterial(indicator_matdet)
 				render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 			end
 			if revealed and client:GetRole() == ROLE_DETECTIVE then
-				if ply:IsRole(ROLE_INNOCENT) then
+				if ply:GetRole() == ROLE_INNOCENT then
 					render.SetMaterial(indicator_matinn)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_GLITCH) then
+				elseif ply:GetRole() == ROLE_GLITCH then
 					render.SetMaterial(indicator_matgli)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_MERCENARY) then
+				elseif ply:GetRole() == ROLE_MERCENARY then
 					render.SetMaterial(indicator_matmer)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_PHANTOM) then
+				elseif ply:GetRole() == ROLE_PHANTOM then
 					render.SetMaterial(indicator_matpha)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_TRAITOR) then
+				elseif ply:GetRole() == ROLE_TRAITOR then
 					render.SetMaterial(indicator_mattra)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_ASSASSIN) then
+				elseif ply:GetRole() == ROLE_ASSASSIN then
 					render.SetMaterial(indicator_matass)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_HYPNOTIST) then
+				elseif ply:GetRole() == ROLE_HYPNOTIST then
 					render.SetMaterial(indicator_mathyp)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_VAMPIRE) then
+				elseif ply:GetRole() == ROLE_VAMPIRE then
 					render.SetMaterial(indicator_matvam)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_ZOMBIE) then
+				elseif ply:GetRole() == ROLE_ZOMBIE then
 					render.SetMaterial(indicator_matzom)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_JESTER) then
+				elseif ply:GetRole() == ROLE_JESTER then
 					render.SetMaterial(indicator_matjes)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-				elseif ply:IsRole(ROLE_SWAPPER) then
+				elseif ply:GetRole() == ROLE_SWAPPER then
 					render.SetMaterial(indicator_matswa)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 				end
 			end
 			if not hide_roles then
 				if client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_VAMPIRE or client:GetRole() == ROLE_ASSASSIN then
-					if ply:IsRole(ROLE_TRAITOR) or ply:IsRole(ROLE_GLITCH) then
+					if ply:GetRole() == ROLE_TRAITOR or ply:GetRole() == ROLE_GLITCH then
 						render.SetMaterial(indicator_mattra_noz)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					elseif ply:IsRole(ROLE_HYPNOTIST) then
+					elseif ply:GetRole() == ROLE_HYPNOTIST then
 						render.SetMaterial(indicator_mathyp_noz)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					elseif ply:IsRole(ROLE_VAMPIRE) then
+					elseif ply:GetRole() == ROLE_VAMPIRE then
 						render.SetMaterial(indicator_matvam_noz)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					elseif ply:IsRole(ROLE_ASSASSIN) then
+					elseif ply:GetRole() == ROLE_ASSASSIN then
 						render.SetMaterial(indicator_matass_noz)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					elseif ply:IsRole(ROLE_JESTER) or ply:IsRole(ROLE_SWAPPER) then
+					elseif ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER then
 						render.SetMaterial(indicator_matjes)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
 				elseif client:GetRole() == ROLE_ZOMBIE then
-					if ply:IsRole(ROLE_ZOMBIE) or ply:IsRole(ROLE_GLITCH) then
+					if ply:GetRole() == ROLE_ZOMBIE or ply:GetRole() == ROLE_GLITCH then
 						render.SetMaterial(indicator_matzom_noz)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					elseif ply:IsRole(ROLE_JESTER) or ply:IsRole(ROLE_SWAPPER) then
+					elseif ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER then
 						render.SetMaterial(indicator_matjes)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
