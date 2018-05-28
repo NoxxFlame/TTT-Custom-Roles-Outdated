@@ -899,10 +899,6 @@ function CheckForMapSwitch()
 end
 
 function LogScore(type)
-	local playerCount = 0
-	for k, v in pairs(player.GetAll()) do
-		playerCount = playerCount + 1
-	end
 	
 	local playerStats = {}
 	if file.Exists("stats/playerStats.txt", "DATA") then
@@ -910,8 +906,8 @@ function LogScore(type)
 	end
 	
 	local roleStats = {}
-	if file.Exists(Format("stats/roleStats%02d.txt", playerCount), "DATA") then
-		roleStats = util.JSONToTable(file.Read(Format("stats/roleStats%02d.txt", playerCount), "DATA"))
+	if file.Exists(Format("stats/roleStats.txt", "DATA")) then
+		roleStats = util.JSONToTable(file.Read("stats/roleStats.txt", "DATA"))
 	end
 	
 	local roundRoles = { false, false, false, false, false, false, false, false, false, false, false, false }
@@ -921,16 +917,12 @@ function LogScore(type)
 		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
 		
 		if not playerStats[v:Nick()] then
-			playerStats[v:Nick()] = { 0, 0, 0 } -- Wins, Deaths, Rounds
+			playerStats[v:Nick()] = { 0, 0 } -- Wins, Rounds
 		end
-		playerStats[v:Nick()][3] = playerStats[v:Nick()][3] + 1
+		playerStats[v:Nick()][2] = playerStats[v:Nick()][2] + 1
 		
 		if didWin then
 			playerStats[v:Nick()][1] = playerStats[v:Nick()][1] + 1
-		end
-		
-		if not v:Alive() and v:IsTerror() then
-			playerStats[v:Nick()][2] = playerStats[v:Nick()][2] + 1
 		end
 		
 		if not roundRoles[v:GetRole() + 1] then
@@ -948,7 +940,7 @@ function LogScore(type)
 	end
 	
 	file.Write("stats/playerStats.txt", util.TableToJSON(playerStats))
-	file.Write(Format("stats/roleStats%02d.txt", playerCount), util.TableToJSON(roleStats))
+	file.Write("stats/roleStats.txt", util.TableToJSON(roleStats))
 end
 
 function EndRound(type)
