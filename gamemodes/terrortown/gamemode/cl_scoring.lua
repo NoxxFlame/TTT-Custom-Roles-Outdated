@@ -52,6 +52,7 @@ local hypnotised = ""
 local revived = {}
 local zombified = {}
 local disconnected = {}
+local spawnedplayers = {}
 
 net.Receive("TTT_JesterKiller", function(len)
 	jesterkiller = net.ReadString()
@@ -88,6 +89,12 @@ net.Receive("TTT_ClearRoleSwaps", function(len)
 	revived = {}
 	zombified = {}
 	disconnected = {}
+	spawnedplayers = {}
+end)
+
+net.Receive("TTT_SpawnedPlayers", function(len)
+	spawnedPly = net.ReadString()
+	table.insert(spawnedplayers, spawnedPly)
 end)
 
 function CLSCORE:GetDisplay(key, event)
@@ -407,106 +414,118 @@ function CLSCORE:ShowPanel()
 				end
 			end
 			
-			local dead = s.deaths
-			local hasDisconnected = false
+			local foundPlayer = false
 			
-			for k, v in pairs(revived) do
+			for k, v in pairs(spawnedplayers) do
 				if v == nicks[id] then
-					dead = dead - 1
+					foundPlayer = true
+					break
 				end
 			end
 			
-			for k, v in pairs(disconnected) do
-				if v == nicks[id] then
-					hasDisconnected = true
-				end
-			end
-			
-			if nicks[id] == jesterkiller and jesterkillerrole >= 0 then
-				role = "swa"
-			end
-			
-			if ConVarExists("ttt_role_symbols") then
-				symbols = GetConVar("ttt_role_symbols"):GetBool()
-			end
-			
-			local symorlet = "let"
-			if symbols then
-				symorlet = "sym"
-			end
-			
-			if nicks[id] == hypnotised then
-				role = role .. "_hyped"
-			end
-			
-			for k, v in pairs(zombified) do
-				if v == nicks[id] then
-					role = role .. "_zomed"
-				end
-			end
-			
-			local roleIcon = vgui.Create("DImage", dpanel)
-			roleIcon:SetSize(32, 32)
-			roleIcon:SetImage("vgui/ttt/score_" .. symorlet .. "_" .. role .. ".png")
-			
-			local nicklbl = vgui.Create("DLabel", dpanel)
-			nicklbl:SetFont("ScoreNicks")
-			nicklbl:SetText(nicks[id])
-			nicklbl:SetTextColor(COLOR_WHITE)
-			nicklbl:SizeToContents()
-			
-			if role == "inn" or role == "det" or role == "mer" or role == "pha" or role == "gli" then
-				roleIcon:SetPos(10, 123 + 33 * countI)
-				nicklbl:SetPos(48, 121 + 33 * countI)
-				if hasDisconnected then
-					disconIcon = vgui.Create("DImage", dpanel)
-					disconIcon:SetSize(32, 32)
-					disconIcon:SetPos(314, 123 + 33 * countI)
-					disconIcon:SetImage("vgui/ttt/score_disconicon.png")
-				elseif dead > 0 then
-					skullIcon = vgui.Create("DImage", dpanel)
-					skullIcon:SetSize(32, 32)
-					skullIcon:SetPos(314, 123 + 33 * countI)
-					skullIcon:SetImage("vgui/ttt/score_skullicon.png")
-				end
-				countI = countI + 1
-			elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" or string.sub(role, 5) == "hyped" or string.sub(role, 5) == "zomed" then
-				roleIcon:SetPos(354, 123 + 33 * countT)
-				nicklbl:SetPos(392, 121 + 33 * countT)
-				if hasDisconnected then
-					disconIcon = vgui.Create("DImage", dpanel)
-					disconIcon:SetSize(32, 32)
-					disconIcon:SetPos(314, 123 + 33 * countI)
-					disconIcon:SetImage("vgui/ttt/score_disconicon.png")
-				elseif dead > 0 then
-					skullIcon = vgui.Create("DImage", dpanel)
-					skullIcon:SetSize(32, 32)
-					skullIcon:SetPos(658, 123 + 33 * countT)
-					skullIcon:SetImage("vgui/ttt/score_skullicon.png")
-				end
-				countT = countT + 1
-			elseif role == "jes" or role == "swa" then
-				roleIcon:SetPos(10, 460)
-				nicklbl:SetPos(48, 458)
-				if jesterkiller ~= "" then
-					if role == "jes" then
-						nicklbl:SetText(nicks[id] .. " (Killed by " .. jesterkiller .. ")")
-						nicklbl:SizeToContents()
-					else
-						nicklbl:SetText(nicks[id] .. " (Killed " .. jestervictim .. ")")
-						nicklbl:SizeToContents()
+			if foundPlayer then
+				local dead = s.deaths
+				local hasDisconnected = false
+				
+				for k, v in pairs(revived) do
+					if v == nicks[id] then
+						dead = dead - 1
 					end
 				end
-				if hasDisconnected then
-					disconIcon = vgui.Create("DImage", dpanel)
-					disconIcon:SetSize(32, 32)
-					disconIcon:SetPos(314, 123 + 33 * countI)
-					disconIcon:SetImage("vgui/ttt/score_disconicon.png")
-				elseif dead > 0 then
-					skullIcon = vgui.Create("DImage", dpanel)
-					skullIcon:SetSize(32, 32)
-					skullIcon:SetPos(658, 460)
-					skullIcon:SetImage("vgui/ttt/score_skullicon.png")
+				
+				for k, v in pairs(disconnected) do
+					if v == nicks[id] then
+						hasDisconnected = true
+						break
+					end
+				end
+				
+				if nicks[id] == jesterkiller and jesterkillerrole >= 0 then
+					role = "swa"
+				end
+				
+				if ConVarExists("ttt_role_symbols") then
+					symbols = GetConVar("ttt_role_symbols"):GetBool()
+				end
+				
+				local symorlet = "let"
+				if symbols then
+					symorlet = "sym"
+				end
+				
+				if nicks[id] == hypnotised then
+					role = role .. "_hyped"
+				end
+				
+				for k, v in pairs(zombified) do
+					if v == nicks[id] then
+						role = role .. "_zomed"
+					end
+				end
+				
+				local roleIcon = vgui.Create("DImage", dpanel)
+				roleIcon:SetSize(32, 32)
+				roleIcon:SetImage("vgui/ttt/score_" .. symorlet .. "_" .. role .. ".png")
+				
+				local nicklbl = vgui.Create("DLabel", dpanel)
+				nicklbl:SetFont("ScoreNicks")
+				nicklbl:SetText(nicks[id])
+				nicklbl:SetTextColor(COLOR_WHITE)
+				nicklbl:SizeToContents()
+				
+				if role == "inn" or role == "det" or role == "mer" or role == "pha" or role == "gli" then
+					roleIcon:SetPos(10, 123 + 33 * countI)
+					nicklbl:SetPos(48, 121 + 33 * countI)
+					if hasDisconnected then
+						disconIcon = vgui.Create("DImage", dpanel)
+						disconIcon:SetSize(32, 32)
+						disconIcon:SetPos(314, 123 + 33 * countI)
+						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
+					elseif dead > 0 then
+						skullIcon = vgui.Create("DImage", dpanel)
+						skullIcon:SetSize(32, 32)
+						skullIcon:SetPos(314, 123 + 33 * countI)
+						skullIcon:SetImage("vgui/ttt/score_skullicon.png")
+					end
+					countI = countI + 1
+				elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" or string.sub(role, 5) == "hyped" or string.sub(role, 5) == "zomed" then
+					roleIcon:SetPos(354, 123 + 33 * countT)
+					nicklbl:SetPos(392, 121 + 33 * countT)
+					if hasDisconnected then
+						disconIcon = vgui.Create("DImage", dpanel)
+						disconIcon:SetSize(32, 32)
+						disconIcon:SetPos(314, 123 + 33 * countI)
+						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
+					elseif dead > 0 then
+						skullIcon = vgui.Create("DImage", dpanel)
+						skullIcon:SetSize(32, 32)
+						skullIcon:SetPos(658, 123 + 33 * countT)
+						skullIcon:SetImage("vgui/ttt/score_skullicon.png")
+					end
+					countT = countT + 1
+				elseif role == "jes" or role == "swa" then
+					roleIcon:SetPos(10, 460)
+					nicklbl:SetPos(48, 458)
+					if jesterkiller ~= "" then
+						if role == "jes" then
+							nicklbl:SetText(nicks[id] .. " (Killed by " .. jesterkiller .. ")")
+							nicklbl:SizeToContents()
+						else
+							nicklbl:SetText(nicks[id] .. " (Killed " .. jestervictim .. ")")
+							nicklbl:SizeToContents()
+						end
+					end
+					if hasDisconnected then
+						disconIcon = vgui.Create("DImage", dpanel)
+						disconIcon:SetSize(32, 32)
+						disconIcon:SetPos(314, 123 + 33 * countI)
+						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
+					elseif dead > 0 then
+						skullIcon = vgui.Create("DImage", dpanel)
+						skullIcon:SetSize(32, 32)
+						skullIcon:SetPos(658, 460)
+						skullIcon:SetImage("vgui/ttt/score_skullicon.png")
+					end
 				end
 			end
 		end

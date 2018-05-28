@@ -192,6 +192,7 @@ util.AddNetworkString("TTT_Birthday")
 util.AddNetworkString("TTT_TeleportMark")
 util.AddNetworkString("TTT_ClearTeleportMarks")
 util.AddNetworkString("TTT_PlayerDisconnected")
+util.AddNetworkString("TTT_SpawnedPlayers")
 
 jesterkilled = 0
 
@@ -803,8 +804,17 @@ function BeginRound()
 	net.WriteString("")
 	net.WriteInt(-1, 6)
 	net.Broadcast()
+	
 	net.Start("TTT_ClearRoleSwaps")
 	net.Broadcast()
+	
+	for k, v in pairs(player.GetAll()) do
+		if v:Alive() and v:IsTerror() then
+			net.Start("TTT_SpawnedPlayers")
+			net.WriteString(v:Nick())
+			net.Broadcast()
+		end
+	end
 	
 	-- Give the StateUpdate messages ample time to arrive
 	timer.Simple(1.5, TellTraitorsAboutTraitors)
@@ -919,7 +929,7 @@ function LogScore(type)
 			playerStats[v:Nick()][1] = playerStats[v:Nick()][1] + 1
 		end
 		
-		if not v:Alive() then
+		if not v:Alive() and v:IsTerror() then
 			playerStats[v:Nick()][2] = playerStats[v:Nick()][2] + 1
 		end
 		
