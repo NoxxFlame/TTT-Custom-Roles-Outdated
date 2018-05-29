@@ -906,7 +906,7 @@ function LogScore(type)
 	end
 	
 	local roleStats = {}
-	if file.Exists(Format("stats/roleStats.txt", "DATA")) then
+	if file.Exists("stats/roleStats.txt", "DATA") then
 		roleStats = util.JSONToTable(file.Read("stats/roleStats.txt", "DATA"))
 	end
 	
