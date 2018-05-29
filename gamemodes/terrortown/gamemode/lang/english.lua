@@ -327,9 +327,7 @@ L.item_armor = "Body Armor"
 L.item_armor_desc = [[
 Reduces bullet damage by 30% when
 you get hit. Does not protect your
-head.
-
-Default equipment for Detectives.]]
+head.]]
 
 L.item_radar = "Radar"
 L.item_radar_desc = [[
