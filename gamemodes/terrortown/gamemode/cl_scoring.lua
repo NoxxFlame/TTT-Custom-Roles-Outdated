@@ -492,9 +492,9 @@ function CLSCORE:ShowPanel()
 					roleIcon:SetPos(354, 123 + 33 * countT)
 					nicklbl:SetPos(392, 121 + 33 * countT)
 					if hasDisconnected then
-						skullIcon = vgui.Create("DImage", dpanel)
-						skullIcon:SetSize(32, 32)
-						skullIcon:SetPos(658, 123 + 33 * countT)
+						disconIcon = vgui.Create("DImage", dpanel)
+						disconIcon:SetSize(32, 32)
+						disconIcon:SetPos(658, 123 + 33 * countT)
 						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
 					elseif dead > 0 then
 						skullIcon = vgui.Create("DImage", dpanel)
@@ -516,9 +516,9 @@ function CLSCORE:ShowPanel()
 						end
 					end
 					if hasDisconnected then
-						skullIcon = vgui.Create("DImage", dpanel)
-						skullIcon:SetSize(32, 32)
-						skullIcon:SetPos(658, 460)
+						disconIcon = vgui.Create("DImage", dpanel)
+						disconIcon:SetSize(32, 32)
+						disconIcon:SetPos(658, 460)
 						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
 					elseif dead > 0 then
 						skullIcon = vgui.Create("DImage", dpanel)
