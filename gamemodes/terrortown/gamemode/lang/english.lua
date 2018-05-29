@@ -353,7 +353,7 @@ holding claws from 35% to 50%.]]
 L.item_regen = "Regeneration"
 L.item_regen_desc = [[
 Passively regenerate health at a
-rate of 1 HP every second.]]
+rate of 1.5 HP every second.]]
 
 -- C4
 L.c4_hint = "Press {usekey} to arm or disarm."
