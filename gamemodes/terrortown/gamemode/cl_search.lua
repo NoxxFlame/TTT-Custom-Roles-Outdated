@@ -380,26 +380,28 @@ local function ShowSearchScreen(search_raw)
 	-- buttons
 	local by = rh - bh - (m / 2)
 	
-	--local dident = vgui.Create("DButton", dcont)
-	--dident:SetPos(m, by)
-	--dident:SetSize(bw,bh)
-	--dident:SetText(T("search_confirm"))
-	--local id = search_raw.eidx + search_raw.dtime
-	--dident.DoClick = function() RunConsoleCommand("ttt_confirm_death", search_raw.eidx, id) end
-	
-	--local dcall = vgui.Create("DButton", dcont)
-	--dcall:SetPos(m*2 + bw, by)
-	--dcall:SetSize(bw, bh)
-	--dcall:SetText(T("search_call"))
-	--dcall.DoClick = function(s)
-	--client.called_corpses = client.called_corpses or {}
-	--table.insert(client.called_corpses, search_raw.eidx)
-	--s:SetDisabled(true)
-	
-	--RunConsoleCommand("ttt_call_detective", search_raw.eidx)
-	--
-	
-	--dcall:SetDisabled(client:IsSpec() or table.HasValue(client.called_corpses or {}, search_raw.eidx))
+	local detectiveSearchOnly = GetGlobalBool("ttt_detective_search_only", true)
+	if not detectiveSearchOnly then
+		local dident = vgui.Create("DButton", dcont)
+		dident:SetPos(m, by)
+		dident:SetSize(bw, bh)
+		dident:SetText(T("search_confirm"))
+		local id = search_raw.eidx + search_raw.dtime
+		dident.DoClick = function() RunConsoleCommand("ttt_confirm_death", search_raw.eidx, id) end
+		
+		local dcall = vgui.Create("DButton", dcont)
+		dcall:SetPos(m * 2 + bw, by)
+		dcall:SetSize(bw, bh)
+		dcall:SetText(T("search_call"))
+		dcall.DoClick = function(s)
+			client.called_corpses = client.called_corpses or {}
+			table.insert(client.called_corpses, search_raw.eidx)
+			s:SetDisabled(true)
+			RunConsoleCommand("ttt_call_detective", search_raw.eidx)
+		end
+		
+		dcall:SetDisabled(client:IsSpec() or table.HasValue(client.called_corpses or {}, search_raw.eidx))
+	end
 	
 	local dconfirm = vgui.Create("DButton", dcont)
 	dconfirm:SetPos(rw - m - bw, by)

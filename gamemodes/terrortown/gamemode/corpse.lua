@@ -239,6 +239,8 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
 	-- basic sanity check
 	if nick == nil or eq == nil or role == nil then return end
 	
+	local detectiveSearchOnly = GetGlobalBool("ttt_detective_search_only", true)
+	
 	local credits = CORPSE.GetCredits(rag, 0)
 	if (ply:IsActiveDetective() or ply:IsActiveTraitor() or ply:IsActiveMercenary() or ply:IsActiveZombie() or ply:IsActiveVampire() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) and credits > 0 and (not long_range) then
 		LANG.Msg(ply, "body_credits", { num = credits })
@@ -248,7 +250,7 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
 		SCORE:HandleCreditFound(ply, nick, credits)
 		return
 	elseif DetectiveMode() and not covert then
-		if ply:IsDetective() then
+		if ply:IsDetective() or not detectiveSearchOnly then
 			IdentifyBody(ply, rag)
 		elseif not ply:IsSpec() and not ownerEnt:GetNWBool("det_called", false) and not ownerEnt:GetNWBool("body_searched", false) then
 			if IsValid(rag) and rag:GetPos():Distance(ply:GetPos()) < 128 then

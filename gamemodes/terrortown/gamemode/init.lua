@@ -123,6 +123,8 @@ CreateConVar("ttt_det_credits_traitordead", "1")
 
 CreateConVar("ttt_mer_credits_starting", "1")
 
+CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
+
 CreateConVar("ttt_use_weapon_spawn_scripts", "1")
 CreateConVar("ttt_weapon_spawn_count", "0")
 
@@ -290,6 +292,8 @@ function GM:SyncGlobals()
 	SetGlobalFloat("ttt_voice_drain_normal", GetConVar("ttt_voice_drain_normal"):GetFloat())
 	SetGlobalFloat("ttt_voice_drain_admin", GetConVar("ttt_voice_drain_admin"):GetFloat())
 	SetGlobalFloat("ttt_voice_drain_recharge", GetConVar("ttt_voice_drain_recharge"):GetFloat())
+	
+	SetGlobalBool("ttt_detective_search_only", GetConVar("ttt_detective_search_only"):GetBool())
 end
 
 function SendRoundState(state, ply)
