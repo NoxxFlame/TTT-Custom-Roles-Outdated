@@ -115,7 +115,7 @@ end
 
 -- Everyone's model
 local ttt_playermodels = {
-	Model("models/player/Phantom.mdl"),
+	Model("models/player/phoenix.mdl"),
 	Model("models/player/arctic.mdl"),
 	Model("models/player/guerilla.mdl"),
 	Model("models/player/leet.mdl")

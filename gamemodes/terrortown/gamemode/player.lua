@@ -248,7 +248,7 @@ function GM:PlayerSelectSpawn(ply)
 end
 
 function GM:PlayerSetModel(ply)
-	local mdl = GAMEMODE.playermodel or "models/player/Phantom.mdl"
+	local mdl = GAMEMODE.playermodel or "models/player/phoenix.mdl"
 	util.PrecacheModel(mdl)
 	ply:SetModel(mdl)
 	
