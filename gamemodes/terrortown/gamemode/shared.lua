@@ -188,6 +188,7 @@ DefaultEquipment = {
 		"weapon_ttt_sipistol",
 		"weapon_ttt_teleport",
 		"weapon_ttt_decoy",
+		"weapon_ttt_health_station",
 		EQUIP_ARMOR,
 		EQUIP_RADAR,
 		EQUIP_DISGUISE
@@ -205,26 +206,36 @@ DefaultEquipment = {
 		EQUIP_RADAR
 	},
 	[ROLE_MERCENARY] = {
-		"weapon_ttt_binoculars",
-		"weapon_ttt_defuser",
 		"weapon_ttt_health_station",
-		"weapon_ttt_stungun",
-		"weapon_ttt_cse",
 		"weapon_ttt_teleport",
+		"weapon_ttt_confgrenade",
+		"weapon_ttt_m16",
+		"weapon_ttt_smokegrenade",
+		"weapon_zm_mac10",
+		"weapon_zm_molotov",
+		"weapon_zm_pistol",
+		"weapon_zm_revolver",
+		"weapon_zm_rifle",
+		"weapon_zm_shotgun",
+		"weapon_zm_sledge",
+		"weapon_ttt_glock",
 		EQUIP_ARMOR,
 		EQUIP_RADAR
 	},
 	[ROLE_HYPNOTIST] = {
 		EQUIP_ARMOR,
-		EQUIP_RADAR
+		EQUIP_RADAR,
+		"weapon_ttt_health_station"
 	},
 	[ROLE_VAMPIRE] = {
 		EQUIP_ARMOR,
-		EQUIP_RADAR
+		EQUIP_RADAR,
+		"weapon_ttt_health_station"
 	},
 	[ROLE_ASSASSIN] = {
 		EQUIP_ARMOR,
-		EQUIP_RADAR
+		EQUIP_RADAR,
+		"weapon_ttt_health_station"
 	},
 	[ROLE_ZOMBIE] = {
 		EQUIP_ARMOR,
