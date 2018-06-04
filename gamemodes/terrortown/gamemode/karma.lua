@@ -18,10 +18,11 @@ KARMA.cv.clean = CreateConVar("ttt_karma_clean_bonus", "30")
 KARMA.cv.tbonus = CreateConVar("ttt_karma_traitorkill_bonus", "40")
 KARMA.cv.tratio = CreateConVar("ttt_karma_traitordmg_ratio", "0.0003")
 KARMA.cv.jpenalty = CreateConVar("ttt_karma_jesterkill_penalty", "50")
+KARMA.cv.jratio = CreateConVar("ttt_karma_jester_ratio", "0.5")
 KARMA.cv.debug = CreateConVar("ttt_karma_debugspam", "0")
 
 KARMA.cv.persist = CreateConVar("ttt_karma_persist", "0")
-KARMA.cv.falloff = CreateConVar("ttt_kakarrma_clean_half", "0.25")
+KARMA.cv.falloff = CreateConVar("ttt_karma_clean_half", "0.25")
 
 KARMA.cv.autokick = CreateConVar("ttt_karma_low_autokick", "1")
 KARMA.cv.kicklevel = CreateConVar("ttt_karma_low_amount", "450")
@@ -151,7 +152,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
 		end
 	elseif isJesterTeam(victim) then
-		local penalty = hurt_amount * 0.5
+		local penalty = hurt_amount * config.jratio
 		KARMA.GivePenalty(attacker, penalty, victim)
 		attacker:SetCleanRound(false)
 		
