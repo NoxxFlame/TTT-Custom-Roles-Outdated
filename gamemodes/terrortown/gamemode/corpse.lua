@@ -100,6 +100,7 @@ local function IdentifyBody(ply, rag)
 		local deadply = player.GetBySteamID(rag.sid)
 		if deadply then
 			deadply:SetNWBool("body_searched", true)
+			deadply:SetNWBool("body_found", true)
 			
 			if traitor then
 				-- update innocent's list of traitors

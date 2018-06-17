@@ -152,7 +152,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
 		end
 	elseif isJesterTeam(victim) then
-		local penalty = hurt_amount * config.jratio
+		local penalty = hurt_amount * config.jratio:GetFloat()
 		KARMA.GivePenalty(attacker, penalty, victim)
 		attacker:SetCleanRound(false)
 		
