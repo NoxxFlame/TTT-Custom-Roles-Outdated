@@ -18,8 +18,17 @@ function PANEL:Init()
 	self.cols = {}
 	self:AddColumn(GetTranslation("sb_ping"), function(ply) return ply:Ping() end)
 	
+	local beta = false
+	if ConVarExists("ttt_karma_beta") then
+		beta = GetConVar("ttt_karma_beta"):GetBool()
+	end
+	
 	if KARMA.IsEnabled() then
-		self:AddColumn(GetTranslation("sb_karma"), function(ply) return math.Round(ply:GetBaseKarma()) end)
+		if beta then
+			self:AddColumn(GetTranslation("sb_karma"), function(ply) return math.Round(ply:GetDamageFactor() * 100) .. "%" end)
+		else
+			self:AddColumn(GetTranslation("sb_karma"), function(ply) return math.Round(ply:GetBaseKarma()) end)
+		end
 	end
 	
 	-- Let hooks add their custom columns

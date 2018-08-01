@@ -338,13 +338,13 @@ if CLIENT then
 		local maxkarma = GetGlobalInt("ttt_karma_max", 1000)
 		local maxdif = maxkarma - 1000
 		
-		if karma == maxkarma then
+		if karma >= 1000 then
 			return "karma_max", karmacolors.max
-		elseif karma > 900 then
+		elseif karma >= 900 then
 			return "karma_high", karmacolors.high
-		elseif karma > 700 then
+		elseif karma >= 700 then
 			return "karma_med", karmacolors.med
-		elseif karma > 500 then
+		elseif karma >= 500 then
 			return "karma_low", karmacolors.low
 		else
 			return "karma_min", karmacolors.min

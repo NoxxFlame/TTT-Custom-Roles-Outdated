@@ -240,7 +240,11 @@ function KARMA.RoundIncrement()
 	
 	for _, ply in pairs(player.GetAll()) do
 		if ply:IsDeadTerror() and ply.death_type ~= KILL_SUICIDE or not ply:IsSpec() then
-			local bonus = healbonus + (ply:GetCleanRound() and math.Clamp(math.floor(cleanbonus * config.cleanmult:GetFloat() ^ (ply:GetCleanRounds() - 1)), 0, config.cleanmax:GetFloat()) or 0)
+			if config.beta:GetBool() then
+				local bonus = healbonus + (ply:GetCleanRound() and math.Clamp(math.floor(cleanbonus * config.cleanmult:GetFloat() ^ (ply:GetCleanRounds() - 1)), 0, config.cleanmax:GetFloat()) or 0)
+			else
+				local bonus = healbonus + (ply:GetCleanRound() and cleanbonus or 0)
+			end
 			KARMA.GiveReward(ply, bonus)
 			
 			if IsDebug() then
@@ -273,16 +277,19 @@ end
 function KARMA.NotifyPlayer(ply)
 	local df = ply:GetDamageFactor() or 1
 	local k = math.Round(ply:GetBaseKarma())
-	if df > 0.99 then
-		LANG.Msg(ply, "karma_dmg_full", { amount = k })
-		ply:PrintMessage(HUD_PRINTTALK, "Your Karma is " .. k .. ", so you deal full damage this round!")
-	else
-		LANG.Msg(ply, "karma_dmg_other",
-			{
-				amount = k,
-				num = math.ceil((1 - df) * 100)
-			})
-		ply:PrintMessage(HUD_PRINTTALK, "Your Karma is " .. k .. ". As a result all damage you deal is reduced by " .. math.ceil((1 - df) * 100) .. "%")
+	if not config.beta:GetBool() then
+		if df > 0.99 then
+			LANG.Msg(ply, "karma_dmg_full", { amount = k })
+			ply:PrintMessage(HUD_PRINTTALK, "Your Karma is " .. k .. ", so you deal full damage this round!")
+		else
+			
+			LANG.Msg(ply, "karma_dmg_other",
+				{
+					amount = k,
+					num = math.ceil((1 - df) * 100)
+				})
+			ply:PrintMessage(HUD_PRINTTALK, "Your Karma is " .. k .. ". As a result all damage you deal is reduced by " .. math.ceil((1 - df) * 100) .. "%")
+		end
 	end
 end
 
