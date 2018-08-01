@@ -141,6 +141,8 @@ CreateConVar("ttt_voice_drain_recharge", "0.05", FCVAR_NOTIFY)
 CreateConVar("ttt_namechange_kick", "1", FCVAR_NOTIFY)
 CreateConVar("ttt_namechange_bantime", "10")
 
+CreateConVar("ttt_karma_beta", "0", FCVAR_REPLICATED)
+
 local ttt_detective = CreateConVar("ttt_sherlock_mode", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY)
 local ttt_minply = CreateConVar("ttt_minimum_players", "2", FCVAR_ARCHIVE + FCVAR_NOTIFY)
 
@@ -295,6 +297,8 @@ function GM:SyncGlobals()
 	SetGlobalFloat("ttt_voice_drain_recharge", GetConVar("ttt_voice_drain_recharge"):GetFloat())
 	
 	SetGlobalBool("ttt_detective_search_only", GetConVar("ttt_detective_search_only"):GetBool())
+	
+	SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 end
 
 function SendRoundState(state, ply)

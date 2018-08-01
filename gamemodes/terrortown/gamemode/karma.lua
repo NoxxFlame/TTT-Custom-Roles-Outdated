@@ -9,7 +9,6 @@ KARMA.RememberedPlayers = {}
 KARMA.cv = {}
 KARMA.cv.enabled = CreateConVar("ttt_karma", "1", FCVAR_ARCHIVE)
 KARMA.cv.strict = CreateConVar("ttt_karma_strict", "1")
-KARMA.cv.beta = CreateConVar("ttt_karma_beta", "0")
 KARMA.cv.starting = CreateConVar("ttt_karma_starting", "1000")
 KARMA.cv.max = CreateConVar("ttt_karma_max", "1000")
 KARMA.cv.ratio = CreateConVar("ttt_karma_ratio", "0.001")
@@ -99,7 +98,7 @@ function KARMA.ApplyKarma(ply)
 	-- need the penalty curve
 	if ply:GetBaseKarma() < 1000 then
 		local k = ply:GetBaseKarma() - 1000
-		if config.beta:GetBool() then
+		if GetGlobalBool("ttt_karma_beta", false) then
 			df = -0.0000005 * (k + 1000) ^ 2 + 0.0015 * (k + 1000)
 		else
 			if config.strict:GetBool() then
@@ -240,7 +239,7 @@ function KARMA.RoundIncrement()
 	
 	for _, ply in pairs(player.GetAll()) do
 		if ply:IsDeadTerror() and ply.death_type ~= KILL_SUICIDE or not ply:IsSpec() then
-			if config.beta:GetBool() then
+			if GetGlobalBool("ttt_karma_beta", false) then
 				local bonus = healbonus + (ply:GetCleanRound() and math.Clamp(math.floor(cleanbonus * config.cleanmult:GetFloat() ^ (ply:GetCleanRounds() - 1)), 0, config.cleanmax:GetFloat()) or 0)
 			else
 				local bonus = healbonus + (ply:GetCleanRound() and cleanbonus or 0)
@@ -277,7 +276,7 @@ end
 function KARMA.NotifyPlayer(ply)
 	local df = ply:GetDamageFactor() or 1
 	local k = math.Round(ply:GetBaseKarma())
-	if not config.beta:GetBool() then
+	if not GetGlobalBool("ttt_karma_beta", false) then
 		if df > 0.99 then
 			LANG.Msg(ply, "karma_dmg_full", { amount = k })
 			ply:PrintMessage(HUD_PRINTTALK, "Your Karma is " .. k .. ", so you deal full damage this round!")

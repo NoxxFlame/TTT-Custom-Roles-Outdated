@@ -18,10 +18,7 @@ function PANEL:Init()
 	self.cols = {}
 	self:AddColumn(GetTranslation("sb_ping"), function(ply) return ply:Ping() end)
 	
-	local beta = false
-	if ConVarExists("ttt_karma_beta") then
-		beta = GetConVar("ttt_karma_beta"):GetBool()
-	end
+	local beta = GetGlobalBool("ttt_karma_beta", false)
 	
 	if KARMA.IsEnabled() then
 		if beta then
