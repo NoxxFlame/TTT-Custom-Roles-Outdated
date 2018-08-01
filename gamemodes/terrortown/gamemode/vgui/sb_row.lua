@@ -22,10 +22,7 @@ function PANEL:Init()
 	
 	if KARMA.IsEnabled() then
 		if beta then
-			local damagescale = ply:GetNWInt("DamageScale", -1)
-			if damagescale >= 0 then
-				self:AddColumn(GetTranslation("sb_karma"), function(ply) return damagescale .. "%" end)
-			end
+			self:AddColumn(GetTranslation("sb_karma"), function(ply) return math.Round(math.Clamp(-0.0000005 * ply:GetBaseKarma() ^ 2 + 0.0015 * ply:GetBaseKarma(), 0.1, 1.0) * 100) .. "%" end)
 		else
 			self:AddColumn(GetTranslation("sb_karma"), function(ply) return math.Round(ply:GetBaseKarma()) end)
 		end
