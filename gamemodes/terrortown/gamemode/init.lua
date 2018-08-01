@@ -744,6 +744,7 @@ function BeginRound()
 	SCORE:HandleSelection() -- log traitors and detectives
 	
 	for k, v in pairs(player.GetAll()) do
+		v:SetNWInt("DamageScale", math.Round(ply:GetDamageFactor() * 100))
 		v:SetPData("IsZombifying", 0)
 		v:SetPData("AssassinTarget", "")
 		if v:GetRole() == ROLE_ASSASSIN then
