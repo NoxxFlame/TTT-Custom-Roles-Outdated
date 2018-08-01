@@ -195,9 +195,9 @@ function PANEL:Paint(width, height)
 	surface.DrawRect(0, 0, width, SB_ROW_HEIGHT)
 	
 	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") then
-		surface.SetDrawColor(255, math.Clamp(math.sin(RealTime()) * 128 + 128, 0, 255), 0, 255)
-		surface.DrawOutlinedRect(0, 0, width, SB_ROW_HEIGHT)
-		surface.DrawOutlinedRect(1, 1, width - 2, SB_ROW_HEIGHT - 2)
+		surface.SetDrawColor(255, math.Clamp(math.sin(RealTime() * 4) * 128 + 128, 0, 255), 0, 255)
+		surface.DrawOutlinedRect(SB_ROW_HEIGHT, 0, width - SB_ROW_HEIGHT, SB_ROW_HEIGHT)
+		surface.DrawOutlinedRect(1 + SB_ROW_HEIGHT, 1, width - 2 - SB_ROW_HEIGHT, SB_ROW_HEIGHT - 2)
 	end
 	
 	local rolestr = ""
