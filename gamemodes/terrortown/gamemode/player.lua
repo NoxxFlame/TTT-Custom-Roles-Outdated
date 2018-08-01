@@ -24,16 +24,35 @@ function GM:PlayerInitialSpawn(ply)
 	local rstate = GetRoundState() or ROUND_WAIT
 	-- We should update the traitor list, if we are not about to send it
 	if rstate <= ROUND_PREP then
-		SendTraitorList(GetTraitorFilter())
-		SendConfirmedTraitors(GetInnocentFilter())
+		SendInnocentList()
+		SendTraitorList()
 		SendDetectiveList()
+		SendMercenaryList()
+		SendHypnotistList()
+		SendGlitchList()
+		SendJesterList()
+		SendPhantomList()
+		SendZombieList()
+		SendVampireList()
+		SendSwapperList()
+		SendAssassinList()
 	end
 	
 	-- Game has started, tell this gusy where the round is at
 	if rstate ~= ROUND_WAIT then
 		SendRoundState(rstate, ply)
-		SendConfirmedTraitors(ply)
+		SendInnocentList(ply)
+		SendTraitorList(ply)
 		SendDetectiveList(ply)
+		SendMercenaryList(ply)
+		SendHypnotistList(ply)
+		SendGlitchList(ply)
+		SendJesterList(ply)
+		SendPhantomList(ply)
+		SendZombieList(ply)
+		SendVampireList(ply)
+		SendSwapperList(ply)
+		SendAssassinList(ply)
 	end
 	
 	-- Handle spec bots
@@ -641,6 +660,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 					v:PrintMessage(HUD_PRINTCENTER, "The phantom has been respawned.")
 				end
 			end
+			ply:SetNWBool("HauntedSmoke", false)
 			SendFullStateUpdate()
 		end
 	end
@@ -673,10 +693,8 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 					--v:PrintMessage( HUD_PRINTTALK, "There is a detective left")
 				end
 				if #innocents + #detectives > 1 then
-					v:PrintMessage(HUD_PRINTTALK, "Target Eliminated. Your next target is " .. v:GetPData("AssassinTarget", ""))
 					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your next target is " .. v:GetPData("AssassinTarget", ""))
 				elseif #innocents + #detectives == 1 then
-					v:PrintMessage(HUD_PRINTTALK, "Target Eliminated. Your final target is " .. v:GetPData("AssassinTarget", ""))
 					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your final target is " .. v:GetPData("AssassinTarget", ""))
 				end
 			end
@@ -685,7 +703,6 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	if attacker:IsPlayer() then
 		if attacker:GetRole() == ROLE_ASSASSIN then
 			if ply:Nick() ~= assassintarget and assassintarget ~= "" then
-				attacker:PrintMessage(HUD_PRINTTALK, "Contract failed. You killed the wrong player.")
 				attacker:PrintMessage(HUD_PRINTCENTER, "Contract failed. You killed the wrong player.")
 				attacker:SetPData("AssassinTarget", "")
 			end
@@ -802,7 +819,7 @@ function GM:PlayerDeath(victim, infl, attacker)
 	if victim:GetRole() == ROLE_SWAPPER and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
 		for k, ply in pairs(player.GetAll()) do
 			if ply == attacker then
-				attacker:PrintMessage(HUD_PRINTCENTER, "You killed the swapper you dumb dumb!")
+				attacker:PrintMessage(HUD_PRINTCENTER, "You killed the swapper!")
 			else
 				if ply:GetRole() == ROLE_TRAITOR or ply:GetRole() == ROLE_HYPNOTIST or ply:GetRole() == ROLE_ZOMBIE or ply:GetRole() == ROLE_VAMPIRE or ply:GetRole() == ROLE_ASSASSIN then
 					if attacker:GetRole() == ROLE_TRAITOR then

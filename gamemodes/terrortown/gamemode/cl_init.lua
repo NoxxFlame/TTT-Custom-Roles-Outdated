@@ -233,7 +233,7 @@ local function ReceiveRoleList()
 	for i = 1, num_ids do
 		local eidx = net.ReadUInt(7) + 1 -- we - 1 worldspawn=0
 		local ply = player.GetByID(eidx)
-		if IsValid(ply) and ply.SetRole then
+		if IsValid(ply) then
 			ply:SetRole(role)
 			
 			if ply:IsTraitor() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsZombie() then

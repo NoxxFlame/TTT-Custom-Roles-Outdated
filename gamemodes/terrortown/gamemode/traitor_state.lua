@@ -73,31 +73,7 @@ function SendSwapperList(ply_or_rf) SendRoleList(ROLE_SWAPPER, ply_or_rf) end
 
 function SendAssassinList(ply_or_rf) SendRoleList(ROLE_ASSASSIN, ply_or_rf) end
 
--- this is purely to make sure last round's traitors/dets ALWAYS get reset
--- not happy with this, but it'll do for now
-function SendInnocentList(ply_or_rf)
-	-- Send innocent and detectives a list of actual innocents + traitors, while
-	-- sending traitors only a list of actual innocents.
-	local inno_ids = {}
-	local traitor_ids = {}
-	for k, v in pairs(player.GetAll()) do
-		if v:IsRole(ROLE_INNOCENT) then
-			table.insert(inno_ids, v:EntIndex())
-		elseif v:IsRole(ROLE_TRAITOR) then
-			table.insert(traitor_ids, v:EntIndex())
-		end
-	end
-	
-	-- traitors get actual innocent, so they do not reset their traitor mates to
-	-- innocence
-	SendRoleListMessage(ROLE_INNOCENT, inno_ids, GetTraitorFilter())
-	
-	-- detectives and innocents get an expanded version of the truth so that they
-	-- reset everyone who is not detective
-	table.Add(inno_ids, traitor_ids)
-	table.Shuffle(inno_ids)
-	SendRoleListMessage(ROLE_INNOCENT, inno_ids, GetInnocentFilter())
-end
+function SendInnocentList(ply_or_rf) SendRoleList(ROLE_INNOCENT, ply_or_rf) end
 
 function SendConfirmedTraitors(ply_or_rf)
 	SendTraitorList(ply_or_rf, function(p) return p:GetNWBool("body_searched") end)

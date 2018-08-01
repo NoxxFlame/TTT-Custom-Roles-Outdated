@@ -591,28 +591,15 @@ function TellTraitorsAboutTraitors()
 	local hypnotistnick = {}
 	local vampirenick = {}
 	local assassinnick = {}
-	local zombienicks = {}
 	local glitchnick = {}
 	local jesternick = {}
 	for k, v in pairs(player.GetAll()) do
-		if v:IsTraitor() then
+		if v:IsTraitor() or v:IsHypnotist() or v:IsVampire() or v:IsZombie() or v:IsAssassin() then
 			table.insert(traitornicks, v:Nick())
-		elseif v:GetHypnotist() then
-			table.insert(traitornicks, v:Nick())
-			table.insert(hypnotistnick, v:Nick())
-		elseif v:GetVampire() then
-			table.insert(traitornicks, v:Nick())
-			table.insert(vampirenick, v:Nick())
-		elseif v:GetAssassin() then
-			table.insert(traitornicks, v:Nick())
-			table.insert(assassinnick, v:Nick())
-		elseif v:GetZombie() then
-			table.insert(traitornicks, v:Nick())
-			table.insert(zombienicks, v:Nick())
-		elseif v:GetGlitch() then
+		elseif v:IsGlitch() then
 			table.insert(traitornicks, v:Nick())
 			table.insert(glitchnick, v:Nick())
-		elseif v:GetJester() or v:GetSwapper() then
+		elseif v:IsJester() or v:IsSwapper() then
 			table.insert(jesternick, v:Nick())
 		end
 	end
@@ -621,31 +608,11 @@ function TellTraitorsAboutTraitors()
 	-- traitors themselves in the messages to them
 	for k, v in pairs(player.GetAll()) do
 		if v:IsTraitor() or v:IsHypnotist() or v:IsVampire() or v:IsZombie() or v:IsAssassin() then
-			if table.Count(jesternick) > 0 then
-				for ent, ply in pairs(jesternick) do
-					v:PrintMessage(HUD_PRINTTALK, ply .. " is a Jester")
-				end
-			end
-			if table.Count(hypnotistnick) > 0 then
-				for ent, ply in pairs(hypnotistnick) do
-					v:PrintMessage(HUD_PRINTTALK, ply .. " is a Hypnotist")
-				end
-			end
-			if table.Count(vampirenick) > 0 then
-				for ent, ply in pairs(vampirenick) do
-					v:PrintMessage(HUD_PRINTTALK, ply .. " is a Vampire")
-				end
-			end
-			if table.Count(assassinnick) > 0 then
-				for ent, ply in pairs(assassinnick) do
-					v:PrintMessage(HUD_PRINTTALK, ply .. " is an Assassin")
-				end
-			end
 			if table.Count(glitchnick) > 0 then
 				v:PrintMessage(HUD_PRINTTALK, "There is a Glitch.")
 				v:PrintMessage(HUD_PRINTCENTER, "There is a Glitch.")
 			end
-			if #traitornicks + #hypnotistnick + #vampirenick + #assassinnick + #zombienicks < 2 then
+			if #traitornicks < 2 then
 				LANG.Msg(v, "round_traitors_one")
 				return
 			else
@@ -793,10 +760,8 @@ function BeginRound()
 				v:SetPData("AssassinTarget", detectives[math.random(#detectives)])
 			end
 			if #innocents + #detectives > 1 then
-				v:PrintMessage(HUD_PRINTTALK, "Your first target is " .. v:GetPData("AssassinTarget", ""))
 				v:PrintMessage(HUD_PRINTCENTER, "Your first target is " .. v:GetPData("AssassinTarget", ""))
 			elseif #innocents + #detectives == 1 then
-				v:PrintMessage(HUD_PRINTTALK, "Your final target is " .. v:GetPData("AssassinTarget", ""))
 				v:PrintMessage(HUD_PRINTCENTER, "Your final target is " .. v:GetPData("AssassinTarget", ""))
 			end
 		elseif v:GetRole() == ROLE_HYPNOTIST then
