@@ -19,8 +19,6 @@ function GM:PlayerInitialSpawn(ply)
 		GAMEMODE:InitCvars()
 	end
 	
-	ply:SetNWInt("DamageScale", math.Round(ply:GetDamageFactor() * 100))
-	
 	ply:InitialSpawn()
 	
 	local rstate = GetRoundState() or ROUND_WAIT
