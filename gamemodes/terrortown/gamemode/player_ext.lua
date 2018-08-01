@@ -35,6 +35,9 @@ AccessorFunc(plymeta, "dmg_factor", "DamageFactor", FORCE_NUMBER)
 -- and gets a bonus for it.
 AccessorFunc(plymeta, "clean_round", "CleanRound", FORCE_BOOL)
 
+-- How many clean rounds in a row the player has gone
+AccessorFunc(plymeta, "clean_rounds", "CleanRounds", FORCE_NUMBER)
+
 function plymeta:InitKarma()
 	KARMA.InitPlayer(self)
 end
@@ -174,6 +177,10 @@ function plymeta:ResetRoundFlags()
 	
 	-- karma
 	self:SetCleanRound(true)
+	
+	if not self:GetCleanRounds() then
+		self:SetCleanRounds(1)
+	end
 	
 	self:Freeze(false)
 end

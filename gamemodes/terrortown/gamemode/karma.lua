@@ -9,12 +9,15 @@ KARMA.RememberedPlayers = {}
 KARMA.cv = {}
 KARMA.cv.enabled = CreateConVar("ttt_karma", "1", FCVAR_ARCHIVE)
 KARMA.cv.strict = CreateConVar("ttt_karma_strict", "1")
+KARMA.cv.beta = CreateConVar("ttt_karma_beta", "0")
 KARMA.cv.starting = CreateConVar("ttt_karma_starting", "1000")
 KARMA.cv.max = CreateConVar("ttt_karma_max", "1000")
 KARMA.cv.ratio = CreateConVar("ttt_karma_ratio", "0.001")
 KARMA.cv.killpenalty = CreateConVar("ttt_karma_kill_penalty", "15")
 KARMA.cv.roundheal = CreateConVar("ttt_karma_round_increment", "5")
 KARMA.cv.clean = CreateConVar("ttt_karma_clean_bonus", "30")
+KARMA.cv.cleanmax = CreateConVar("ttt_karma_clean_bonus_max", "100")
+KARMA.cv.cleanmult = CreateConVar("ttt_karma_clean_bonus_multiplier", "1.2")
 KARMA.cv.tbonus = CreateConVar("ttt_karma_traitorkill_bonus", "40")
 KARMA.cv.tratio = CreateConVar("ttt_karma_traitordmg_ratio", "0.0003")
 KARMA.cv.jpenalty = CreateConVar("ttt_karma_jesterkill_penalty", "50")
@@ -96,11 +99,15 @@ function KARMA.ApplyKarma(ply)
 	-- need the penalty curve
 	if ply:GetBaseKarma() < 1000 then
 		local k = ply:GetBaseKarma() - 1000
-		if config.strict:GetBool() then
-			-- this penalty curve sinks more quickly, less parabolic
-			df = 1 + (0.0007 * k) + (-0.000002 * (k ^ 2))
+		if config.beta:GetBool() then
+			df = -0.0000005 * (k + 1000) ^ 2 + 0.0015 * (k + 1000)
 		else
-			df = 1 + -0.0000025 * (k ^ 2)
+			if config.strict:GetBool() then
+				-- this penalty curve sinks more quickly, less parabolic
+				df = 1 + (0.0007 * k) + (-0.000002 * (k ^ 2))
+			else
+				df = 1 + -0.0000025 * (k ^ 2)
+			end
 		end
 	end
 	
@@ -140,6 +147,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 		KARMA.GivePenalty(attacker, penalty, victim)
 		
 		attacker:SetCleanRound(false)
+		attacker:SetCleanRounds(0)
 		
 		if IsDebug() then
 			print(Format("%s (%f) attacked %s (%f) for %d and got penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, penalty))
@@ -155,6 +163,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 		local penalty = hurt_amount * config.jratio:GetFloat()
 		KARMA.GivePenalty(attacker, penalty, victim)
 		attacker:SetCleanRound(false)
+		attacker:SetCleanRounds(0)
 		
 		if IsDebug() then
 			print(Format("%s (%f) attacked the jester %s (%f) for %d and got penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, penalty))
@@ -177,6 +186,7 @@ function KARMA.Killed(attacker, victim, dmginfo)
 		KARMA.GivePenalty(attacker, penalty, victim)
 		
 		attacker:SetCleanRound(false)
+		attacker:SetCleanRounds(0)
 		
 		if IsDebug() then
 			print(Format("%s (%f) killed %s (%f) and gets penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), penalty))
@@ -192,6 +202,7 @@ function KARMA.Killed(attacker, victim, dmginfo)
 		local penalty = config.jpenalty:GetFloat()
 		KARMA.GivePenalty(attacker, penalty, victim)
 		attacker:SetCleanRound(false)
+		attacker:SetCleanRounds(0)
 		
 		if IsDebug() then
 			print(Format("%s (%f) killed the jester %s (%f) and gets penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), penalty))
@@ -229,7 +240,7 @@ function KARMA.RoundIncrement()
 	
 	for _, ply in pairs(player.GetAll()) do
 		if ply:IsDeadTerror() and ply.death_type ~= KILL_SUICIDE or not ply:IsSpec() then
-			local bonus = healbonus + (ply:GetCleanRound() and cleanbonus or 0)
+			local bonus = healbonus + (ply:GetCleanRound() and math.Clamp(math.floor(cleanbonus * config.cleanmult:GetFloat() ^ (ply:GetCleanRounds() - 1)), 0, config.cleanmax:GetFloat()) or 0)
 			KARMA.GiveReward(ply, bonus)
 			
 			if IsDebug() then
@@ -315,6 +326,7 @@ function KARMA.InitPlayer(ply)
 	ply:SetBaseKarma(k)
 	ply:SetLiveKarma(k)
 	ply:SetCleanRound(true)
+	ply:SetCleanRounds(ply:GetCleanRounds() + 1)
 	ply:SetDamageFactor(1.0)
 	
 	-- compute the damagefactor based on actual (possibly loaded) karma
