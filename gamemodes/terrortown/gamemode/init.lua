@@ -745,7 +745,7 @@ function BeginRound()
 	
 	for k, v in pairs(player.GetAll()) do
 		v:SetPData("IsZombifying", 0)
-		v:SetPData("AssassinTarget", "")
+		v:SetNWString("AssassinTarget", "")
 		if v:GetRole() == ROLE_ASSASSIN then
 			local innocents = {}
 			local detectives = {}
@@ -759,14 +759,14 @@ function BeginRound()
 				end
 			end
 			if #innocents > 0 then
-				v:SetPData("AssassinTarget", innocents[math.random(#innocents)])
+				v:SetNWString("AssassinTarget", innocents[math.random(#innocents)])
 			elseif #detectives > 0 then
-				v:SetPData("AssassinTarget", detectives[math.random(#detectives)])
+				v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
 			end
 			if #innocents + #detectives > 1 then
-				v:PrintMessage(HUD_PRINTCENTER, "Your first target is " .. v:GetPData("AssassinTarget", ""))
+				v:PrintMessage(HUD_PRINTCENTER, "Your first target is " .. v:GetNWString("AssassinTarget", ""))
 			elseif #innocents + #detectives == 1 then
-				v:PrintMessage(HUD_PRINTCENTER, "Your final target is " .. v:GetPData("AssassinTarget", ""))
+				v:PrintMessage(HUD_PRINTCENTER, "Your final target is " .. v:GetNWString("AssassinTarget", ""))
 			end
 		elseif v:GetRole() == ROLE_HYPNOTIST then
 			v:Give("weapon_hyp_brainwash")

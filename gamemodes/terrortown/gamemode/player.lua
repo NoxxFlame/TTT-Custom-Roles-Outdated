@@ -652,11 +652,9 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 			net.Start("TTT_Defibrillated")
 			net.WriteString(deadPhantom:Nick())
 			net.Broadcast()
-			deadPhantom:PrintMessage(HUD_PRINTTALK, "Your attacker died and you have been respawned.")
 			deadPhantom:PrintMessage(HUD_PRINTCENTER, "Your attacker died and you have been respawned.")
 			for k, v in pairs(player.GetAll()) do
 				if v:IsRole(ROLE_DETECTIVE) and v:Alive() then
-					v:PrintMessage(HUD_PRINTTALK, "The phantom has been respawned.")
 					v:PrintMessage(HUD_PRINTCENTER, "The phantom has been respawned.")
 				end
 			end
@@ -668,7 +666,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	local assassintarget = ""
 	for k, v in pairs(player.GetAll()) do
 		if v:GetRole() == ROLE_ASSASSIN then
-			assassintarget = v:GetPData("AssassinTarget", "")
+			assassintarget = v:GetNWString("AssassinTarget", "")
 		end
 	end
 	if ply:Nick() == assassintarget then
@@ -686,16 +684,16 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 					end
 				end
 				if #innocents > 0 then
-					v:SetPData("AssassinTarget", innocents[math.random(#innocents)])
+					v:SetNWString("AssassinTarget", innocents[math.random(#innocents)])
 					--v:PrintMessage( HUD_PRINTTALK, "There is an innocent left")
 				elseif #detectives > 0 then
-					v:SetPData("AssassinTarget", detectives[math.random(#detectives)])
+					v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
 					--v:PrintMessage( HUD_PRINTTALK, "There is a detective left")
 				end
 				if #innocents + #detectives > 1 then
-					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your next target is " .. v:GetPData("AssassinTarget", ""))
+					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your next target is " .. v:GetNWString("AssassinTarget", ""))
 				elseif #innocents + #detectives == 1 then
-					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your final target is " .. v:GetPData("AssassinTarget", ""))
+					v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your final target is " .. v:GetNWString("AssassinTarget", ""))
 				end
 			end
 		end
@@ -704,7 +702,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 		if attacker:GetRole() == ROLE_ASSASSIN then
 			if ply:Nick() ~= assassintarget and assassintarget ~= "" then
 				attacker:PrintMessage(HUD_PRINTCENTER, "Contract failed. You killed the wrong player.")
-				attacker:SetPData("AssassinTarget", "")
+				attacker:SetNWString("AssassinTarget", "")
 			end
 		end
 	end
@@ -803,13 +801,10 @@ end
 function GM:PlayerDeath(victim, infl, attacker)
 	if victim:GetRole() == ROLE_PHANTOM and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
 		attacker:SetNWBool("HauntedSmoke", true)
-		attacker:PrintMessage(HUD_PRINTTALK, "You have been haunted. Other players will see the phantom's presence.")
 		attacker:PrintMessage(HUD_PRINTCENTER, "You have been haunted.")
-		victim:PrintMessage(HUD_PRINTTALK, "Your attacker has been haunted. You will respawn if they are killed and your body is not destroyed.")
 		victim:PrintMessage(HUD_PRINTCENTER, "Your attacker has been haunted.")
 		for k, v in pairs(player.GetAll()) do
 			if v:IsRole(ROLE_DETECTIVE) and v:Alive() then
-				v:PrintMessage(HUD_PRINTTALK, "The phantom has been killed.")
 				v:PrintMessage(HUD_PRINTCENTER, "The phantom has been killed.")
 			end
 		end
@@ -1106,7 +1101,7 @@ function GM:EntityTakeDamage(ent, dmginfo)
 		local assassintarget = ""
 		for k, v in pairs(player.GetAll()) do
 			if v:GetRole() == ROLE_ASSASSIN then
-				assassintarget = v:GetPData("AssassinTarget", "")
+				assassintarget = v:GetNWString("AssassinTarget", "")
 			end
 		end
 		local assassinbonus = 1

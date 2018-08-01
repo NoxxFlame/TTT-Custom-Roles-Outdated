@@ -239,10 +239,11 @@ function KARMA.RoundIncrement()
 	
 	for _, ply in pairs(player.GetAll()) do
 		if ply:IsDeadTerror() and ply.death_type ~= KILL_SUICIDE or not ply:IsSpec() then
+			local bonus = 0
 			if GetGlobalBool("ttt_karma_beta", false) then
-				local bonus = healbonus + (ply:GetCleanRound() and math.Clamp(math.floor(cleanbonus * config.cleanmult:GetFloat() ^ (ply:GetCleanRounds() - 1)), 0, config.cleanmax:GetFloat()) or 0)
+				bonus = healbonus + (ply:GetCleanRound() and math.Clamp(math.floor(cleanbonus * config.cleanmult:GetFloat() ^ (ply:GetCleanRounds() - 1)), 0, config.cleanmax:GetFloat()) or 0)
 			else
-				local bonus = healbonus + (ply:GetCleanRound() and cleanbonus or 0)
+				bonus = healbonus + (ply:GetCleanRound() and cleanbonus or 0)
 			end
 			KARMA.GiveReward(ply, bonus)
 			
