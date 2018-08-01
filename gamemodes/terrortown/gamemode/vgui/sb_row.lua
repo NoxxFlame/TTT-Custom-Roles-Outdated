@@ -295,7 +295,11 @@ function PANEL:UpdatePlayerData()
 		self.cols[i]:SetText(self.cols[i].GetPlayerText(ply, self.cols[i]))
 	end
 	
-	self.nick:SetText(ply:Nick())
+	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") then
+		self.nick:SetText(ply:Nick() .. " (TARGET)")
+	else
+		self.nick:SetText(ply:Nick())
+	end
 	self.nick:SizeToContents()
 	self.nick:SetTextColor(ColorForPlayer(ply))
 	
