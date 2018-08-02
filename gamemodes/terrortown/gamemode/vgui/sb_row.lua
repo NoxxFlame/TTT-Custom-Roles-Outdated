@@ -297,6 +297,7 @@ function PANEL:UpdatePlayerData()
 		self.cols[i]:SetText(self.cols[i].GetPlayerText(ply, self.cols[i]))
 	end
 	
+	self.nick:SetText(ply:Nick())
 	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") and GetRoundState() >= ROUND_ACTIVE then
 		self.nick:SetText(ply:Nick() .. " (TARGET)")
 	elseif (LocalPlayer():GetTraitor() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetZombie()) and GetRoundState() >= ROUND_ACTIVE then
@@ -305,9 +306,8 @@ function PANEL:UpdatePlayerData()
 				self.nick:SetText(ply:Nick() .. " (" .. v:Nick() .. "'s Target)")
 			end
 		end
-	else
-		self.nick:SetText(ply:Nick())
 	end
+	
 	self.nick:SizeToContents()
 	self.nick:SetTextColor(ColorForPlayer(ply))
 	
