@@ -194,12 +194,6 @@ function PANEL:Paint(width, height)
 	surface.SetDrawColor(c)
 	surface.DrawRect(0, 0, width, SB_ROW_HEIGHT)
 	
-	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") then
-		surface.SetDrawColor(255, math.Clamp(math.sin(RealTime() * 4) * 128 + 128, 0, 255), 0, 255)
-		surface.DrawOutlinedRect(SB_ROW_HEIGHT, 0, width - SB_ROW_HEIGHT, SB_ROW_HEIGHT)
-		surface.DrawOutlinedRect(1 + SB_ROW_HEIGHT, 1, width - 2 - SB_ROW_HEIGHT, SB_ROW_HEIGHT - 2)
-	end
-	
 	local rolestr = ""
 	
 	if c == rolecolor.innocent then
@@ -242,6 +236,14 @@ function PANEL:Paint(width, height)
 		self.sresult:SetVisible(true)
 	else
 		self.sresult:SetVisible(false)
+	end
+	
+	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") then
+		surface.SetDrawColor(112, 50, 0, 255)
+		surface.DrawOutlinedRect(SB_ROW_HEIGHT, 0, width - SB_ROW_HEIGHT, SB_ROW_HEIGHT)
+		surface.DrawOutlinedRect(1 + SB_ROW_HEIGHT, 1, width - 2 - SB_ROW_HEIGHT, SB_ROW_HEIGHT - 2)
+		surface.SetDrawColor(255, 255, 255, math.Clamp(math.sin(RealTime() * 4) * 25 + 25, 0, 100))
+		surface.DrawRect(0, 0, width, SB_ROW_HEIGHT)
 	end
 	
 	if ply == LocalPlayer() then
@@ -297,6 +299,12 @@ function PANEL:UpdatePlayerData()
 	
 	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") then
 		self.nick:SetText(ply:Nick() .. " (TARGET)")
+	elseif LocalPlayer():GetTraitor() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetZombie() then
+		for k, v in pairs(player.GetAll()) do
+			if ply:Nick() == v:GetNWString("AssassinTarget", "") then
+				self.nick:SetText(ply:Nick() .. " (" .. v:Nick() .. "'s Target)")
+			end
+		end
 	else
 		self.nick:SetText(ply:Nick())
 	end
