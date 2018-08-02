@@ -638,6 +638,7 @@ L.target_jester = "JESTER"
 L.target_swapper = "SWAPPER"
 L.target_fellow_traitor = "FELLOW TRAITOR"
 L.target_fellow_zombie = "FELLOW ZOMBIE"
+L.target_current_target = "CURRENT TARGET"
 
 L.target_credits = "Search to silently receive unspent credits"
 

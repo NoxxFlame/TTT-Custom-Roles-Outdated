@@ -311,6 +311,7 @@ function GM:HUDDrawTargetID()
 	local target_swapper = false
 	local target_fellow_traitor = false
 	local target_fellow_zombie = false
+	local target_current_target = false
 	local target_corpse = false
 	
 	local text = nil
@@ -391,6 +392,9 @@ function GM:HUDDrawTargetID()
 			target_jester = ent:IsRole(ROLE_JESTER) or ent:IsRole(ROLE_SWAPPER)
 			target_vampire = ent:IsRole(ROLE_VAMPIRE)
 			target_assassin = ent:IsRole(ROLE_ASSASSIN)
+		end
+		if client:GetRole() == ROLE_ASSASSIN then
+			target_current_target = (ent:Nick() == client:GetNWString("AssassinTarget", ""))
 		end
 		
 		target_detective = GetRoundState() > ROUND_PREP and (ent:GetRole() == ROLE_DETECTIVE) or false
@@ -532,7 +536,10 @@ function GM:HUDDrawTargetID()
 	end
 	
 	text = nil
-	if target_innocent then
+	if target_current_target then
+		text = L.target_current_target
+		clr = Color(112, 50, 0, 200)
+	elseif target_innocent then
 		text = L.target_innocent
 		clr = Color(0, 255, 0, 200)
 	elseif target_detective then

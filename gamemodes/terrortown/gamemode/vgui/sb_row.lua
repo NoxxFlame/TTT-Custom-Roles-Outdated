@@ -239,11 +239,11 @@ function PANEL:Paint(width, height)
 	end
 	
 	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") then
+		surface.SetDrawColor(165, 74, 0, math.Round(math.sin(RealTime() * 8) / 2 + 0.5) * 10)
+		surface.DrawRect(0, 0, width, SB_ROW_HEIGHT)
 		surface.SetDrawColor(112, 50, 0, 255)
 		surface.DrawOutlinedRect(SB_ROW_HEIGHT, 0, width - SB_ROW_HEIGHT, SB_ROW_HEIGHT)
 		surface.DrawOutlinedRect(1 + SB_ROW_HEIGHT, 1, width - 2 - SB_ROW_HEIGHT, SB_ROW_HEIGHT - 2)
-		surface.SetDrawColor(255, 255, 255, math.Clamp(math.sin(RealTime() * 4) * 25 + 25, 0, 100))
-		surface.DrawRect(0, 0, width, SB_ROW_HEIGHT)
 	end
 	
 	if ply == LocalPlayer() then

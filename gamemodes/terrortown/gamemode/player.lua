@@ -801,7 +801,13 @@ end
 function GM:PlayerDeath(victim, infl, attacker)
 	if victim:GetRole() == ROLE_PHANTOM and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
 		attacker:SetNWBool("HauntedSmoke", true)
-		attacker:PrintMessage(HUD_PRINTCENTER, "You have been haunted.")
+		if attacker:GetRole() == ROLE_ASSASSIN then
+			timer.Simple(2.5, function()
+				attacker:PrintMessage(HUD_PRINTCENTER, "You have been haunted.")
+			end)
+		else
+			attacker:PrintMessage(HUD_PRINTCENTER, "You have been haunted.")
+		end
 		victim:PrintMessage(HUD_PRINTCENTER, "Your attacker has been haunted.")
 		for k, v in pairs(player.GetAll()) do
 			if v:IsRole(ROLE_DETECTIVE) and v:Alive() then
