@@ -393,7 +393,7 @@ function GM:HUDDrawTargetID()
 			target_vampire = ent:IsRole(ROLE_VAMPIRE)
 			target_assassin = ent:IsRole(ROLE_ASSASSIN)
 		end
-		if client:GetRole() == ROLE_ASSASSIN then
+		if client:GetRole() == ROLE_ASSASSIN and GetRoundState() >= ROUND_ACTIVE then
 			target_current_target = (ent:Nick() == client:GetNWString("AssassinTarget", ""))
 		end
 		
