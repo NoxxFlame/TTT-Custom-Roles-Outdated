@@ -303,6 +303,12 @@ function plymeta:SpawnForRound(dead_only)
 	self:SetTeam(TEAM_TERROR)
 	self:Spawn()
 	
+	self:Freeze(true)
+	local ply = self
+	timer.Simple(1.5, function()
+		ply:Freeze(false)
+	end)
+
 	-- tell caller that we spawned
 	return true
 end

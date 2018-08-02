@@ -12,6 +12,7 @@ local GetLang = LANG.GetUnsafeLanguageTable
 local interp = string.Interp
 
 local hide_role = false
+local spawning = 0
 
 -- Fonts
 surface.CreateFont("TraitorState", {
@@ -230,6 +231,13 @@ local function SpecHUDPaint(client)
 	
 	-- Draw round/prep/post time remaining
 	local text = util.SimpleTime(math.max(0, GetGlobalFloat("ttt_round_end", 0) - CurTime()), "%02i:%02i")
+	if spawning == 1 then
+		local spawntime = math.max(0, GetGlobalFloat("ttt_round_end", 0) - CurTime())
+		while spawntime > 10 do
+			spawntime = spawntime - 10
+		end
+		text = util.SimpleTime(spawntime, "%02i:%02i")
+	end
 	ShadowedText(text, "TimeLeft", time_x + margin, time_y, COLOR_WHITE)
 	
 	local tgt = client:GetObserverTarget()
@@ -294,6 +302,15 @@ local function InfoPaint(client)
 	local traitor_y = y - 30
 	local text = nil
 	
+	if spawning == 2 and (GAMEMODE.round_state == ROUND_PREP or GAMEMODE.round_state == ROUND_ACTIVE) then
+		spawning = 1
+		timer.Simple(1.5, function()
+			spawning = 0
+		end)
+	elseif spawning == 0 and (GAMEMODE.round_state == ROUND_WAIT or GAMEMODE.round_state == ROUND_POST) then
+		spawning = 2
+	end
+	
 	if round_state == ROUND_ACTIVE then
 		if hide_role then
 			text = L['hidden']
@@ -301,7 +318,11 @@ local function InfoPaint(client)
 			text = L[client:GetRoleStringRaw()]
 		end
 	else
-		text = L[roundstate_string[round_state]]
+		if spawning == 1 and GAMEMODE.round_state == ROUND_PREP then
+			text = "Spawning"
+		else
+			text = L[roundstate_string[round_state]]
+		end
 	end
 	
 	ShadowedText(text, "TraitorState", x + margin + 73, traitor_y, COLOR_WHITE, TEXT_ALIGN_CENTER)
@@ -320,34 +341,42 @@ local function InfoPaint(client)
 	
 	-- Time displays differently depending on whether haste mode is on,
 	-- whether the player is traitor or not, and whether it is overtime.
-	if is_haste then
-		local hastetime = GetGlobalFloat("ttt_haste_end", 0) - CurTime()
-		if hastetime < 0 then
-			if (not is_traitor) or (math.ceil(CurTime()) % 7 <= 2) then
-				-- innocent or blinking "overtime"
-				text = L.overtime
-				font = "Trebuchet18"
-				
-				-- need to hack the position a little because of the font switch
-				ry = ry + 5
-				rx = rx - 3
+	if spawning == 1 and GAMEMODE.round_state == ROUND_PREP then
+		local spawntime = endtime
+		while spawntime >= 10 do
+			spawntime = spawntime - 10
+		end
+		text = util.SimpleTime(math.max(0, spawntime), "%02i:%02i")
+	else
+		if is_haste then
+			local hastetime = GetGlobalFloat("ttt_haste_end", 0) - CurTime()
+			if hastetime < 0 then
+				if (not is_traitor) or (math.ceil(CurTime()) % 7 <= 2) then
+					-- innocent or blinking "overtime"
+					text = L.overtime
+					font = "Trebuchet18"
+					
+					-- need to hack the position a little because of the font switch
+					ry = ry + 5
+					rx = rx - 3
+				else
+					-- traitor and not blinking "overtime" right now, so standard endtime display
+					text = util.SimpleTime(math.max(0, endtime), "%02i:%02i")
+					color = COLOR_RED
+				end
 			else
-				-- traitor and not blinking "overtime" right now, so standard endtime display
-				text = util.SimpleTime(math.max(0, endtime), "%02i:%02i")
-				color = COLOR_RED
+				-- still in starting period
+				local t = hastetime
+				if is_traitor and math.ceil(CurTime()) % 6 < 2 then
+					t = endtime
+					color = COLOR_RED
+				end
+				text = util.SimpleTime(math.max(0, t), "%02i:%02i")
 			end
 		else
-			-- still in starting period
-			local t = hastetime
-			if is_traitor and math.ceil(CurTime()) % 6 < 2 then
-				t = endtime
-				color = COLOR_RED
-			end
-			text = util.SimpleTime(math.max(0, t), "%02i:%02i")
+			-- bog standard time when haste mode is off (or round not active)
+			text = util.SimpleTime(math.max(0, endtime), "%02i:%02i")
 		end
-	else
-		-- bog standard time when haste mode is off (or round not active)
-		text = util.SimpleTime(math.max(0, endtime), "%02i:%02i")
 	end
 	
 	ShadowedText(text, font, rx, ry, color)

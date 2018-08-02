@@ -548,9 +548,9 @@ function PrepareRound()
 	
 	if CheckForAbort() then return end
 	-- Schedule round start
-	local ptime = GetConVar("ttt_preptime_seconds"):GetInt()
+	local ptime = GetConVar("ttt_preptime_seconds"):GetFloat()
 	if GAMEMODE.FirstRound then
-		ptime = GetConVar("ttt_firstpreptime"):GetInt()
+		ptime = GetConVar("ttt_firstpreptime"):GetFloat()
 		GAMEMODE.FirstRound = false
 	end
 	
