@@ -22,7 +22,11 @@ function PANEL:Init()
 	
 	if KARMA.IsEnabled() then
 		if beta then
-			self:AddColumn(GetTranslation("sb_karma"), function(ply) return math.Round(math.Clamp(-0.0000005 * ply:GetBaseKarma() ^ 2 + 0.0015 * ply:GetBaseKarma(), 0.1, 1.0) * 100) .. "%" end)
+			local dmgpct = math.Round(math.Clamp(-0.0000005 * ply:GetBaseKarma() ^ 2 + 0.0015 * ply:GetBaseKarma(), 0.1, 1.0) * 100)
+			if ply:GetBaseKarma() > 1000 then
+				dmgpct = math.Round(math.Clamp(ply:GetBaseKarma() / 10, 100, 110))
+			end
+			self:AddColumn(GetTranslation("sb_karma"), function(ply) return dmgpct .. "%" end)
 		else
 			self:AddColumn(GetTranslation("sb_karma"), function(ply) return math.Round(ply:GetBaseKarma()) end)
 		end

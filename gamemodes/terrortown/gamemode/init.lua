@@ -562,7 +562,7 @@ function PrepareRound()
 	-- related to traitor's mics cutting off for a second when they're selected.
 	timer.Create("selectmute", ptime - 1, 1, function() MuteForRestart(true) end)
 	
-	LANG.Msg("round_begintime", { num = ptime })
+	LANG.Msg("round_begintime", { num = ptime - 1.5 })
 	SetRoundState(ROUND_PREP)
 	
 	-- Delay spawning until next frame to avoid ent overload
