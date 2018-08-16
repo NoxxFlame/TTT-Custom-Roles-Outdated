@@ -7,17 +7,23 @@ if SERVER then
 	AddCSLuaFile()
 	resource.AddFile("sound/hitmarkers/mlghit.wav")
 	util.AddNetworkString("DrawHitMarker")
+	util.AddNetworkString("CreateBlood")
 	util.AddNetworkString("OpenMixer")
 	
 	hook.Add("EntityTakeDamage", "HitmarkerDetector", function(ent, dmginfo)
 		local att = dmginfo:GetAttacker()
 		local dmg = dmginfo:GetDamage()
+		local pos = dmginfo:GetDamagePosition()
 		
 		if (IsValid(att) and att:IsPlayer() and att ~= ent) then
 			if (ent:IsPlayer() or ent:IsNPC()) then -- Only players and NPCs show hitmarkers
 				net.Start("DrawHitMarker")
 				net.WriteBool(ent:GetNWBool("LastHitCrit"))
 				net.Send(att) -- Send the message to the attacker
+				
+				net.Start("CreateBlood")
+				net.WriteVector(pos)
+				net.Broadcast()
 			end
 		end
 	end)
@@ -116,6 +122,14 @@ if CLIENT then
 			LastHitCrit = false
 		end
 		alpha = 255
+	end)
+	
+	net.Receive("CreateBlood", function()
+		local pos = net.ReadVector()
+		local effect = EffectData()
+		effect:SetOrigin(pos)
+		effect:SetScale(1)
+		util.Effect("bloodimpact", effect)
 	end)
 	
 	hook.Add("HUDPaint", "HitmarkerDrawer", function()
