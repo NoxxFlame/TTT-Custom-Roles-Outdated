@@ -329,7 +329,7 @@ if CLIENT then
 	local karmacolors = {
 		max = Color(255, 255, 255, 255),
 		high = Color(255, 240, 135, 255),
-		med = Color(245, 220, 60, 255),
+		med = Color(255, 220, 60, 255),
 		low = Color(255, 180, 0, 255),
 		min = Color(255, 130, 0, 255),
 	};

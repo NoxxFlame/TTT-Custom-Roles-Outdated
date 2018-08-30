@@ -277,7 +277,7 @@ end
 
 -- Preps a player for a new round, spawning them if they should. If dead_only is
 -- true, only spawns if player is dead, else just makes sure he is healed.
-function plymeta:SpawnForRound(dead_only)
+function plymeta:SpawnForRound(dead_only, round_start)
 	hook.Call("PlayerSetModel", GAMEMODE, self)
 	hook.Call("TTTPlayerSetColor", GAMEMODE, self)
 	
@@ -302,6 +302,14 @@ function plymeta:SpawnForRound(dead_only)
 	self:StripAll()
 	self:SetTeam(TEAM_TERROR)
 	self:Spawn()
+	
+	if round_start then
+		self:Freeze(true)
+		local ply = self
+		timer.Simple(1.5, function()
+			ply:Freeze(false)
+		end)
+	end
 
 	-- tell caller that we spawned
 	return true

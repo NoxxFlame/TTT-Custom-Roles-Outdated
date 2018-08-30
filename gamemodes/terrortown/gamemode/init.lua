@@ -642,11 +642,7 @@ function SpawnWillingPlayers(dead_only)
 	if wave_delay <= 0 or dead_only then
 		for k, ply in pairs(player.GetAll()) do
 			if IsValid(ply) then
-				ply:SpawnForRound(dead_only)
-				ply:Freeze(true)
-				timer.Simple(1.5, function()
-					ply:Freeze(false)
-				end)
+				ply:SpawnForRound(dead_only, true)
 			end
 		end
 	else

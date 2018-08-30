@@ -24,9 +24,6 @@ function PANEL:Init()
 		if beta then
 			self:AddColumn(GetTranslation("sb_karma"), function(ply)
 				local dmgpct = math.Round(math.Clamp(-0.0000005 * ply:GetBaseKarma() ^ 2 + 0.0015 * ply:GetBaseKarma(), 0.1, 1.0) * 100)
-				if ply:GetBaseKarma() > 1000 then
-					dmgpct = math.Round(math.Clamp(ply:GetBaseKarma() / 10, 100, 110))
-				end
 				return dmgpct .. "%"
 			end)
 		else
