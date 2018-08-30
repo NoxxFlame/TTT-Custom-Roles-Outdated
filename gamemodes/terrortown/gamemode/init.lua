@@ -146,6 +146,8 @@ CreateConVar("ttt_karma_beta", "0", FCVAR_REPLICATED)
 
 -- Drinking game punishments
 CreateConVar("ttt_drinking_death", "drink")
+CreateConVar("ttt_drinking_team_kill", "drink")
+CreateConVar("ttt_drinking_suicide", "drink")
 CreateConVar("ttt_drinking_jester_kill", "shot")
 
 local ttt_detective = CreateConVar("ttt_sherlock_mode", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY)

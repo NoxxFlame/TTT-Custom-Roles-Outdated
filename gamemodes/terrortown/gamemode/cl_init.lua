@@ -98,6 +98,9 @@ end
 KARMA = {}
 function KARMA.IsEnabled() return GetGlobalBool("ttt_karma", false) end
 
+DRINKS = {}
+function DRINKS.IsEnabled() return GetGlobalBool("ttt_drinking_enabled", false) end
+
 function GetRoundState() return GAMEMODE.round_state end
 
 local function RoundStateChange(o, n)

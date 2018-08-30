@@ -5,6 +5,14 @@ DRINKS = {}
 -- ply steamid -> drinks table for disconnected players who might reconnect
 DRINKS.RememberedPlayers = {}
 
+-- used for printing at the end of the round
+DRINKS.PlayerActions = {}
+DRINKS.PlayerActions["death"] = {}
+DRINKS.PlayerActions["teamkill"] = {}
+DRINKS.PlayerActions["suicide"] = {}
+DRINKS.PlayerActions["jesterkill"] = {}
+DRINKS.PlayerActions["goldengun"] = {}
+
 -- Convars, more convenient access than GetConVar bla bla
 DRINKS.cv = {}
 DRINKS.cv.enabled = CreateConVar("ttt_drinking_enabled", "0", FCVAR_ARCHIVE)
@@ -20,11 +28,11 @@ function DRINKS.IsEnabled()
 end
 
 function DRINKS.AddDrink(ply)
-	ply:SetLiveDrinks(ply:GetLiveDrinks + 1)
+	ply:SetLiveDrinks((ply:GetLiveDrinks() or 0) + 1)
 end
 
 function DRINKS.AddShot(ply)
-	ply:SetLiveShots(ply:GetLiveShots + 1)
+	ply:SetLiveShots((ply:SetLiveShots() or 0) + 1)
 end
 
 function DRINKS.Rebase()
@@ -34,12 +42,83 @@ function DRINKS.Rebase()
 	end
 end
 
-function DRINKS.NotifyPlayers()
-	for _, ply in pairs(player.GetAll()) do
-		if ply:GetLiveDrinks() > ply:GetBaseDrinks() or ply:GetLiveShots() > ply:GetBaseShots() then
-			for _, p in pairs(player.GetAll()) do
-				p:PrintMessage(HUD_PRINTTALK, ply:Nick() .. " takes " .. (ply:GetLiveDrinks() - ply:GetBaseDrinks()) .. " drink(s) and " .. (ply:GetLiveShots() - ply:GetBaseShots()) .. " shots.")
+function DRINKS.AddPlayerAction(key, ply)
+	local actionTable = DRINKS.PlayerActions[key]
+	local found = false
+	for _, p in pairs(actionTable) do
+		if ply:Nick() == p then
+			found = true
+			break
+		end
+	end
+	if not found then
+		actionTable[#actionTable + 1] = ply:Nick()
+	end
+end
+
+function DRINKS.ResetPlayerActions()
+	DRINKS.PlayerActions["death"] = {}
+	DRINKS.PlayerActions["teamkill"] = {}
+	DRINKS.PlayerActions["suicide"] = {}
+	DRINKS.PlayerActions["jesterkill"] = {}
+	DRINKS.PlayerActions["goldengun"] = {}
+end
+
+function DRINKS.CreateDrinkMessage(convar, key, message)
+	local punishment
+	if convar == "drink" or convar == "shot" then
+		punishment = convar
+	else
+		punishment = GetConVar(convar):GetString()
+	end
+	
+	local punishedplys = DRINKS.PlayerActions[key]
+	if #punishedplys > 0 and (punishment == "drink" or punishment == "shot") then
+		if punishment == "drink" then
+			message = " a drink for " .. message
+		elseif punishment == "shot" then
+			message = " a shot for " .. message
+		end
+		
+		if #punishedplys == 1 then
+			message = " takes" .. message
+		else
+			message = " take" .. message
+		end
+		
+		for key, nick in pairs(punishedplys) do
+			if key == 1 and #punishedplys > 1 then
+				message = " and " .. nick .. message
+			elseif key == #punishedplys then
+				message = nick .. message
+			else
+				message = ", " .. nick .. message
 			end
+		end
+		
+		return message
+	else
+		return false
+	end
+end
+
+function DRINKS.NotifyPlayers()
+	local deathmessage = DRINKS.CreateDrinkMessage("ttt_drinking_death", "death", "dying at the hands of an enemy.")
+	local teamkillmessage = DRINKS.CreateDrinkMessage("ttt_drinking_team_kill", "teamkill", "killing allies.")
+	local suicidemessage = DRINKS.CreateDrinkMessage("ttt_drinking_suicide", "suicide", "committing suicide.")
+	local jesterkillmessage = DRINKS.CreateDrinkMessage("ttt_drinking_jester_kill", "jesterkill", "killing the jester.")
+	local goldengunmessage = DRINKS.CreateDrinkMessage("shot", "goldengun", "dying to the golden gun.")
+
+	for _, ply in pairs(player.GetAll()) do
+		if deathmessage then ply:PrintMessage(HUD_PRINTTALK, deathmessage) end
+		if teamkillmessage then ply:PrintMessage(HUD_PRINTTALK, teamkillmessage) end
+		if suicidemessage then ply:PrintMessage(HUD_PRINTTALK, suicidemessage) end
+		if jesterkillmessage then ply:PrintMessage(HUD_PRINTTALK, jesterkillmessage) end
+		if goldengunmessage then ply:PrintMessage(HUD_PRINTTALK, goldengunmessage) end
+		
+		if (ply:GetLiveDrinks() and ply:GetLiveDrinks() > ply:GetBaseDrinks()) or (ply:GetLiveShots() and ply:GetLiveShots() > ply:GetBaseShots()) then
+			ply:PrintMessage(HUD_PRINTTALK, "You must take " .. ((ply:GetLiveDrinks() or 0) - (ply:GetBaseDrinks() or 0)) .. " drink(s) and " .. ((ply:GetLiveShots() or 0) - (ply:GetBaseShots() or 0)) .. " shot(s).")
+			ply:PrintMessage(HUD_PRINTCENTER, "You must take " .. ((ply:GetLiveDrinks() or 0) - (ply:GetBaseDrinks() or 0)) .. " drink(s) and " .. ((ply:GetLiveShots() or 0) - (ply:GetBaseShots() or 0)) .. " shot(s).")
 		end
 	end
 end
@@ -47,6 +126,7 @@ end
 function DRINKS.RoundEnd()
 	if DRINKS.IsEnabled() then
 		DRINKS.NotifyPlayers()
+		DRINKS.ResetPlayerActions()
 		DRINKS.Rebase()
 		DRINKS.RememberAll()
 	end

@@ -342,6 +342,8 @@ function plymeta:InitialSpawn()
 	-- Start off with clean, full karma (unless it can and should be loaded)
 	self:InitKarma()
 	
+	self:InitDrinks()
+	
 	-- We never have weapons here, but this inits our equipment state
 	self:StripAll()
 end

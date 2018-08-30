@@ -28,7 +28,7 @@ surface.CreateFont("treb_small", {
 	weight = 700
 })
 
-CreateClientConVar("ttt_scoreboard_sorting", "name", true, false, "name | karma | ping")
+CreateClientConVar("ttt_scoreboard_sorting", "name", true, false, "name | karma | ping | drinks | shots")
 CreateClientConVar("ttt_scoreboard_ascending", "1", true, false, "Should scoreboard ordering be in ascending order")
 
 local logo = surface.GetTextureID("vgui/ttt/score_logo")
@@ -107,6 +107,12 @@ sboard_sort = {
 	end,
 	karma = function(plya, plyb)
 		return (plya:GetBaseKarma() or 0) - (plyb:GetBaseKarma() or 0)
+	end,
+	drinks = function(plya, plyb)
+		return (plya:GetBaseDrinks() or 0) - (plyb:GetBaseDrinks() or 0)
+	end,
+	shots = function(plya, plyb)
+		return (plya:GetBaseShots() or 0) - (plyb:GetBaseShots() or 0)
 	end
 }
 

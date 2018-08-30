@@ -762,18 +762,55 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 		end
 		
 		KARMA.Killed(attacker, ply, dmginfo)
-		
-		if GetConVar("ttt_drinking_death"):GetString() == "drink" then
-			DRINKS.AddDrink(ply)
-		elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
-			DRINKS.AddShot(ply)
-		end
-		
-		if ply:GetJester() or ply:GetSwapper() then
-			if GetConVar("ttt_drinking_jester_kill"):GetString() == "drink" then
-				DRINKS.AddDrink(attacker)
-			elseif GetConVar("ttt_drinking_jester_kill"):GetString() == "shot" then
-				DRINKS.AddShot(attacker)
+		if not (IsValid(attacker) and attacker:IsPlayer() and attacker == ply) then
+			if IsValid(attacker) and attacker:IsPlayer() then
+				if ply:IsRole(ROLE_INNOCENT) or ply:IsRole(ROLE_DETECTIVE) or ply:IsRole(ROLE_GLITCH) or ply:IsRole(ROLE_MERCENARY) or ply:IsRole(ROLE_PHANTOM) then
+					if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) then
+						if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
+							DRINKS.AddDrink(attacker)
+						elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
+							DRINKS.AddShot(attacker)
+						end
+						DRINKS.AddPlayerAction("teamkill", attacker)
+					elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) or attacker:IsRole(ROLE_VAMPIRE) or attacker:IsRole(ROLE_ZOMBIE) then
+						if GetConVar("ttt_drinking_death"):GetString() == "drink" then
+							DRINKS.AddDrink(ply)
+						elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
+							DRINKS.AddShot(ply)
+						end
+						DRINKS.AddPlayerAction("death", ply)
+					end
+				elseif ply:IsRole(ROLE_TRAITOR) or ply:IsRole(ROLE_ASSASSIN) or ply:IsRole(ROLE_HYPNOTIST) or ply:IsRole(ROLE_VAMPIRE) or ply:IsRole(ROLE_ZOMBIE) then
+					if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) then
+						if GetConVar("ttt_drinking_death"):GetString() == "drink" then
+							DRINKS.AddDrink(ply)
+						elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
+							DRINKS.AddShot(ply)
+						end
+						DRINKS.AddPlayerAction("death", ply)
+					elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) or attacker:IsRole(ROLE_VAMPIRE) or attacker:IsRole(ROLE_ZOMBIE) then
+						if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
+							DRINKS.AddDrink(attacker)
+						elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
+							DRINKS.AddShot(attacker)
+						end
+						DRINKS.AddPlayerAction("teamkill", attacker)
+					end
+				elseif ply:IsRole(ROLE_JESTER) or ply:IsRole(ROLE_SWAPPER) then
+					if GetConVar("ttt_drinking_jester_kill"):GetString() == "drink" then
+						DRINKS.AddDrink(attacker)
+					elseif GetConVar("ttt_drinking_jester_kill"):GetString() == "shot" then
+						DRINKS.AddShot(attacker)
+					end
+					DRINKS.AddPlayerAction("jesterkill", attacker)
+				end
+			else
+				if GetConVar("ttt_drinking_suicide"):GetString() == "drink" then
+					DRINKS.AddDrink(ply)
+				elseif GetConVar("ttt_drinking_suicide"):GetString() == "shot" then
+					DRINKS.AddShot(ply)
+				end
+				DRINKS.AddPlayerAction("suicide", ply)
 			end
 		end
 	end
@@ -821,6 +858,14 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 end
 
 function GM:PlayerDeath(victim, infl, attacker)
+	if not attacker:IsPlayer() then
+		if GetConVar("ttt_drinking_suicide"):GetString() == "drink" then
+			DRINKS.AddDrink(victim)
+		elseif GetConVar("ttt_drinking_suicide"):GetString() == "shot" then
+			DRINKS.AddShot(victim)
+		end
+		DRINKS.AddPlayerAction("suicide", victim)
+	end
 	if victim:GetRole() == ROLE_PHANTOM and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
 		attacker:SetNWBool("HauntedSmoke", true)
 		if attacker:GetRole() == ROLE_ASSASSIN then
