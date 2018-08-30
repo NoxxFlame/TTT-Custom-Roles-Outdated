@@ -31,6 +31,11 @@ function PANEL:Init()
 		end
 	end
 	
+	if DRINKS.IsEnabled() then
+		self:AddColumn(GetTranslation("sb_drinks"), function(ply) return math.Round(ply:GetBaseDrinks()) end)
+		self:AddColumn(GetTranslation("sb_shots"), function(ply) return math.Round(ply:GetBaseShots()) end)
+	end
+	
 	-- Let hooks add their custom columns
 	hook.Call("TTTScoreboardColumns", nil, self)
 	

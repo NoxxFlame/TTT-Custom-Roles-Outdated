@@ -111,6 +111,10 @@ end
 
 function plymeta:GetBaseKarma() return self:GetNWFloat("karma", 1000) end
 
+function plymeta:GetBaseDrinks() return self:GetNWInt("drinks", 0) end
+
+function plymeta:GetBaseShots() return self:GetNWInt("shots", 0) end
+
 function plymeta:HasEquipmentWeapon()
 	for _, wep in pairs(self:GetWeapons()) do
 		if IsValid(wep) and wep:IsEquipment() then

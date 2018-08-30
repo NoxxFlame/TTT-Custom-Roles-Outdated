@@ -42,6 +42,7 @@ AddCSLuaFile("vgui/sb_info.lua")
 include("shared.lua")
 
 include("karma.lua")
+include("drinks.lua")
 include("entity.lua")
 include("scoring_shd.lua")
 include("radar.lua")
@@ -142,6 +143,10 @@ CreateConVar("ttt_namechange_kick", "1", FCVAR_NOTIFY)
 CreateConVar("ttt_namechange_bantime", "10")
 
 CreateConVar("ttt_karma_beta", "0", FCVAR_REPLICATED)
+
+-- Drinking game punishments
+CreateConVar("ttt_drinking_death", "drink")
+CreateConVar("ttt_drinking_jester_kill", "shot")
 
 local ttt_detective = CreateConVar("ttt_sherlock_mode", "1", FCVAR_ARCHIVE + FCVAR_NOTIFY)
 local ttt_minply = CreateConVar("ttt_minimum_players", "2", FCVAR_ARCHIVE + FCVAR_NOTIFY)
@@ -541,6 +546,8 @@ function PrepareRound()
 	
 	-- Update damage scaling
 	KARMA.RoundBegin()
+	
+	DRINKS.RoundBegin()
 	
 	-- New look. Random if no forced model set.
 	GAMEMODE.playermodel = GAMEMODE.force_plymodel == "" and GetRandomPlayerModel() or GAMEMODE.force_plymodel
@@ -942,6 +949,8 @@ function EndRound(type)
 	CheckForMapSwitch()
 	
 	KARMA.RoundEnd()
+	
+	DRINKS.RoundEnd()
 	
 	-- now handle potentially error prone scoring stuff
 	

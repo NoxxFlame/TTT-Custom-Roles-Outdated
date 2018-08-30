@@ -18,9 +18,7 @@ AccessorFunc(plymeta, "force_spec", "ForceSpec", FORCE_BOOL)
 
 -- The base/start karma is determined once per round and determines the player's
 -- damage penalty. It is networked and shown on clients.
-function plymeta:SetBaseKarma(k)
-	self:SetNWFloat("karma", k)
-end
+function plymeta:SetBaseKarma(k) self:SetNWFloat("karma", k) end
 
 -- The live karma starts equal to the base karma, but is updated "live" as the
 -- player damages/kills others. When another player damages/kills this one, the
@@ -38,8 +36,19 @@ AccessorFunc(plymeta, "clean_round", "CleanRound", FORCE_BOOL)
 -- How many clean rounds in a row the player has gone
 AccessorFunc(plymeta, "clean_rounds", "CleanRounds", FORCE_NUMBER)
 
+function plymeta:SetBaseDrinks(d) self:SetNWInt("drinks", d) end
+
+function plymeta:SetBaseShots(s) self:SetNWInt("shots", s) end
+
+AccessorFunc(plymeta, "live_drinks", "LiveDrinks", FORCE_NUMBER)
+AccessorFunc(plymeta, "live_shots", "LiveShots", FORCE_NUMBER)
+
 function plymeta:InitKarma()
 	KARMA.InitPlayer(self)
+end
+
+function plymeta:InitDrinks()
+	DRINKS.InitPlayer(self)
 end
 
 --- Equipment credits

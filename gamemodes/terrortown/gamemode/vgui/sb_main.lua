@@ -169,6 +169,11 @@ function PANEL:Init()
 		self:AddColumn(GetTranslation("sb_karma"), nil, nil, "karma")
 	end
 	
+	if DRINKS.IsEnabled() then
+		self:AddColumn(GetTranslation("sb_drinks"), nil, nil, "drinks")
+		self:AddColumn(GetTranslation("sb_shots"), nil, nil, "shots")
+	end
+	
 	self.sort_headers = {}
 	-- Reuse some translations
 	self:AddFakeColumn(GetTranslation("sb_sortby"), nil, nil, nil) -- "Sort by:"

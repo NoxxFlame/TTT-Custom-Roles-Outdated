@@ -65,9 +65,13 @@ end
 function GM:NetworkIDValidated(name, steamid)
 	-- edge case where player authed after initspawn
 	for _, p in pairs(player.GetAll()) do
-		if IsValid(p) and p:SteamID() == steamid and p.delay_karma_recall then
-			KARMA.LateRecallAndSet(p)
-			return
+		if IsValid(p) and p:SteamID() == steamid then
+			if p.delay_karma_recall then
+				KARMA.LateRecallAndSet(p)
+			end
+			if p.delay_drinks_recall then
+				DRINKS.LateRecallAndSet(p)
+			end
 		end
 	end
 end
@@ -478,6 +482,10 @@ function GM:PlayerDisconnected(ply)
 	if KARMA.IsEnabled() then
 		KARMA.Remember(ply)
 	end
+	
+	if DRINKS.IsEnabled() then
+		DRINKS.Remember(ply)
+	end
 end
 
 -- Death affairs
@@ -629,7 +637,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	
 	local timestamp = os.time()
 	local date = os.date("%d/%m", timestamp)
-	local names = { "B1andy413", "Aspirin", "The_Samarox", "Arack12", "Noxx", "Kommandos0", "FunCheetah", "Cooliew", "Lix3" }
+	local names = { "B1andy413", "NegroniPepperoni", "The_Samarox", "Arack12", "Noxx", "Kommandos0", "FunCheetah", "Cooliew", "Lix3" }
 	local dates = { "01/01", "31/01", "01/02", "29/03", "31/07", "15/09", "05/11", "01/12", "12/12" }
 	
 	for i = 1, 9 do
@@ -754,6 +762,20 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 		end
 		
 		KARMA.Killed(attacker, ply, dmginfo)
+		
+		if GetConVar("ttt_drinking_death"):GetString() == "drink" then
+			DRINKS.AddDrink(ply)
+		elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
+			DRINKS.AddShot(ply)
+		end
+		
+		if ply:GetJester() or ply:GetSwapper() then
+			if GetConVar("ttt_drinking_jester_kill"):GetString() == "drink" then
+				DRINKS.AddDrink(attacker)
+			elseif GetConVar("ttt_drinking_jester_kill"):GetString() == "shot" then
+				DRINKS.AddShot(attacker)
+			end
+		end
 	end
 	
 	-- Clear out any weapon or equipment we still have
