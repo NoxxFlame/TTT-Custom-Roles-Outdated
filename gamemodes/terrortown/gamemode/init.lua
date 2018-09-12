@@ -482,7 +482,9 @@ local function SpawnEntities()
 	end
 	
 	-- Replace weapons with similar types
-	et.ReplaceWeaponsFromPools()
+	if et.ReplaceWeaponsFromPools then
+		et.ReplaceWeaponsFromPools()
+	end
 	
 	-- Finally, get players in there
 	SpawnWillingPlayers()
