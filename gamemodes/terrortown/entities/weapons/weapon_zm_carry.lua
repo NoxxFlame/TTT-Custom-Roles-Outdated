@@ -2,6 +2,8 @@
 
 AddCSLuaFile()
 
+DEFINE_BASECLASS "weapon_tttbase"
+
 SWEP.HoldType = "pistol"
 
 if CLIENT then
@@ -167,6 +169,7 @@ if SERVER then
 	
 	local stand_time = 0
 	function SWEP:Think()
+		BaseClass.Think(self)
 		if not self:CheckValidity() then return end
 		
 		-- If we are too far from our object, force a drop. To avoid doing this
@@ -193,9 +196,9 @@ if SERVER then
 			stand_time = CurTime() + 0.1
 		end
 		
-		self.CarryHack:SetPos(self.Owner:EyePos() + self.Owner:GetAimVector() * 70)
+		self.CarryHack:SetPos(self:GetOwner():EyePos() + self:GetOwner():GetAimVector() * 70)
 		
-		self.CarryHack:SetAngles(self.Owner:GetAngles())
+		self.CarryHack:SetAngles(self:GetOwner():GetAngles())
 		
 		self.EntHolding:PhysWake()
 	end
@@ -275,7 +278,7 @@ function SWEP:DoAttack(pickup)
 		return
 	end
 	
-	local ply = self.Owner
+	local ply = self:GetOwner()
 	
 	local trace = ply:GetEyeTrace(MASK_SHOT)
 	if IsValid(trace.Entity) then
@@ -343,7 +346,7 @@ end
 function SWEP:Pickup()
 	if CLIENT or IsValid(self.EntHolding) then return end
 	
-	local ply = self.Owner
+	local ply = self:GetOwner()
 	local trace = ply:GetEyeTrace(MASK_SHOT)
 	local ent = trace.Entity
 	self.EntHolding = ent
@@ -367,7 +370,7 @@ function SWEP:Pickup()
 			self.CarryHack:SetSolid(SOLID_NONE)
 			
 			-- set the desired angles before adding the constraint
-			self.CarryHack:SetAngles(self.Owner:GetAngles())
+			self.CarryHack:SetAngles(self:GetOwner():GetAngles())
 			
 			self.CarryHack:Spawn()
 			
@@ -410,7 +413,7 @@ end
 
 local down = Vector(0, 0, -1)
 function SWEP:AllowEntityDrop()
-	local ply = self.Owner
+	local ply = self:GetOwner()
 	local ent = self.CarryHack
 	if (not IsValid(ply)) or (not IsValid(ent)) then return false end
 	
@@ -439,7 +442,7 @@ function SWEP:Drop()
 			phys:EnableDrag(true)
 			phys:EnableMotion(true)
 			phys:Wake()
-			phys:ApplyForceCenter(self.Owner:GetAimVector() * 500)
+			phys:ApplyForceCenter(self:GetOwner():GetAimVector() * 500)
 			
 			phys:ClearGameFlag(FVPHYSICS_PLAYER_HELD)
 			phys:AddGameFlag(FVPHYSICS_WAS_THROWN)
@@ -450,7 +453,7 @@ function SWEP:Drop()
 			KillVelocity(ent)
 		end
 		
-		ent:SetPhysicsAttacker(self.Owner)
+		ent:SetPhysicsAttacker(self:GetOwner())
 	end
 	
 	self:Reset()
@@ -472,10 +475,10 @@ end
 
 function SWEP:PinRagdoll()
 	if not pin_rag:GetBool() then return end
-	if (not self.Owner:IsTraitor()) and (not pin_rag_inno:GetBool()) then return end
+	if (not self:GetOwner():IsTraitor()) and (not pin_rag_inno:GetBool()) then return end
 	
 	local rag = self.EntHolding
-	local ply = self.Owner
+	local ply = self:GetOwner()
 	
 	local tr = util.TraceLine({
 		start = ply:EyePos(),
@@ -575,15 +578,17 @@ if CLIENT then
 		if self.dt.can_rag_pin and IsValid(self.dt.carried_rag) and LocalPlayer():IsTraitor() then
 			local client = LocalPlayer()
 			
-			local tr = util.TraceLine({
-				start = client:EyePos(),
-				endpos = client:EyePos() + (client:GetAimVector() * PIN_RAG_RANGE),
-				filter = { client, self, self.dt.carried_rag },
-				mask = MASK_SOLID
-			})
-			
-			if tr.HitWorld and (not tr.HitSky) then
-				draw.SimpleText(PT("magnet_help", key_params), "TabLarge", ScrW() / 2, ScrH() / 2 - 50, COLOR_RED, TEXT_ALIGN_CENTER)
+			if not client:IsSpec() and client:IsTraitor() then
+				local tr = util.TraceLine({
+					start = client:EyePos(),
+					endpos = client:EyePos() + (client:GetAimVector() * PIN_RAG_RANGE),
+					filter = { client, self, self.dt.carried_rag },
+					mask = MASK_SOLID
+				})
+				
+				if tr.HitWorld and (not tr.HitSky) then
+					draw.SimpleText(PT("magnet_help", key_params), "TabLarge", ScrW() / 2, ScrH() / 2 - 50, COLOR_RED, TEXT_ALIGN_CENTER)
+				end
 			end
 		end
 	end

@@ -3,10 +3,10 @@ AddCSLuaFile()
 SWEP.HoldType = "ar2"
 
 if CLIENT then
-	SWEP.PrintName = "UMP Prototype"
+	SWEP.PrintName = "TMP Prototype"
 	SWEP.Slot = 6
 	
-	SWEP.ViewModelFlip = false
+	SWEP.ViewModelFlip = true
 	SWEP.ViewModelFOV = 54
 	
 	SWEP.EquipMenuData = {
@@ -14,7 +14,7 @@ if CLIENT then
 		desc = "ump_desc"
 	};
 	
-	SWEP.Icon = "vgui/ttt/icon_ump"
+	SWEP.Icon = "vgui/ttt/icon_tmp"
 	SWEP.IconLetter = "q"
 end
 
@@ -32,16 +32,18 @@ SWEP.Primary.ClipSize = 30
 SWEP.Primary.ClipMax = 60
 SWEP.Primary.DefaultClip = 30
 SWEP.Primary.Automatic = true
-SWEP.Primary.Ammo = "XBowBolt"
+SWEP.Primary.Ammo = "smg1"
 SWEP.Primary.Recoil = 1.2
-SWEP.Primary.Sound = Sound("Weapon_UMP45.Single")
+SWEP.Primary.Sound = Sound("Weapon_TMP.Single")
 
+SWEP.AmmoEnt = "item_ammo_smg1_ttt"
+
+SWEP.IronSightsPos = Vector(5.239, 0, 2.68)
+SWEP.IronSightsAng = Vector(0, 0, 0)
+
+SWEP.ViewModel = "models/weapons/v_smg_tmp.mdl"
+SWEP.WorldModel = "models/weapons/w_smg_tmp.mdl"
 SWEP.UseHands = true
-SWEP.ViewModel = "models/weapons/cstrike/c_smg_ump45.mdl"
-SWEP.WorldModel = "models/weapons/w_smg_ump45.mdl"
-
-SWEP.IronSightsPos = Vector(-8.735, -10, 4.039)
-SWEP.IronSightsAng = Vector(-1.201, -0.201, -2)
 
 SWEP.HeadshotMultiplier = 4.5 -- brain fizz
 --SWEP.DeploySpeed = 3

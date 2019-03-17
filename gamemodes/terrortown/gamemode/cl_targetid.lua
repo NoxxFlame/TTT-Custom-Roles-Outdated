@@ -8,10 +8,6 @@ local GetRaw = LANG.GetRawTranslation
 local symbols = false
 local hide_roles = false
 
-fakebodyres = false
-fakebodyname = {}
-fakebodyid = { "1" }
-
 local key_params = { usekey = Key("+use", "USE"), walkkey = Key("+walk", "WALK") }
 local ClassHint = {
 	prop_ragdoll = {
@@ -20,6 +16,11 @@ local ClassHint = {
 		fmt = function(ent, txt) return GetPTranslation(txt, key_params) end
 	}
 };
+
+-- Access for servers to display hints using their own HUD/UI.
+function GM:GetClassHints()
+	return ClassHint
+end
 
 -- Basic access for servers to add/modify hints. They override hints stored on
 -- the entities themselves.
@@ -285,14 +286,28 @@ local rag_color = Color(200, 200, 200, 255)
 
 local GetLang = LANG.GetUnsafeLanguageTable
 
+local MAX_TRACE_LENGTH = math.sqrt(3) * 2 * 16384
+
 function GM:HUDDrawTargetID()
 	local client = LocalPlayer()
 	
 	local L = GetLang()
 	
-	DrawPropSpecLabels(client)
+	if hook.Call("HUDShouldDraw", GAMEMODE, "TTTPropSpec") then
+		DrawPropSpecLabels(client)
+	end
 	
-	local trace = client:GetEyeTrace(MASK_SHOT)
+	local startpos = client:EyePos()
+	local endpos = client:GetAimVector()
+	endpos:Mul(MAX_TRACE_LENGTH)
+	endpos:Add(startpos)
+	
+	local trace = util.TraceLine({
+		start = startpos,
+		endpos = endpos,
+		mask = MASK_SHOT,
+		filter = client:GetObserverMode() == OBS_MODE_IN_EYE and { client, client:GetObserverTarget() } or client
+	})
 	local ent = trace.Entity
 	if (not IsValid(ent)) or ent.NoTarget then return end
 	
@@ -328,42 +343,19 @@ function GM:HUDDrawTargetID()
 	local minimal = minimalist:GetBool()
 	local hint = (not minimal) and (ent.TargetIDHint or ClassHint[cls])
 	
-	net.Receive("hudRagdollSearch", function(len, pl)
-		local fakebode = net.ReadString()
-		local fakebodename = net.ReadString()
-		local fakebodeid = net.ReadString()
-		table.insert(fakebodyname, 1, fakebodename)
-		table.insert(fakebodyid, 1, fakebodeid)
-		if fakebode == "1" then
-			fakebodyres = true
-		else
-			fakebodyres = false
-		end
-	end)
-	
 	if ent:IsPlayer() and ent:Alive() then
 		text = ent:Nick()
 		client.last_id = ent
-		--if ent:GetActiveWeapon() == nil then
-		--text = ent:Nick()
-		--client.last_id = ent
-		--else
-		--if ent:GetActiveWeapon():GetClass() == "weapon_ttt_cloak" then
-		--client.last_id = nil
 		
-		--if client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE or client:GetRole() == ROLE_ASSASSIN or client:IsSpec() then
-		--text = ent:Nick() .. L.target_disg
-		--else
-		-- Do not show anything
-		--return
-		--end
-		
-		--color = COLOR_RED
-		--else
-		--text = ent:Nick()
-		--client.last_id = ent
-		--end
-		--end
+		if ent:GetActiveWeapon():IsValid() and ent:GetActiveWeapon():GetClass() == "weapon_ttt_cloak" then
+			client.last_id = nil
+			
+			if client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE or client:GetRole() == ROLE_ASSASSIN or client:IsSpec() then
+				text = ent:Nick() .. L.target_disg
+			else
+				return
+			end
+		end
 		
 		local _ -- Stop global clutter
 		-- in minimalist targetID, colour nick with health level

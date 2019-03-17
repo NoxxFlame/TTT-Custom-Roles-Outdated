@@ -1,5 +1,7 @@
 AddCSLuaFile()
 
+DEFINE_BASECLASS "weapon_tttbase"
+
 SWEP.HoldType = "shotgun"
 
 if CLIENT then
@@ -20,16 +22,16 @@ SWEP.CanBuy = { ROLE_MERCENARY }
 SWEP.WeaponID = AMMO_SHOTGUN
 
 SWEP.Primary.Ammo = "Buckshot"
-SWEP.Primary.Damage = 7
+SWEP.Primary.Damage = 4
 SWEP.Primary.Cone = 0.105
-SWEP.Primary.Delay = 1.0
+SWEP.Primary.Delay = 0.6
 SWEP.Primary.ClipSize = 8
 SWEP.Primary.ClipMax = 24
 SWEP.Primary.DefaultClip = 8
 SWEP.Primary.Automatic = true
 SWEP.Primary.NumShots = 12
 SWEP.Primary.Sound = Sound("Weapon_XM1014.Single")
-SWEP.Primary.Recoil = 7
+SWEP.Primary.Recoil = 5
 
 SWEP.AutoSpawnable = true
 SWEP.Spawnable = true
@@ -46,7 +48,7 @@ function SWEP:SetupDataTables()
 	self:NetworkVar("Bool", 0, "Reloading")
 	self:NetworkVar("Float", 0, "ReloadTimer")
 	
-	return true
+	return BaseClass.SetupDataTables(self)
 end
 
 function SWEP:Reload()
@@ -129,6 +131,7 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:Think()
+	BaseClass.Think(self)
 	if self:GetReloading() then
 		if self:GetOwner():KeyDown(IN_ATTACK) then
 			self:FinishReload()
@@ -152,7 +155,7 @@ end
 function SWEP:Deploy()
 	self:SetReloading(false)
 	self:SetReloadTimer(0)
-	return true
+	return BaseClass.Deploy(self)
 end
 
 -- The shotgun's headshot damage multiplier is based on distance. The closer it
@@ -161,13 +164,13 @@ end
 -- lucky headshots relatively easily due to the spread.
 function SWEP:GetHeadshotMultiplier(victim, dmginfo)
 	local att = dmginfo:GetAttacker()
-	if not IsValid(att) then return 3 end
+	if not IsValid(att) then return 2 end
 	
 	local dist = victim:GetPos():Distance(att:GetPos())
 	local d = math.max(0, dist - 140)
 	
-	-- decay from 3.1 to 1 slowly as distance increases
-	return 1 + math.max(0, (2.1 - 0.002 * (d ^ 1.25)))
+	-- decay from 2.5 to 1 slowly as distance increases
+	return 1 + math.max(0, (1.5 - 0.0015 * (d ^ 1.25)))
 end
 
 function SWEP:SecondaryAttack()

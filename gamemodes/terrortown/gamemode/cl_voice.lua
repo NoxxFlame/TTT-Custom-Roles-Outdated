@@ -479,6 +479,7 @@ end
 local PlayerVoicePanels = {}
 
 function GM:PlayerStartVoice(ply)
+	if true then return end -- TODO: Actually fix voice chat
 	local client = LocalPlayer()
 	if not IsValid(g_VoicePanelList) or not IsValid(client) then return end
 	

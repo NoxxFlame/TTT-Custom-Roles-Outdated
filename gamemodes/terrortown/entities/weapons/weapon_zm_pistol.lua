@@ -20,9 +20,9 @@ SWEP.CanBuy = { ROLE_MERCENARY }
 SWEP.WeaponID = AMMO_PISTOL
 
 SWEP.Primary.Recoil = 1.5
-SWEP.Primary.Damage = 25
-SWEP.Primary.Delay = 0.38
-SWEP.Primary.Cone = 0.02
+SWEP.Primary.Damage = 20
+SWEP.Primary.Delay = 0.25
+SWEP.Primary.Cone = 0.022
 SWEP.Primary.ClipSize = 20
 SWEP.Primary.Automatic = true
 SWEP.Primary.DefaultClip = 20

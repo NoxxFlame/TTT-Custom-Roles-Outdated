@@ -322,8 +322,6 @@ function GM:PlayerUse(ply, ent)
 	return ply:IsTerror()
 end
 
-util.AddNetworkString("hudRagdollSearch")
-util.AddNetworkString("TTT_fakeRagdollSearch")
 function GM:KeyPress(ply, key)
 	if not IsValid(ply) then return end
 	
@@ -1114,6 +1112,7 @@ function GM:OnPlayerHitGround(ply, in_water, on_floater, speed)
 				-- if the faller was pushed, that person should get attrib
 				local push = ply.was_pushed
 				if push then
+					-- TODO: move push time checking stuff into fn?
 					if math.max(push.t or 0, push.hurt or 0) > CurTime() - 4 then
 						att = push.att
 					end
@@ -1417,14 +1416,6 @@ function GM:Tick()
 				ply.drowning = nil
 			end
 			
-			-- Slow down ironsighters
-			local wep = ply:GetActiveWeapon()
-			if IsValid(wep) and wep.GetIronsights and wep:GetIronsights() then
-				ply:SetSpeed(true)
-			else
-				ply:SetSpeed(false)
-			end
-			
 			-- Run DNA Scanner think also when it is not deployed
 			if IsValid(ply.scanner_weapon) and wep ~= ply.scanner_weapon then
 				ply.scanner_weapon:Think()
@@ -1475,7 +1466,5 @@ function GM:AllowPlayerPickup(ply, obj)
 end
 
 function GM:PlayerShouldTaunt(ply, actid)
-	-- Disable taunts, we don't have a system for them (camera freezing etc).
-	-- Mods/plugins that add such a system should override this.
 	return true
 end

@@ -108,7 +108,7 @@ function DRINKS.NotifyPlayers()
 	local suicidemessage = DRINKS.CreateDrinkMessage("ttt_drinking_suicide", "suicide", "committing suicide.")
 	local jesterkillmessage = DRINKS.CreateDrinkMessage("ttt_drinking_jester_kill", "jesterkill", "killing the jester.")
 	local goldengunmessage = DRINKS.CreateDrinkMessage("shot", "goldengun", "dying to the golden gun.")
-
+	
 	for _, ply in pairs(player.GetAll()) do
 		if deathmessage then ply:PrintMessage(HUD_PRINTTALK, deathmessage) end
 		if teamkillmessage then ply:PrintMessage(HUD_PRINTTALK, teamkillmessage) end

@@ -107,7 +107,7 @@ if SERVER then
 	
 	function SWEP:FindRespawnLocation()
 		local midsize = Vector(33, 33, 74)
-		local tstart = self.Owner:GetPos() + Vector(0, 0, midsize.z / 2)
+		local tstart = self:GetOwner():GetPos() + Vector(0, 0, midsize.z / 2)
 		
 		for i = 1, #offsets do
 			local o = offsets[i]
@@ -159,7 +159,7 @@ if SERVER then
 		self:SetBegin(CurTime())
 		self:SetMessage(msg)
 		
-		self.Owner:EmitSound(beep, 60, 50, 1)
+		self:GetOwner():EmitSound(beep, 60, 50, 1)
 		self.Target = nil
 		
 		timer.Simple(3 * 0.75, function()
@@ -206,7 +206,7 @@ if SERVER then
 		
 		SendFullStateUpdate()
 		
-		self.Owner:ConCommand("lastinv")
+		self:GetOwner():ConCommand("lastinv")
 		self:Remove()
 	end
 	
@@ -240,7 +240,7 @@ if SERVER then
 		self:SetBegin(CurTime())
 		self:SetMessage("DEFIBRILLATING " .. string.upper(ply:Nick()))
 		
-		self.Owner:EmitSound(hum, 75, math.random(98, 102), 1)
+		self:GetOwner():EmitSound(hum, 75, math.random(98, 102), 1)
 		
 		self.Target = body
 		self.Bone = bone
@@ -250,7 +250,7 @@ if SERVER then
 		if self:GetState() == DEFIB_BUSY then
 			if self:GetBegin() + charge <= CurTime() then
 				self:Defib()
-			elseif not self.Owner:KeyDown(IN_ATTACK) or self.Owner:GetEyeTrace(MASK_SHOT_HULL).Entity ~= self.Target then
+			elseif not self:GetOwner():KeyDown(IN_ATTACK) or self:GetOwner():GetEyeTrace(MASK_SHOT_HULL).Entity ~= self.Target then
 				self:Error("DEFIBRILLATION ABORTED")
 			end
 		end
@@ -259,20 +259,20 @@ if SERVER then
 	function SWEP:PrimaryAttack()
 		if self:GetState() ~= DEFIB_IDLE then return end
 		
-		self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+		local tr = self:GetOwner():GetEyeTrace(MASK_SHOT_HULL)
 		
-		local tr = self.Owner:GetEyeTrace(MASK_SHOT_HULL)
-		
-		if tr.HitPos:Distance(self.Owner:GetPos()) > maxdist then return end
+		if tr.HitPos:Distance(self:GetOwner():GetPos()) > maxdist then return end
 		if GetRoundState() ~= ROUND_ACTIVE then return end
 		
 		local ent = tr.Entity
 		
 		if ent and IsValid(ent) then
 			if ent:GetClass() == "prop_physics" and mutate[ent:GetModel()] and mutateok > 0 then
+				self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 				ent:EmitSound(zap, 75, math.random(98, 102))
 				ent:SetModelScale(math.min(mutatemax, ent:GetModelScale() + 0.25), 1)
 			elseif ent:GetClass() == "prop_ragdoll" and validbody(ent) then
+				self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 				self.Location = self:FindRespawnLocation()
 				
 				if self.Location then
@@ -281,6 +281,16 @@ if SERVER then
 					self:Error("INSUFFICIENT ROOM")
 					return
 				end
+			elseif ent:IsPlayer() and ent:IsActive() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) and not ent:IsFrozen() then
+				self:SetNextPrimaryFire(CurTime() + 0.1)
+				ent:EmitSound(zap, 100, math.random(98, 102))
+				ent:Freeze(true)
+				ent:ScreenFade(SCREENFADE.IN, Color(255, 255, 255, 255), 1, 10)
+				timer.Simple(10, function()
+					if IsValid(ent) then
+						ent:Freeze(false)
+					end
+				end)
 			end
 		end
 	end

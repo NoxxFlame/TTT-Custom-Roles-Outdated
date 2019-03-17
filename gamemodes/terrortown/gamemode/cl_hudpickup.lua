@@ -34,7 +34,7 @@ function GM:HUDWeaponPickedUp(wep)
 	pickup.fadein = 0.04
 	pickup.fadeout = 0.3
 	
-	local role = LocalPlayer():GetRole() or ROLE_INNOCENT
+	local role = LocalPlayer().GetRole and LocalPlayer():GetRole() or ROLE_INNOCENT
 	pickup.color = pickupclr[role]
 	
 	pickup.upper = true

@@ -51,6 +51,7 @@ include("cl_equip.lua")
 include("cl_voice.lua")
 
 CreateClientConVar("ttt_role_symbols", 0, true, false, "Shows symbols instead of letters in role icons.")
+CreateClientConVar("ttt_export_player_data", 0, true, false)
 
 function GM:Initialize()
 	MsgN("TTT Client initializing...")
@@ -236,7 +237,7 @@ local function ReceiveRoleList()
 	for i = 1, num_ids do
 		local eidx = net.ReadUInt(7) + 1 -- we - 1 worldspawn=0
 		local ply = player.GetByID(eidx)
-		if IsValid(ply) then
+		if IsValid(ply) and ply.SetRole then
 			ply:SetRole(role)
 			
 			if ply:IsTraitor() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsZombie() then
@@ -403,6 +404,18 @@ function GM:Think()
 				v.SmokeEmitter = nil
 			end
 		end
+	end
+	
+	if GetConVar("ttt_export_player_data"):GetBool() then
+		local client = LocalPlayer()
+		
+		local state = GetRoundState() == 3 and "1" or "0"
+		local role = tostring(client:GetRole())
+		local alive = client:IsActive() and "1" or "0"
+		local health = tostring(client:Health())
+		
+		local data = state .. "," .. role .. "," .. alive .. "," .. health
+		file.Write("playerdata/data.txt", data)
 	end
 end
 

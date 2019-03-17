@@ -1,5 +1,4 @@
 -- Body search popup
-local GetTranslation = LANG.GetTranslation
 local T = LANG.GetTranslation
 local PT = LANG.GetParamTranslation
 
@@ -306,7 +305,8 @@ local function ShowSearchScreen(search_raw)
 	
 	local m = 8
 	local bw, bh = 100, 25
-	local w, h = 410, 260
+	local bw_large = 125
+	local w, h = 425, 260
 	
 	local rw, rh = (w - m * 2), (h - 25 - m * 2)
 	local rx, ry = 0, 0
@@ -384,14 +384,15 @@ local function ShowSearchScreen(search_raw)
 	if not detectiveSearchOnly then
 		local dident = vgui.Create("DButton", dcont)
 		dident:SetPos(m, by)
-		dident:SetSize(bw, bh)
+		dident:SetSize(bw_large, bh)
 		dident:SetText(T("search_confirm"))
 		local id = search_raw.eidx + search_raw.dtime
 		dident.DoClick = function() RunConsoleCommand("ttt_confirm_death", search_raw.eidx, id) end
+		dident:SetDisabled(client:IsSpec() or (not client:KeyDownLast(IN_WALK)))
 		
 		local dcall = vgui.Create("DButton", dcont)
-		dcall:SetPos(m * 2 + bw, by)
-		dcall:SetSize(bw, bh)
+		dcall:SetPos(m * 2 + bw_large, by)
+		dcall:SetSize(bw_large, bh)
 		dcall:SetText(T("search_call"))
 		dcall.DoClick = function(s)
 			client.called_corpses = client.called_corpses or {}
@@ -553,203 +554,3 @@ local function ReceiveRagdollSearch()
 end
 
 net.Receive("TTT_RagdollSearch", ReceiveRagdollSearch)
-
-local function SearchInfofakeController(fuckingtableshit, dactive, dtext)
-	return function(s, pold, cock)
-		local t = cock.info_type
-		local nick = {}
-		nick.img = "vgui/ttt/icon_id"
-		nick.nick = cock.GetNamo
-		nick.text = "This is the body of " .. cock.GetNamo
-		local role = {}
-		role.img = "vgui/ttt/icon_inno"
-		role.text = GetTranslation("search_role_i")
-		local dtime = {}
-		dtime.img = "vgui/ttt/icon_time"
-		dtime.text = GetTranslation("search_timefake")
-		dtime.text_icon = "00:15"
-		local dmg = {}
-		dmg.img = "vgui/ttt/icon_skull"
-		dmg.text = GetTranslation("search_dmg_other")
-		local fuckingtableshit = {}
-		fuckingtableshit["nick"] = nick
-		fuckingtableshit["role"] = dmg
-		fuckingtableshit["dtime"] = role
-		fuckingtableshit["dmg"] = dtime
-		local data = fuckingtableshit[t]
-		
-		if not data then
-			ErrorNoHalt("Search: data not found", t, data, "\n")
-			return
-		end
-		
-		-- If wrapping is on, the Label's SizeToContentsY misbehaves for
-		-- text that does not need wrapping. I long ago stopped wondering
-		-- "why" when it comes to VGUI. Apply hack, move on.
-		dtext:GetLabel():SetWrap(#data.text > 50)
-		
-		dtext:SetText(data.text)
-		dactive:SetImage(data.img)
-	end
-end
-
-net.Receive("TTT_fakeRagdollSearch", function(len, ply)
-	local client = LocalPlayer()
-	if not IsValid(client) then return end
-	
-	local fakesearch_raw = net.ReadEntity()
-	local fakename = net.ReadString()
-	local fakeedi = net.ReadString()
-	local deathicon = "vgui/ttt/icon_skull"
-	
-	local m = 8
-	local bw, bh = 100, 25
-	local w, h = 410, 260
-	
-	local rw, rh = (w - m * 2), (h - 25 - m * 2)
-	local rx, ry = 0, 0
-	
-	local rows = 1
-	local listw, listh = rw, (64 * rows + 6)
-	local listx, listy = rx, ry
-	
-	ry = ry + listh + m * 2
-	rx = m
-	
-	local descw, desch = rw - m * 2, 80
-	local descx, descy = rx, ry
-	
-	ry = ry + desch + m
-	
-	local butx, buty = rx, ry
-	
-	local Frame = vgui.Create("DFrame")
-	Frame:SetSize(w, h)
-	Frame:Center()
-	Frame:SetTitle(T("search_title") .. " - " .. fakesearch_raw:Nick() or "???")
-	Frame:Center()
-	
-	Frame.OnKeyCodePressed = util.BasicKeyHandler
-	
-	-- contents wrapper
-	local dcont = vgui.Create("DPanel", Frame)
-	dcont:SetPaintBackground(false)
-	dcont:SetSize(rw, rh)
-	dcont:SetPos(m, 25 + m)
-	
-	-- icon list
-	local dlist = vgui.Create("DPanelSelect", dcont)
-	dlist:SetPos(listx, listy)
-	dlist:SetSize(listw, listh)
-	dlist:EnableHorizontal(true)
-	dlist:SetSpacing(1)
-	dlist:SetPadding(2)
-	
-	-- description area
-	local dscroll = vgui.Create("DHorizontalScroller", dlist)
-	dscroll:StretchToParent(3, 3, 3, 3)
-	
-	local ddesc = vgui.Create("ColoredBox", dcont)
-	ddesc:SetColor(Color(50, 50, 50))
-	ddesc:SetName(T("search_info"))
-	ddesc:SetPos(descx, descy)
-	ddesc:SetSize(descw, desch)
-	
-	local dactive = vgui.Create("DImage", ddesc)
-	dactive:SetImage("vgui/ttt/icon_id")
-	dactive:SetPos(m, m)
-	dactive:SetSize(64, 64)
-	
-	local dtext = vgui.Create("ScrollLabel", ddesc)
-	dtext:SetSize(descw - 120, desch - m * 2)
-	dtext:MoveRightOf(dactive, m * 2)
-	dtext:AlignTop(m)
-	dtext:SetText("This is the body of " .. fakesearch_raw:GetName())
-	
-	-- buttons
-	local by = rh - bh - (m / 2)
-	
-	local dident = vgui.Create("DButton", dcont)
-	dident:SetPos(m, by)
-	dident:SetSize(bw, bh)
-	dident:SetText(T("search_confirm"))
-	local id = math.Round(fakeedi + CurTime())
-	dident.DoClick = function() RunConsoleCommand("ttt_fakeconfirm_death", fakeedi, id) end
-	dident:SetDisabled(client:IsSpec() or (not client:KeyDownLast(IN_WALK)))
-	
-	local dcall = vgui.Create("DButton", dcont)
-	dcall:SetPos(m * 2 + bw, by)
-	dcall:SetSize(bw, bh)
-	dcall:SetText(T("search_call"))
-	dcall.DoClick = function(s)
-		client.called_corpses = client.called_corpses or {}
-		table.insert(client.called_corpses, fakesearch_raw:EntIndex())
-		s:SetDisabled(true)
-		
-		RunConsoleCommand("ttt_call_detective", fakesearch_raw:EntIndex())
-	end
-	
-	dcall:SetDisabled(client:IsSpec() or table.HasValue(client.called_corpses or {}, fakesearch_raw:EntIndex()))
-	
-	local dconfirm = vgui.Create("DButton", dcont)
-	dconfirm:SetPos(rw - m - bw, by)
-	dconfirm:SetSize(bw, bh)
-	dconfirm:SetText(T("close"))
-	dconfirm.DoClick = function() Frame:Close() end
-	local nick = {}
-	nick.img = "vgui/ttt/icon_id"
-	nick.nick = fakesearch_raw
-	local role = {}
-	role.img = "vgui/ttt/icon_inno"
-	role.text = GetTranslation("search_role_i")
-	local dtime = {}
-	dtime.img = "vgui/ttt/icon_time"
-	dtime.text = GetTranslation("search_timefake")
-	dtime.text_icon = "00:15"
-	local dmg = {}
-	dmg.img = deathicon
-	dmg.text = GetTranslation("search_dmg_other")
-	local fuckingtableshit = {}
-	fuckingtableshit["nick"] = nick
-	fuckingtableshit["role"] = dmg
-	fuckingtableshit["dtime"] = role
-	fuckingtableshit["dmg"] = dtime
-	
-	dlist.OnActivePanelChanged = SearchInfofakeController(fuckingtableshit, dactive, dtext)
-	
-	local start_icon = nil
-	for t, v in pairs(fuckingtableshit) do
-		local ic = nil
-		
-		-- Certain items need a special icon conveying additional information
-		if t == "nick" then
-			local avply = fakesearch_raw
-			
-			ic = vgui.Create("SimpleIconAvatar", dlist)
-			ic:SetPlayer(avply)
-			
-			start_icon = ic
-		elseif t == "lastid" then
-			ic = vgui.Create("SimpleIconAvatar", dlist)
-			ic:SetPlayer(fakesearch_raw)
-			ic:SetAvatarSize(24)
-		elseif v.text_icon then
-			ic = vgui.Create("SimpleIconLabelled", dlist)
-			ic:SetIconText(v.text_icon)
-		else
-			ic = vgui.Create("SimpleIcon", dlist)
-		end
-		
-		ic:SetIconSize(64)
-		ic:SetIcon(v.img)
-		
-		ic.GetNamo = fakesearch_raw:GetName()
-		ic.info_type = t
-		
-		print(ic.GetNamo)
-		dlist:AddPanel(ic)
-		dscroll:AddPanel(ic)
-	end
-	Frame:MakePopup()
-	seframe = Frame
-end)

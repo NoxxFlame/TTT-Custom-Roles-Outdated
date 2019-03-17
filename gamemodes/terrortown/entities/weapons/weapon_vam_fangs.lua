@@ -67,9 +67,9 @@ function SWEP:PrimaryAttack()
 	if CLIENT then return end
 	
 	local tr = util.TraceLine({
-		start = self.Owner:GetShootPos(),
-		endpos = self.Owner:GetShootPos() + self.Owner:GetAimVector() * 100,
-		filter = self.Owner
+		start = self:GetOwner():GetShootPos(),
+		endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 100,
+		filter = self:GetOwner()
 	})
 	
 	if IsValid(tr.Entity) and tr.Entity:GetClass() == "prop_ragdoll" then
@@ -80,7 +80,7 @@ function SWEP:PrimaryAttack()
 		if IsValid(ply) and ply:Alive() then
 		else
 			self:Eat(tr.Entity)
-			self.Owner:EmitSound("weapons/ttt/vampireeat.wav")
+			self:GetOwner():EmitSound("weapons/ttt/vampireeat.wav")
 		end
 	end
 end
@@ -148,17 +148,17 @@ function SWEP:Think()
 	
 	if self:Clip1() < 13 and not self.fading then
 		self.fading = true
-		self.Owner:SetColor(Color(255, 255, 255, 0))
-		self.Owner:SetMaterial("sprites/heatwave")
-		self.Owner:EmitSound("weapons/ttt/fade.wav")
+		self:GetOwner():SetColor(Color(255, 255, 255, 0))
+		self:GetOwner():SetMaterial("sprites/heatwave")
+		self:GetOwner():EmitSound("weapons/ttt/fade.wav")
 	elseif self:Clip1() >= 13 and self.fading then
 		self.fading = false
-		self.Owner:SetMaterial("models/glass")
-		self.Owner:EmitSound("weapons/ttt/unfade.wav")
+		self:GetOwner():SetMaterial("models/glass")
+		self:GetOwner():EmitSound("weapons/ttt/unfade.wav")
 	end
 	
 	if self:GetState() == STATE_EAT then
-		if not IsValid(self.Owner) then
+		if not IsValid(self:GetOwner()) then
 			self:FireError()
 			return
 		end
@@ -169,9 +169,9 @@ function SWEP:Think()
 		end
 		
 		local tr = util.TraceLine({
-			start = self.Owner:GetShootPos(),
-			endpos = self.Owner:GetShootPos() + self.Owner:GetAimVector() * 100,
-			filter = self.Owner
+			start = self:GetOwner():GetShootPos(),
+			endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 100,
+			filter = self:GetOwner()
 		})
 		
 		if tr.Entity ~= self.TargetRagdoll then
@@ -182,7 +182,7 @@ function SWEP:Think()
 		if CurTime() >= self:GetStartTime() + 5 then
 			self:SetState(STATE_NONE)
 			
-			self.Owner:SetHealth(math.min(self.Owner:Health() + 50, 125))
+			self:GetOwner():SetHealth(math.min(self:GetOwner():Health() + 50, self:GetOwner():GetMaxHealth() + 25))
 			
 			self:DropBones()
 			
@@ -222,7 +222,7 @@ if CLIENT then
 	end
 end
 
-hook.Add("TTTPlayerSpeed", "FadeSpeed", function(ply, slowed)
+hook.Add("TTTPlayerSpeedModifier", "FadeSpeed", function(ply, slowed, mv)
 	local wep = ply:GetActiveWeapon()
 	if wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
 		return 3

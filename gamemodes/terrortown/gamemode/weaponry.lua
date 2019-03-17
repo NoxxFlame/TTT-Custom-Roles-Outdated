@@ -108,7 +108,7 @@ local function GiveLoadoutItems(ply)
 end
 
 -- Quick hack to limit hats to models that fit them well
-local Hattables = { "Phantom.mdl", "arctic.mdl", "Group01", "monk.mdl" }
+local Hattables = { "phoenix.mdl", "arctic.mdl", "Group01", "monk.mdl" }
 local function CanWearHat(ply)
 	local path = string.Explode("/", ply:GetModel())
 	if #path == 1 then path = string.Explode("\\", path) end
@@ -145,8 +145,8 @@ end
 -- calling this function is used to get them the weapons anyway as soon as
 -- possible.
 local function LateLoadout(id)
-	local ply = player.GetByID(id)
-	if not IsValid(ply) then
+	local ply = Entity(id)
+	if not IsValid(ply) or not ply:IsPlayer() then
 		timer.Remove("lateloadout" .. id)
 		return
 	end
@@ -371,100 +371,6 @@ local function OrderEquipment(ply, cmd, args)
 	-- we use weapons.GetStored to save time on an unnecessary copy, we will not
 	-- be modifying it
 	local swep_table = (not is_item) and weapons.GetStored(id) or nil
-	local Players = {}
-	local io = 0
-	
-	local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-	local Mfiles, Mdirectories = file.Find("roleweapons/Mercenary/*.txt", "DATA")
-	for k, v in pairs(Mfiles) do
-		local Mplayers = util.JSONToTable(file.Read("roleweapons/Mercenary/" .. v, "DATA"))
-		for k, v in pairs(Mplayers) do
-			if swep_table == nil then
-			else
-				if swep_table.ClassName == v.name then
-					table.insert(swep_table.CanBuy, ROLE_MERCENARY)
-				end
-			end
-		end
-	end
-	
-	local Zfiles, Zdirectories = file.Find("roleweapons/Zombie/*.txt", "DATA")
-	for k, v in pairs(Zfiles) do
-		local Zplayers = util.JSONToTable(file.Read("roleweapons/Zombie/" .. v, "DATA"))
-		for k, v in pairs(Zplayers) do
-			if swep_table == nil then
-			else
-				if swep_table.ClassName == v.name then
-					table.insert(swep_table.CanBuy, ROLE_ZOMBIE)
-				end
-			end
-		end
-	end
-	
-	local Hfiles, Hdirectories = file.Find("roleweapons/Hypnotist/*.txt", "DATA")
-	for k, v in pairs(Hfiles) do
-		local Hplayers = util.JSONToTable(file.Read("roleweapons/Hypnotist/" .. v, "DATA"))
-		for k, v in pairs(Hplayers) do
-			if swep_table == nil then
-			else
-				if swep_table.ClassName == v.name then
-					table.insert(swep_table.CanBuy, ROLE_HYPNOTIST)
-				end
-			end
-		end
-	end
-	
-	local Afiles, Adirectories = file.Find("roleweapons/Assassin/*.txt", "DATA")
-	for k, v in pairs(Afiles) do
-		local Aplayers = util.JSONToTable(file.Read("roleweapons/Assassin/" .. v, "DATA"))
-		for k, v in pairs(Aplayers) do
-			if swep_table == nil then
-			else
-				if swep_table.ClassName == v.name then
-					table.insert(swep_table.CanBuy, ROLE_ASSASSIN)
-				end
-			end
-		end
-	end
-	
-	local Vfiles, Vdirectories = file.Find("roleweapons/Vampire/*.txt", "DATA")
-	for k, v in pairs(Vfiles) do
-		local Vplayers = util.JSONToTable(file.Read("roleweapons/Vampire/" .. v, "DATA"))
-		for k, v in pairs(Vplayers) do
-			if swep_table == nil then
-			else
-				if swep_table.ClassName == v.name then
-					table.insert(swep_table.CanBuy, ROLE_VAMPIRE)
-				end
-			end
-		end
-	end
-	
-	local Dfiles, Ddirectories = file.Find("roleweapons/Detective/*.txt", "DATA")
-	for k, v in pairs(Dfiles) do
-		local Dplayers = util.JSONToTable(file.Read("roleweapons/Detective/" .. v, "DATA"))
-		for k, v in pairs(Dplayers) do
-			if swep_table == nil then
-			else
-				if swep_table.ClassName == v.name then
-					table.insert(swep_table.CanBuy, ROLE_DETECTIVE)
-				end
-			end
-		end
-	end
-	
-	local Tfiles, Tdirectories = file.Find("roleweapons/Traitor/*.txt", "DATA")
-	for k, v in pairs(Tfiles) do
-		local Tplayers = util.JSONToTable(file.Read("roleweapons/Traitor/" .. v, "DATA"))
-		for k, v in pairs(Tplayers) do
-			if swep_table == nil then
-			else
-				if swep_table.ClassName == v.name then
-					table.insert(swep_table.CanBuy, ROLE_TRAITOR)
-				end
-			end
-		end
-	end
 	
 	-- some weapons can only be bought once per player per round, this used to be
 	-- defined in a table here, but is now in the SWEP's table

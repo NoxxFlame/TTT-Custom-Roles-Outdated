@@ -22,7 +22,7 @@ L.terrorists = "Terrorists"
 L.spectators = "Spectators"
 
 --- Round status messages
-L.round_minplayers = "Not enough plsayers to start a new round..."
+L.round_minplayers = "Not enough players to start a new round..."
 L.round_voting = "Vote in progress, delaying new round by {num} seconds..."
 L.round_begintime = "A new round begins in {num} seconds. Prepare yourself."
 L.round_selected = "The Traitors have been selected."
@@ -226,7 +226,6 @@ L.search_dmg_other = "You cannot find a specific cause of this terrorist's death
 L.search_weapon = "It appears a {weapon} was used to kill them."
 L.search_head = "The fatal wound was a headshot. No time to scream."
 L.search_time = "They died roughly {time} before you conducted the search."
-L.search_timefake = "They died roughly 00:15 before you conducted the search."
 L.search_dna = "Retrieve a sample of the killer's DNA with a DNA Scanner. The DNA sample will decay roughly {time} from now."
 
 L.search_kills1 = "You found a list of kills that confirms the death of {player}."
@@ -1238,3 +1237,25 @@ L.set_cross_size = "Crosshair size"
 
 --- 5-25-15
 L.hat_retrieve = "You picked up a Detective's hat."
+
+--- 2018-07-24
+L.equip_tooltip_main = "Equipment menu"
+L.equip_tooltip_radar = "Radar control"
+L.equip_tooltip_disguise = "Disguise control"
+L.equip_tooltip_radio = "Radio control"
+L.equip_tooltip_xfer = "Transfer credits"
+
+L.confgrenade_name = "Discombobulator"
+L.polter_name = "Poltergeist"
+L.stungun_name = "UMP Prototype"
+
+L.knife_instant = "INSTANT KILL"
+
+L.dna_hud_type = "TYPE"
+L.dna_hud_body = "BODY"
+L.dna_hud_item = "ITEM"
+
+L.binoc_zoom_level = "LEVEL"
+L.binoc_body = "BODY DETECTED"
+
+L.idle_popup_title = "Idle"

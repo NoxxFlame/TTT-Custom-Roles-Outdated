@@ -58,15 +58,18 @@ include("player_ext_shd.lua")
 include("player_ext.lua")
 include("player.lua")
 
+-- Round times
 CreateConVar("ttt_roundtime_minutes", "10", FCVAR_NOTIFY)
 CreateConVar("ttt_preptime_seconds", "30", FCVAR_NOTIFY)
 CreateConVar("ttt_posttime_seconds", "30", FCVAR_NOTIFY)
 CreateConVar("ttt_firstpreptime", "60")
 
+-- Haste mode
 local ttt_haste = CreateConVar("ttt_haste", "1", FCVAR_NOTIFY)
 CreateConVar("ttt_haste_starting_minutes", "5", FCVAR_NOTIFY)
 CreateConVar("ttt_haste_minutes_per_death", "0.5", FCVAR_NOTIFY)
 
+-- Player Spawning
 CreateConVar("ttt_spawn_wave_interval", "0")
 
 CreateConVar("ttt_traitor_pct", "0.25")
@@ -126,6 +129,7 @@ CreateConVar("ttt_mer_credits_starting", "1")
 
 CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
 
+-- Other
 CreateConVar("ttt_use_weapon_spawn_scripts", "1")
 CreateConVar("ttt_weapon_spawn_count", "0")
 
@@ -404,7 +408,7 @@ local function NameChangeKick()
 	if GetRoundState() == ROUND_ACTIVE then
 		for _, ply in pairs(player.GetHumans()) do
 			if ply.spawn_nick then
-				if ply.has_spawned and ply.spawn_nick ~= ply:Nick() then
+				if ply.has_spawned and ply.spawn_nick ~= ply:Nick() and not hook.Call("TTTNameChangeKick", GAMEMODE, ply) then
 					local t = GetConVar("ttt_namechange_bantime"):GetInt()
 					local msg = "Changed name during a round"
 					if t > 0 then
@@ -930,7 +934,7 @@ end
 
 function EndRound(type)
 	
-	LogScore(type)
+	-- LogScore(type)
 	
 	PrintResultMessage(type)
 	

@@ -38,7 +38,7 @@ SWEP.UseHands = true
 SWEP.ViewModel = "models/weapons/cstrike/c_mach_m249para.mdl"
 SWEP.WorldModel = "models/weapons/w_mach_m249para.mdl"
 
-SWEP.HeadshotMultiplier = 1.5
+SWEP.HeadshotMultiplier = 2.2
 
 SWEP.IronSightsPos = Vector(-5.96, -5.119, 2.349)
 SWEP.IronSightsAng = Vector(0, 0, 0)

@@ -136,7 +136,6 @@ local function IdentifyBody(ply, rag)
 	end
 end
 
-concommand.Add("ttt_confirm_death", IdentifyCommand)
 
 -- Covert identify concommand for traitors
 local function IdentifyCommand(ply, cmd, args)
@@ -163,7 +162,7 @@ local function IdentifyCommand(ply, cmd, args)
 	end
 end
 
-concommand.Add("ttt_fakeIdentifyBody", IdentifyBody)
+concommand.Add("ttt_confirm_death", IdentifyCommand)
 
 -- Call detectives to a corpse
 local function CallDetective(ply, cmd, args)
@@ -427,6 +426,10 @@ function CORPSE.Create(ply, attacker, dmginfo)
 	
 	rag:SetPos(ply:GetPos())
 	rag:SetModel(ply:GetModel())
+	rag:SetSkin(ply:GetSkin())
+	for key, value in pairs(ply:GetBodyGroups()) do
+		rag:SetBodygroup(value.id, ply:GetBodygroup(value.id))
+	end
 	rag:SetAngles(ply:GetAngles())
 	rag:SetColor(ply:GetColor())
 	

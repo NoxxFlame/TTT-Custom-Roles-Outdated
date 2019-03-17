@@ -19,7 +19,7 @@ SWEP.Kind = WEAPON_HEAVY
 SWEP.CanBuy = { ROLE_MERCENARY }
 SWEP.WeaponID = AMMO_MAC10
 
-SWEP.Primary.Damage = 12
+SWEP.Primary.Damage = 11
 SWEP.Primary.Delay = 0.065
 SWEP.Primary.Cone = 0.03
 SWEP.Primary.ClipSize = 30

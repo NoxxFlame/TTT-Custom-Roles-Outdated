@@ -52,13 +52,25 @@ local bg_colors = {
 local health_colors = {
 	border = COLOR_WHITE,
 	background = Color(100, 25, 25, 222),
-	fill = Color(200, 50, 50, 250)
+	fill = Color(200, 50, 50, 255)
+};
+
+local overhealth_colors = {
+	border = COLOR_WHITE,
+	background = Color(0, 0, 0, 0),
+	fill = Color(255, 150, 175, 255)
 };
 
 local ammo_colors = {
 	border = COLOR_WHITE,
-	background = Color(20, 20, 5, 222),
+	background = Color(100, 60, 0, 222),
 	fill = Color(205, 155, 0, 255)
+};
+
+local sprint_colors = {
+	border = COLOR_WHITE,
+	background = Color(30, 60, 100, 222),
+	fill = Color(75, 150, 255, 255)
 };
 
 -- Modified RoundedBox
@@ -86,16 +98,16 @@ end
 -- http://wiki.garrysmod.com/?title=Creating_a_HUD
 
 -- Paints a graphical meter bar
-local function PaintBar(x, y, w, h, colors, value)
+local function PaintBar(r, x, y, w, h, colors, value)
 	-- Background
 	-- slightly enlarged to make a subtle border
-	draw.RoundedBox(8, x - 1, y - 1, w + 2, h + 2, colors.background)
+	draw.RoundedBox(r, x - 1, y - 1, w + 2, h + 2, colors.background)
 	
 	-- Fill
 	local width = w * math.Clamp(value, 0, 1)
 	
 	if width > 0 then
-		RoundedMeter(8, x, y, width, h, colors.fill)
+		RoundedMeter(r, x, y, width, h, colors.fill)
 	end
 end
 
@@ -161,7 +173,7 @@ local function DrawBg(x, y, width, height, client)
 		col = bg_colors.assassin
 	end
 	
-	draw.RoundedBox(8, x, y, tw, th, col)
+	draw.RoundedBoxEx(8, x, y, tw, th, col, true, false, false, true)
 end
 
 local sf = surface
@@ -185,7 +197,7 @@ local function PunchPaint(client)
 	local x = ScrW() / 2 - width / 2
 	local y = margin / 2 + height
 	
-	PaintBar(x, y, width, height, ammo_colors, punch)
+	PaintBar(8, x, y, width, height, ammo_colors, punch)
 	
 	local color = bg_colors.background_main
 	
@@ -257,7 +269,7 @@ local function InfoPaint(client)
 	local L = GetLang()
 	
 	local width = 250
-	local height = 90
+	local height = 94
 	
 	local x = margin
 	local y = ScrH() - margin - height
@@ -273,14 +285,16 @@ local function InfoPaint(client)
 	
 	-- Draw health
 	local health = math.max(0, client:Health())
+	local maxHealth = math.max(0, client:GetMaxHealth())
 	local health_y = y + margin
 	
-	PaintBar(x + margin, health_y, bar_width, bar_height, health_colors, health / 100)
+	PaintBar(8, x + margin, health_y, bar_width, bar_height, health_colors, health / maxHealth)
+	PaintBar(8, x + margin, health_y, bar_width, bar_height, overhealth_colors, math.max(0, health - maxHealth) / 25)
 	
 	ShadowedText(tostring(health), "HealthAmmo", bar_width, health_y, COLOR_WHITE, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT)
 	
 	if ttt_health_label:GetBool() then
-		local health_status = util.HealthToString(health, client:GetMaxHealth())
+		local health_status = util.HealthToString(health, maxHealth)
 		draw.SimpleText(L[health_status], "TabLarge", x + margin * 2, health_y + bar_height / 2, COLOR_WHITE, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 	
@@ -289,12 +303,17 @@ local function InfoPaint(client)
 		local ammo_clip, ammo_max, ammo_inv = GetAmmo(client)
 		if ammo_clip ~= -1 then
 			local ammo_y = health_y + bar_height + margin
-			PaintBar(x + margin, ammo_y, bar_width, bar_height, ammo_colors, ammo_clip / ammo_max)
+			PaintBar(8, x + margin, ammo_y, bar_width, bar_height, ammo_colors, ammo_clip / ammo_max)
 			local text = string.format("%i + %02i", ammo_clip, ammo_inv)
 			
 			ShadowedText(text, "HealthAmmo", bar_width, ammo_y, COLOR_WHITE, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT)
 		end
 	end
+	
+	local sprint_y = health_y + (2 * (bar_height + margin))
+	bar_height = 4
+	
+	PaintBar(2, x + margin, sprint_y, bar_width, bar_height, sprint_colors, client:GetPData("sprintMeter", 0) / 100)
 	
 	-- Draw traitor state
 	local round_state = GAMEMODE.round_state
