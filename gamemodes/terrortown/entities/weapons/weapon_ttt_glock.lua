@@ -31,7 +31,7 @@ SWEP.AutoSpawnable = true
 SWEP.AmmoEnt = "item_ammo_revolver_ttt"
 SWEP.Kind = WEAPON_PISTOL
 SWEP.WeaponID = AMMO_GLOCK
-SWEP.CanBuy = { ROLE_MERCENARY }
+SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
 
 SWEP.HeadshotMultiplier = 1.8
 

@@ -16,7 +16,7 @@ end
 SWEP.Base = "weapon_tttbasegrenade"
 
 SWEP.WeaponID = AMMO_SMOKE
-SWEP.CanBuy = { ROLE_MERCENARY }
+SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
 SWEP.Kind = WEAPON_NADE
 
 SWEP.UseHands = true

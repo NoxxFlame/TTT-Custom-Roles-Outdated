@@ -39,7 +39,8 @@ local col_active = {
 		[ROLE_ZOMBIE] = Color(69, 97, 0, 255),
 		[ROLE_VAMPIRE] = Color(45, 45, 45, 255),
 		[ROLE_SWAPPER] = Color(111, 0, 255, 255),
-		[ROLE_ASSASSIN] = Color(112, 50, 0, 255)
+		[ROLE_ASSASSIN] = Color(112, 50, 0, 255),
+		[ROLE_KILLER] = Color(50, 0, 70, 255)
 	},
 	bg = Color(20, 20, 20, 250),
 	text_empty = Color(200, 20, 20, 255),
@@ -61,7 +62,8 @@ local col_dark = {
 		[ROLE_ZOMBIE] = Color(69, 97, 0, 255),
 		[ROLE_VAMPIRE] = Color(45, 45, 45, 255),
 		[ROLE_SWAPPER] = Color(111, 0, 255, 255),
-		[ROLE_ASSASSIN] = Color(112, 50, 0, 255)
+		[ROLE_ASSASSIN] = Color(112, 50, 0, 255),
+		[ROLE_KILLER] = Color(50, 0, 70, 255)
 	},
 	bg = Color(20, 20, 20, 200),
 	text_empty = Color(200, 20, 20, 100),

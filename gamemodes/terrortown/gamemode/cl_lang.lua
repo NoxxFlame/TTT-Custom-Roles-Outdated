@@ -213,7 +213,8 @@ local bgcolor = {
 	[ROLE_VAMPIRE] = Color(45, 45, 45, 200),
 	[ROLE_SWAPPER] = Color(111, 0, 255, 200),
 	[ROLE_ASSASSIN] = Color(112, 50, 0, 200),
-	[ROLE_INNOCENT] = Color(0, 50, 0, 200)
+	[ROLE_INNOCENT] = Color(0, 50, 0, 200),
+	[ROLE_KILLER] = Color(50, 0, 70, 200)
 };
 
 -- Table of styles that can take a string and display it in some position,

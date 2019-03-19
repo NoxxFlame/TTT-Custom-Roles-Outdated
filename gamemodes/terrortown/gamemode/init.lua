@@ -89,6 +89,7 @@ CreateConVar("ttt_zombie_enabled", "1")
 CreateConVar("ttt_vampire_enabled", "1")
 CreateConVar("ttt_swapper_enabled", "1")
 CreateConVar("ttt_assassin_enabled", "1")
+CreateConVar("ttt_killer_enabled", "1")
 
 CreateConVar("ttt_zombie_chance", "0.1")
 CreateConVar("ttt_hypnotist_chance", "0.2")
@@ -99,6 +100,7 @@ CreateConVar("ttt_phantom_chance", "0.25")
 CreateConVar("ttt_mercenary_chance", "0.25")
 CreateConVar("ttt_jester_chance", "0.25")
 CreateConVar("ttt_swapper_chance", "0.25")
+CreateConVar("ttt_killer_chance", "0.25")
 
 CreateConVar("ttt_mercenary_required_innos", "2")
 CreateConVar("ttt_hypnotist_required_traitors", "2")
@@ -108,6 +110,7 @@ CreateConVar("ttt_phantom_required_innos", "2")
 CreateConVar("ttt_vampire_required_traitors", "2")
 CreateConVar("ttt_swapper_required_innos", "2")
 CreateConVar("ttt_assassin_required_traitors", "2")
+CreateConVar("ttt_killer_required_innos", "3")
 
 CreateConVar("ttt_zombie_pct", "0.33")
 
@@ -126,6 +129,7 @@ CreateConVar("ttt_det_credits_traitorkill", "0")
 CreateConVar("ttt_det_credits_traitordead", "1")
 
 CreateConVar("ttt_mer_credits_starting", "1")
+CreateConVar("ttt_kil_credits_starting", "2")
 
 CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
 
@@ -612,6 +616,7 @@ function TellTraitorsAboutTraitors()
 	local assassinnick = {}
 	local glitchnick = {}
 	local jesternick = {}
+	local killernick = {}
 	for k, v in pairs(player.GetAll()) do
 		if v:IsTraitor() or v:IsHypnotist() or v:IsVampire() or v:IsZombie() or v:IsAssassin() then
 			table.insert(traitornicks, v:Nick())
@@ -620,6 +625,8 @@ function TellTraitorsAboutTraitors()
 			table.insert(glitchnick, v:Nick())
 		elseif v:IsJester() or v:IsSwapper() then
 			table.insert(jesternick, v:Nick())
+		elseif v:IsKiller() then
+			table.insert(killernick, v:Nick())
 		end
 	end
 	
@@ -630,6 +637,16 @@ function TellTraitorsAboutTraitors()
 			if table.Count(glitchnick) > 0 then
 				v:PrintMessage(HUD_PRINTTALK, "There is a Glitch.")
 				v:PrintMessage(HUD_PRINTCENTER, "There is a Glitch.")
+			end
+			if table.Count(killernick) > 0 then
+				v:PrintMessage(HUD_PRINTTALK, "There is a Killer.")
+				if table.Count(glitchnick) > 0 then
+					timer.Simple(2, function()
+						v:PrintMessage(HUD_PRINTCENTER, "There is a Killer.")
+					end)
+				else
+					v:PrintMessage(HUD_PRINTCENTER, "There is a Killer.")
+				end
 			end
 			if #traitornicks < 2 then
 				LANG.Msg(v, "round_traitors_one")
@@ -766,7 +783,7 @@ function BeginRound()
 			local detectives = {}
 			for i, p in pairs(player.GetAll()) do
 				if p:Alive() and not p:IsSpec() then
-					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY then
+					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER then
 						table.insert(innocents, p:Nick())
 					elseif p:GetRole() == ROLE_DETECTIVE then
 						table.insert(detectives, p:Nick())
@@ -785,6 +802,9 @@ function BeginRound()
 			end
 		elseif v:GetRole() == ROLE_HYPNOTIST then
 			v:Give("weapon_hyp_brainwash")
+		elseif v:GetRole() == ROLE_KILLER then
+			v:SetMaxHealth(150)
+			v:SetHealth(150)
 		end
 	end
 	
@@ -853,6 +873,9 @@ function PrintResultMessage(type)
 	elseif type == WIN_JESTER then
 		LANG.Msg("win_jester")
 		ServerLog("Result: Jester wins.\n")
+	elseif type == WIN_KILLER then
+		LANG.Msg("killer")
+		ServerLog("Result: Killer wins.\n")
 	else
 		ServerLog("Result: Unknown victory condition!\n")
 	end
@@ -900,7 +923,7 @@ function LogScore(type)
 	end
 	
 	local roundRoles = { false, false, false, false, false, false, false, false, false, false, false, false }
-	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin" }
+	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer" }
 	
 	for k, v in pairs(player.GetAll()) do
 		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
@@ -996,6 +1019,7 @@ function GM:TTTCheckForWin()
 	local innocent_alive = false
 	local jester_alive = false
 	local swapper_alive = false
+	local killer_alive = false
 	for k, v in pairs(player.GetAll()) do
 		if (v:Alive() and v:IsTerror()) or v:GetPData("IsZombifying", 0) == 1 then
 			if v:GetTraitor() or v:GetHypnotist() or v:GetZombie() or v:GetVampire() or v:GetAssassin() or v:GetPData("IsZombifying", 0) == 1 then
@@ -1004,6 +1028,8 @@ function GM:TTTCheckForWin()
 				jester_alive = true
 			elseif v:GetSwapper() then
 				swapper_alive = true
+			elseif v:GetKiller() then
+				killer_alive = true
 			else
 				innocent_alive = true
 			end
@@ -1014,20 +1040,22 @@ function GM:TTTCheckForWin()
 		end
 	end
 	
-	if traitor_alive and not innocent_alive and jester_alive then
+	if traitor_alive and not innocent_alive and not killer_alive and jester_alive then
 		return WIN_TRAITOR
-	elseif traitor_alive and not innocent_alive and not jester_alive and jesterkilled == 0 then
+	elseif traitor_alive and not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 then
 		return WIN_TRAITOR
-	elseif not traitor_alive and innocent_alive and jester_alive then
+	elseif not traitor_alive and innocent_alive and not killer_alive and jester_alive then
 		return WIN_INNOCENT
-	elseif not traitor_alive and innocent_alive and not jester_alive and jesterkilled == 0 then
+	elseif not traitor_alive and innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 then
 		return WIN_INNOCENT
-	elseif not innocent_alive and jester_alive then
+	elseif not innocent_alive and not killer_alive and jester_alive then
 		-- ultimately if no one is alive, traitors win
 		return WIN_TRAITOR
-	elseif not innocent_alive and not jester_alive and jesterkilled == 0 then
+	elseif not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 then
 		-- ultimately if no one is alive, traitors win
 		return WIN_TRAITOR
+	elseif not traitor_alive and not innocent_alive and killer_alive then
+		return WIN_KILLER
 	elseif not jester_alive and jesterkilled == 1 then
 		-- ultimately if no one is alive, traitors win
 		return WIN_JESTER
@@ -1077,7 +1105,8 @@ function SelectRoles()
 		[ROLE_ZOMBIE] = {},
 		[ROLE_VAMPIRE] = {},
 		[ROLE_SWAPPER] = {},
-		[ROLE_ASSASSIN] = {}
+		[ROLE_ASSASSIN] = {},
+		[ROLE_KILLER] = {}
 	};
 	
 	if not GAMEMODE.LastRole then GAMEMODE.LastRole = {} end
@@ -1121,6 +1150,9 @@ function SelectRoles()
 	local swapper_chance = GetConVar("ttt_swapper_chance"):GetFloat()
 	local real_swapper_chance = swapper_chance / (1 - jester_chance)
 	
+	local killer_chance = GetConVar("ttt_killer_chance"):GetFloat()
+	local real_killer_chance = killer_chance / ((1 - jester_chance) * (1 - swapper_chance))
+	
 	local glitch_chance = GetConVar("ttt_glitch_chance"):GetFloat()
 	local real_glitch_chance = glitch_chance / (1 - hypnotist_chance - vampire_chance - assassin_chance)
 	
@@ -1148,6 +1180,7 @@ function SelectRoles()
 	local hasPhantom = false
 	local hasGlitch = false
 	local hasDetective = false
+	local hasKiller = false
 	
 	if #choices == 3 then
 		hasDetective = true
@@ -1196,6 +1229,9 @@ function SelectRoles()
 				elseif role == ROLE_SWAPPER then
 					hasJester = true
 					print(v:Nick() .. " (" .. v:SteamID() .. ") - Swapper")
+				elseif role == ROLE_KILLER then
+					hasKiller = true
+					print(v:Nick() .. " (" .. v:SteamID() .. ") - Killer")
 				elseif role == ROLE_DETECTIVE then
 					ds = ds + 1
 					print(v:Nick() .. " (" .. v:SteamID() .. ") - Detective")
@@ -1305,7 +1341,7 @@ function SelectRoles()
 		end
 	end
 	
-	if GetConVar("ttt_jester_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= real_jester_chance and not hasJester then
+	if GetConVar("ttt_jester_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= real_jester_chance and not hasJester and not hasKiller then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1314,13 +1350,22 @@ function SelectRoles()
 			hasJester = true
 		end
 		table.remove(choices, pick)
-	elseif GetConVar("ttt_swapper_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= real_swapper_chance and not hasJester then
+	elseif GetConVar("ttt_swapper_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= real_swapper_chance and not hasJester and not hasKiller then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
 			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Swapper")
 			pply:SetRole(ROLE_SWAPPER)
 			hasJester = true
+		end
+		table.remove(choices, pick)
+	elseif GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= real_killer_chance and not hasJester and not hasKiller then
+		local pick = math.random(1, #choices)
+		local pply = choices[pick]
+		if IsValid(pply) then
+			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Killer")
+			pply:SetRole(ROLE_KILLER)
+			hasKiller = true
 		end
 		table.remove(choices, pick)
 	end

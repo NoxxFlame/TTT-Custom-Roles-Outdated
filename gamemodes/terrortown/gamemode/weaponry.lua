@@ -48,7 +48,8 @@ local function GetLoadoutWeapons(r)
 			[ROLE_ZOMBIE] = {},
 			[ROLE_VAMPIRE] = {},
 			[ROLE_SWAPPER] = {},
-			[ROLE_ASSASSIN] = {}
+			[ROLE_ASSASSIN] = {},
+			[ROLE_KILLER] = {}
 		};
 		
 		for k, w in pairs(weapons.GetList()) do
@@ -357,7 +358,7 @@ end
 local function OrderEquipment(ply, cmd, args)
 	if not IsValid(ply) or #args ~= 1 then return end
 	
-	if not (ply:IsActiveTraitor() or ply:IsActiveDetective() or ply:IsActiveMercenary() or ply:IsActiveZombie() or ply:IsActiveVampire() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) then return end
+	if not (ply:IsActiveTraitor() or ply:IsActiveDetective() or ply:IsActiveMercenary() or ply:IsActiveZombie() or ply:IsActiveVampire() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() or ply:IsActiveKiller()) then return end
 	
 	-- no credits, can't happen when buying through menu as button will be off
 	if ply:GetCredits() < 1 then return end

@@ -24,6 +24,7 @@ ROLE_ZOMBIE = 8
 ROLE_VAMPIRE = 9
 ROLE_SWAPPER = 10
 ROLE_ASSASSIN = 11
+ROLE_KILLER = 12
 ROLE_NONE = ROLE_INNOCENT
 
 -- Game event log defs
@@ -43,6 +44,7 @@ WIN_TRAITOR = 2
 WIN_INNOCENT = 3
 WIN_TIMELIMIT = 4
 WIN_JESTER = 5
+WIN_KILLER = 6
 
 -- Weapon categories, you can only carry one of each
 WEAPON_NONE = 0
@@ -258,6 +260,23 @@ DefaultEquipment = {
 		EQUIP_RADAR,
 		EQUIP_SPEED,
 		EQUIP_REGEN
+	},
+	[ROLE_KILLER] = {
+		"weapon_ttt_health_station",
+		"weapon_ttt_teleport",
+		"weapon_ttt_confgrenade",
+		"weapon_ttt_m16",
+		"weapon_ttt_smokegrenade",
+		"weapon_zm_mac10",
+		"weapon_zm_molotov",
+		"weapon_zm_pistol",
+		"weapon_zm_revolver",
+		"weapon_zm_rifle",
+		"weapon_zm_shotgun",
+		"weapon_zm_sledge",
+		"weapon_ttt_glock",
+		EQUIP_ARMOR,
+		EQUIP_RADAR
 	},
 	
 	-- non-buyable

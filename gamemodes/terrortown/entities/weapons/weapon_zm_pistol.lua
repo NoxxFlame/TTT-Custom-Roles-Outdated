@@ -16,7 +16,7 @@ end
 SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_PISTOL
-SWEP.CanBuy = { ROLE_MERCENARY }
+SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
 SWEP.WeaponID = AMMO_PISTOL
 
 SWEP.Primary.Recoil = 1.5

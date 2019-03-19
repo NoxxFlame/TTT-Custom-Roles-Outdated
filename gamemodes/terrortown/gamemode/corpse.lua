@@ -83,6 +83,8 @@ local function IdentifyBody(ply, rag)
 			roletext = "body_found_s"
 		elseif role == ROLE_ASSASSIN then
 			roletext = "body_found_a"
+		elseif role == ROLE_KILLER then
+			roletext = "body_found_k"
 		else
 			roletext = "body_found_i"
 		end
@@ -242,7 +244,7 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
 	local detectiveSearchOnly = GetGlobalBool("ttt_detective_search_only", true)
 	
 	local credits = CORPSE.GetCredits(rag, 0)
-	if (ply:IsActiveDetective() or ply:IsActiveTraitor() or ply:IsActiveMercenary() or ply:IsActiveZombie() or ply:IsActiveVampire() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) and credits > 0 and (not long_range) then
+	if (ply:IsActiveDetective() or ply:IsActiveTraitor() or ply:IsActiveMercenary() or ply:IsActiveZombie() or ply:IsActiveVampire() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() or ply:IsActiveKiller()) and credits > 0 and (not long_range) then
 		LANG.Msg(ply, "body_credits", { num = credits })
 		ply:AddCredits(credits)
 		CORPSE.SetCredits(rag, 0)

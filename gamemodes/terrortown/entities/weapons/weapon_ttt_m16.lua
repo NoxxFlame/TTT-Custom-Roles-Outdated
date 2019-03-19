@@ -16,7 +16,7 @@ end
 SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
-SWEP.CanBuy = { ROLE_MERCENARY }
+SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
 SWEP.WeaponID = AMMO_M16
 
 SWEP.Primary.Delay = 0.19

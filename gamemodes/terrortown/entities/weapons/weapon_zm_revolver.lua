@@ -15,7 +15,7 @@ end
 SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_PISTOL
-SWEP.CanBuy = { ROLE_MERCENARY }
+SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
 SWEP.WeaponID = AMMO_DEAGLE
 
 SWEP.Primary.Ammo = "AlyxGun" -- hijack an ammo type we don't use otherwise

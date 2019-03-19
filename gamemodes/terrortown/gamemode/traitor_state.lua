@@ -73,6 +73,8 @@ function SendSwapperList(ply_or_rf) SendRoleList(ROLE_SWAPPER, ply_or_rf) end
 
 function SendAssassinList(ply_or_rf) SendRoleList(ROLE_ASSASSIN, ply_or_rf) end
 
+function SendKillerList(ply_or_rf) SendRoleList(ROLE_KILLER, ply_or_rf) end
+
 function SendInnocentList(ply_or_rf) SendRoleList(ROLE_INNOCENT, ply_or_rf) end
 
 function SendConfirmedTraitors(ply_or_rf)
@@ -93,6 +95,7 @@ function SendFullStateUpdate()
 	SendVampireList()
 	SendSwapperList()
 	SendAssassinList()
+	SendKillerList()
 	-- not useful to sync confirmed traitors here
 end
 
@@ -129,6 +132,7 @@ local function request_rolelist(ply)
 		SendVampireList(ply)
 		SendSwapperList(ply)
 		SendAssassinList(ply)
+		SendKillerList(ply)
 		
 		if ply:IsTraitor() then
 			SendTraitorList(ply)
@@ -157,6 +161,8 @@ concommand.Add("ttt_force_terror", force_terror, nil, nil, FCVAR_CHEAT)
 
 local function force_innocent(ply)
 	ply:SetRole(ROLE_INNOCENT)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -171,6 +177,8 @@ concommand.Add("ttt_force_innocent", force_innocent, nil, nil, FCVAR_CHEAT)
 
 local function force_traitor(ply)
 	ply:SetRole(ROLE_TRAITOR)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -185,6 +193,8 @@ concommand.Add("ttt_force_traitor", force_traitor, nil, nil, FCVAR_CHEAT)
 
 local function force_detective(ply)
 	ply:SetRole(ROLE_DETECTIVE)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -199,6 +209,8 @@ concommand.Add("ttt_force_detective", force_detective, nil, nil, FCVAR_CHEAT)
 
 local function force_mercenary(ply)
 	ply:SetRole(ROLE_MERCENARY)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -213,6 +225,8 @@ concommand.Add("ttt_force_mercenary", force_mercenary, nil, nil, FCVAR_CHEAT)
 
 local function force_hypnotist(ply)
 	ply:SetRole(ROLE_HYPNOTIST)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -228,6 +242,8 @@ concommand.Add("ttt_force_hypnotist", force_hypnotist, nil, nil, FCVAR_CHEAT)
 
 local function force_glitch(ply)
 	ply:SetRole(ROLE_GLITCH)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -242,6 +258,8 @@ concommand.Add("ttt_force_glitch", force_glitch, nil, nil, FCVAR_CHEAT)
 
 local function force_jester(ply)
 	ply:SetRole(ROLE_JESTER)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -256,6 +274,8 @@ concommand.Add("ttt_force_jester", force_jester, nil, nil, FCVAR_CHEAT)
 
 local function force_phantom(ply)
 	ply:SetRole(ROLE_PHANTOM)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -270,6 +290,8 @@ concommand.Add("ttt_force_phantom", force_phantom, nil, nil, FCVAR_CHEAT)
 
 local function force_zombie(ply)
 	ply:SetRole(ROLE_ZOMBIE)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -284,6 +306,8 @@ concommand.Add("ttt_force_zombie", force_zombie, nil, nil, FCVAR_CHEAT)
 
 local function force_vampire(ply)
 	ply:SetRole(ROLE_VAMPIRE)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -298,6 +322,8 @@ concommand.Add("ttt_force_vampire", force_vampire, nil, nil, FCVAR_CHEAT)
 
 local function force_swapper(ply)
 	ply:SetRole(ROLE_SWAPPER)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -313,6 +339,8 @@ concommand.Add("ttt_force_swapper", force_swapper, nil, nil, FCVAR_CHEAT)
 
 local function force_assassin(ply)
 	ply:SetRole(ROLE_ASSASSIN)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -324,6 +352,22 @@ local function force_assassin(ply)
 end
 
 concommand.Add("ttt_force_assassin", force_assassin, nil, nil, FCVAR_CHEAT)
+
+local function force_killer(ply)
+	ply:SetRole(ROLE_KILLER)
+	ply:SetMaxHealth(150)
+	ply:SetHealth(150)
+	if ply:HasWeapon("weapon_hyp_brainwash") then
+		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_vam_fangs") then
+		ply:StripWeapon("weapon_vam_fangs")
+	end
+	
+	SendFullStateUpdate()
+end
+
+concommand.Add("ttt_force_killer", force_killer, nil, nil, FCVAR_CHEAT)
 
 local function force_spectate(ply, cmd, arg)
 	if IsValid(ply) then

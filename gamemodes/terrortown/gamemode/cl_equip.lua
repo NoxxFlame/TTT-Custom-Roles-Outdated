@@ -191,7 +191,8 @@ local color_slot = {
 	[ROLE_ZOMBIE] = Color(69, 97, 0, 255),
 	[ROLE_HYPNOTIST] = Color(255, 80, 235, 255),
 	[ROLE_VAMPIRE] = Color(45, 45, 45, 255),
-	[ROLE_ASSASSIN] = Color(112, 50, 0, 255)
+	[ROLE_ASSASSIN] = Color(112, 50, 0, 255),
+	[ROLE_KILLER] = Color(50, 0, 70, 255)
 };
 
 local eqframe = nil
@@ -473,7 +474,7 @@ local function TraitorMenuPopup()
 	end
 	
 	-- Credit transferring
-	if credits > 0 and ply:GetRole() ~= ROLE_MERCENARY then
+	if credits > 0 and (ply:GetRole() ~= ROLE_MERCENARY or ply:GetRole() ~= ROLE_KILLER) then
 		local dtransfer = CreateTransferMenu(dsheet)
 		dsheet:AddSheet(GetTranslation("xfer_name"), dtransfer, "icon16/group_gear.png", false, false, "Transfer credits")
 	end
@@ -583,7 +584,7 @@ concommand.Add("ttt_cl_traitorpopup_close", ForceCloseTraitorMenu)
 
 function GM:OnContextMenuOpen()
 	local r = GetRoundState()
-	if r == ROUND_ACTIVE and not (LocalPlayer():GetTraitor() or LocalPlayer():GetDetective() or LocalPlayer():GetMercenary() or LocalPlayer():GetZombie() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetAssassin()) then
+	if r == ROUND_ACTIVE and not (LocalPlayer():GetTraitor() or LocalPlayer():GetDetective() or LocalPlayer():GetMercenary() or LocalPlayer():GetZombie() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetAssassin() or LocalPlayer():GetKiller()) then
 		return
 	elseif r == ROUND_POST or r == ROUND_PREP then
 		CLSCORE:Reopen()
@@ -604,133 +605,6 @@ local function ReceiveEquipment()
 end
 
 net.Receive("TTT_Equipment", ReceiveEquipment)
-
-local function ReceiveEquipment2()
-	local DermaPanel = vgui.Create("DFrame")
-	DermaPanel:SetPos(50, 50)
-	DermaPanel:SetSize(500, 700)
-	DermaPanel:SetTitle("Testing Derma Stuff")
-	DermaPanel:SetVisible(true)
-	DermaPanel:SetDraggable(true)
-	DermaPanel:ShowCloseButton(true)
-	DermaPanel:MakePopup()
-	
-	local DermaListView = vgui.Create("DListView")
-	DermaListView:SetParent(DermaPanel)
-	DermaListView:SetPos(25, 50)
-	DermaListView:SetSize(450, 500)
-	DermaListView:SetMultiSelect(false)
-	DermaListView:AddColumn("Name") -- Add column
-	DermaListView:AddColumn("In Game Name")
-	
-	local menu = vgui.Create("DComboBox")
-	menu:SetParent(DermaPanel)
-	menu:SetPos(25, 560)
-	menu:SetText("Mercenary")
-	menu:AddChoice("Traitor")
-	menu:AddChoice("Detective")
-	menu:AddChoice("Mercenary")
-	menu:AddChoice("Zombie")
-	menu:AddChoice("Hypnotist")
-	menu:AddChoice("Vampire")
-	menu:AddChoice("Assassin")
-	
-	local TextEntry = vgui.Create("DTextEntry", frame) -- create the form as a child of frame
-	TextEntry:SetParent(DermaPanel)
-	TextEntry:SetSize(100, 25)
-	TextEntry:SetPos(390, 560)
-	TextEntry:SetText("Sample String")
-	TextEntry.OnEnter = function(self)
-		chat.AddText(self:GetValue()) -- print the form's text as server text
-	end
-	
-	local button = vgui.Create("Button")
-	button:SetParent(DermaPanel)
-	button:SetSize(150, 30)
-	button:SetPos(175, 600)
-	button:SetVisible(true)
-	button:SetText("Click Me")
-	function button:DoClick()
-		local Players = {}
-		local io = 0
-		for k, v in pairs(weapons.GetList()) do
-			if v.ClassName == TextEntry:GetValue() then
-				io = io + 1
-				Players[v.PrintName] = { name = TextEntry:GetValue(), traitor = menu:GetValue() }
-				if menu:GetValue() == "Mercenary" then
-					if file.Exists(TextEntry:GetValue() .. ".txt", "DATA/roleweapons/Mercenary") then
-					else
-						local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-						file.CreateDir("roleweapons") -- Create the directory
-						file.CreateDir("roleweapons/Mercenary") -- Create the directory
-						file.Write("roleweapons/Mercenary/" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-						file.Write("../" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-					end
-				elseif menu:GetValue() == "Zombie" then
-					if file.Exists(TextEntry:GetValue() .. ".txt", "DATA/roleweapons/Zombie") then
-					else
-						local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-						file.CreateDir("roleweapons") -- Create the directory
-						file.CreateDir("roleweapons/Zombie") -- Create the directory
-						file.Write("roleweapons/Zombie/" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-						file.Write("../" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-					end
-				elseif menu:GetValue() == "Hypnotist" then
-					if file.Exists(TextEntry:GetValue() .. ".txt", "DATA/roleweapons/Hypnotist") then
-					else
-						local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-						file.CreateDir("roleweapons") -- Create the directory
-						file.CreateDir("roleweapons/Hypnotist") -- Create the directory
-						file.Write("roleweapons/Hypnotist/" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-						file.Write("../" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-					end
-				elseif menu:GetValue() == "Vampire" then
-					if file.Exists(TextEntry:GetValue() .. ".txt", "DATA/roleweapons/Vampire") then
-					else
-						local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-						file.CreateDir("roleweapons") -- Create the directory
-						file.CreateDir("roleweapons/Vampire") -- Create the directory
-						file.Write("roleweapons/Vampire/" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-						file.Write("../" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-					end
-				elseif menu:GetValue() == "Assassin" then
-					if file.Exists(TextEntry:GetValue() .. ".txt", "DATA/roleweapons/Assassin") then
-					else
-						local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-						file.CreateDir("roleweapons") -- Create the directory
-						file.CreateDir("roleweapons/Assassin") -- Create the directory
-						file.Write("roleweapons/Assassin/" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-						file.Write("../" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-					end
-				elseif menu:GetValue() == "Detective" then
-					if file.Exists(TextEntry:GetValue() .. ".txt", "DATA/roleweapons/Detective") then
-					else
-						local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-						file.CreateDir("roleweapons") -- Create the directory
-						file.CreateDir("roleweapons/Detective") -- Create the directory
-						file.Write("roleweapons/Detective/" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-					end
-				elseif menu:GetValue() == "Traitor" then
-					if file.Exists(TextEntry:GetValue() .. ".txt", "DATA/roleweapons/Traitor") then
-					else
-						local tab = util.TableToJSON(Players) -- Convert the player table to JSON
-						file.CreateDir("roleweapons") -- Create the directory
-						file.CreateDir("roleweapons/Traitor") -- Create the directory
-						file.Write("roleweapons/Traitor/" .. TextEntry:GetValue() .. ".txt", tab) -- Write to .txt
-					end
-				end
-			end
-		end
-	end
-	
-	for k, v in pairs(weapons.GetList()) do
-		if v.Base == "weapon_tttbase" then
-			DermaListView:AddLine(v.ClassName, v.PrintName) -- Add lines
-		end
-	end
-end
-
-net.Receive("PlayerDied", ReceiveEquipment2)
 
 local function ReceiveCredits()
 	local ply = LocalPlayer()

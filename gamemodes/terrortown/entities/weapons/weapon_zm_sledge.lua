@@ -19,7 +19,7 @@ SWEP.Spawnable = true
 SWEP.AutoSpawnable = true
 
 SWEP.Kind = WEAPON_HEAVY
-SWEP.CanBuy = { ROLE_MERCENARY }
+SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
 SWEP.WeaponID = AMMO_M249
 
 SWEP.Primary.Damage = 8

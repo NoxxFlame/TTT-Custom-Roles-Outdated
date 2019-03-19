@@ -14,6 +14,7 @@ L.zombie = "Zombie"
 L.vampire = "Vampire"
 L.swapper = "Swapper"
 L.assassin = "Assassin"
+L.killer = "Killer"
 L.innocent = "Innocent"
 L.hidden = "Hidden"
 L.last_words = "Last Words"
@@ -36,6 +37,7 @@ L.win_time = "Time has run out. The Traitors lose."
 L.win_traitor = "The Traitors have won!"
 L.win_jester = "The Jester has fooled you all!"
 L.win_innocent = "The Traitors have been defeated!"
+L.win_killer = "The Killer has murdered you all!"
 L.win_showreport = "Let's look at the round report for {num} seconds."
 
 L.limit_round = "Round limit reached. {mapname} will load soon."
@@ -68,6 +70,7 @@ L.body_found_z = "They were a Zombie."
 L.body_found_v = "They were a Vampire."
 L.body_found_s = "They were a Swapper."
 L.body_found_a = "They were an Assassin."
+L.body_found_k = "They were a Killer."
 L.body_found_i = "They were Innocent."
 
 L.body_confirm = "{finder} confirmed the death of {victim}."
@@ -203,6 +206,7 @@ L.search_role_z = "This person was a Zombie"
 L.search_role_v = "This person was a Vampire"
 L.search_role_s = "This person was a Swapper"
 L.search_role_a = "This person was an Assassin"
+L.search_role_k = "This person was a Killer"
 L.search_role_i = "This person was Innocent."
 
 L.search_words = "Something tells you some of this person's last words were: '{lastwords}'"
@@ -637,6 +641,7 @@ L.target_vampire = "VAMPIRE"
 L.target_zombie = "ZOMBIE"
 L.target_jester = "JESTER"
 L.target_swapper = "SWAPPER"
+L.target_mercenary = "KILLER"
 L.target_fellow_traitor = "FELLOW TRAITOR"
 L.target_fellow_zombie = "FELLOW ZOMBIE"
 L.target_current_target = "CURRENT TARGET"
@@ -773,6 +778,10 @@ to all other players. But take care as killing the wrong
 player will result in you losing your double damage bonus.
 
 Press {menukey} to receive your special equipment!]]
+
+L.info_popup_killer = [[You are a Killer! Try to kill everyone and be the last one standing!
+
+Press {menukey} to receive your equipment!]]
 
 L.info_popup_traitor_alone = [[You are a TRAITOR! You have no fellow traitors this round.
 
@@ -950,6 +959,7 @@ L.report_save_result = "The Event Log has been saved to:"
 L.hilite_win_traitors = "THE TRAITORS WIN"
 L.hilite_win_jester = "THE JESTER WINS"
 L.hilite_win_innocent = "THE INNOCENT WIN"
+L.hilite_win_killer = "THE KILLER WINS"
 
 L.hilite_players1 = "{numplayers} players took part, {numtraitors} were traitors"
 L.hilite_players2 = "{numplayers} players took part, one of them the traitor"

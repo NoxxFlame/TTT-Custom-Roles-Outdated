@@ -16,7 +16,7 @@ end
 SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
-SWEP.CanBuy = { ROLE_MERCENARY }
+SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
 SWEP.WeaponID = AMMO_MAC10
 
 SWEP.Primary.Damage = 11
