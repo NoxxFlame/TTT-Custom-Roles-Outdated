@@ -95,7 +95,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matvam = Material("vgui/ttt/sprite_sym_vam")
 		indicator_matswa = Material("vgui/ttt/sprite_sym_swa")
 		indicator_matass = Material("vgui/ttt/sprite_sym_ass")
-		indicator_matkil = Material("vgui/ttt/sprite_kil_ass")
+		indicator_matkil = Material("vgui/ttt/sprite_sym_kil")
 	else
 		indicator_mattra_noz = Material("vgui/ttt/sprite_let_tra_noz")
 		indicator_matjes_noz = Material("vgui/ttt/sprite_let_jes_noz")
