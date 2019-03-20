@@ -189,7 +189,7 @@ cvars.AddChangeCallback("ttt_mute_team_check", MuteTeamCallback)
 --- Tutorial
 
 local imgpath = "vgui/ttt/tutorial/tut%02d"
-local tutorial_pages = 17
+local tutorial_pages = 18
 function HELPSCRN:CreateTutorial(parent)
 	local w, h = parent:GetSize()
 	local m = 5
