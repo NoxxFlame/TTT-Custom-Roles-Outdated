@@ -43,6 +43,10 @@ local function isJesterTeam(ply)
 	return ply:GetJester() or ply:GetSwapper()
 end
 
+local function isKiller(ply)
+	return ply:GetKiller()
+end
+
 local math = math
 
 cvars.AddChangeCallback("ttt_karma_max", function(cvar, old, new)
@@ -134,6 +138,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 	if not IsValid(attacker) or not IsValid(victim) then return end
 	if attacker == victim then return end
 	if not attacker:IsPlayer() or not victim:IsPlayer() then return end
+	if isKiller(attacker) then return end
 	
 	-- Ignore excess damage
 	local hurt_amount = math.min(victim:Health(), dmginfo:GetDamage())
@@ -175,6 +180,7 @@ function KARMA.Killed(attacker, victim, dmginfo)
 	if not IsValid(attacker) or not IsValid(victim) then return end
 	if attacker == victim then return end
 	if not attacker:IsPlayer() or not victim:IsPlayer() then return end
+	if isKiller(attacker) then return end
 	
 	if isTraitorTeam(attacker) == isTraitorTeam(victim) and not isJesterTeam(victim) then
 		-- don't penalise attacker for stupid victims
