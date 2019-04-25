@@ -43,6 +43,14 @@ local function isJesterTeam(ply)
 	return ply:GetJester() or ply:GetSwapper()
 end
 
+local function isInnocent(ply)
+	return not isTraitorTeam(ply) and not ply:GetKiller()
+end
+
+local function isKiller(ply)
+	return ply:GetKiller()
+end
+
 local math = math
 
 cvars.AddChangeCallback("ttt_karma_max", function(cvar, old, new)
@@ -134,6 +142,15 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 	if not IsValid(attacker) or not IsValid(victim) then return end
 	if attacker == victim then return end
 	if not attacker:IsPlayer() or not victim:IsPlayer() then return end
+	if isKiller(attacker) then return end
+	if isInnocent(attacker) and isKiller(victim) then
+		local reward = KARMA.GetHurtReward(hurt_amount)
+		reward = KARMA.GiveReward(attacker, reward)
+		
+		if IsDebug() then
+			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
+		end
+	return end
 	
 	-- Ignore excess damage
 	local hurt_amount = math.min(victim:Health(), dmginfo:GetDamage())
@@ -175,6 +192,15 @@ function KARMA.Killed(attacker, victim, dmginfo)
 	if not IsValid(attacker) or not IsValid(victim) then return end
 	if attacker == victim then return end
 	if not attacker:IsPlayer() or not victim:IsPlayer() then return end
+	if isKiller(attacker) then return end
+	if isInnocent(attacker) and isKiller(victim) then
+		local reward = KARMA.GetKillReward()
+		reward = KARMA.GiveReward(attacker, reward)
+		
+		if IsDebug() then
+			print(Format("%s (%f) killed %s (%f) and gets REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), reward))
+		end
+	return end
 	
 	if isTraitorTeam(attacker) == isTraitorTeam(victim) and not isJesterTeam(victim) then
 		-- don't penalise attacker for stupid victims
