@@ -19,6 +19,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
+SWEP.LimitedStock = false
 SWEP.WeaponID = AMMO_SHOTGUN
 
 SWEP.Primary.Ammo = "Buckshot"
@@ -180,4 +181,10 @@ function SWEP:SecondaryAttack()
 	self:SetIronsights(not self:GetIronsights())
 	
 	self:SetNextSecondaryFire(CurTime() + 0.3)
+end
+
+function SWEP:WasBought(buyer)
+	if IsValid(buyer) then
+		buyer:GiveAmmo(8, "Buckshot")
+	end
 end

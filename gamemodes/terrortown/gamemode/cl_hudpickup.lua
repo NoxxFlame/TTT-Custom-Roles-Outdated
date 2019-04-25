@@ -108,7 +108,8 @@ function GM:HUDAmmoPickedUp(itemname, amount)
 	pickup.font = "DefaultBold"
 	pickup.fadein = 0.04
 	pickup.fadeout = 0.3
-	pickup.color = Color(205, 155, 0, 255)
+	local role = LocalPlayer().GetRole and LocalPlayer():GetRole() or ROLE_INNOCENT
+	pickup.color = pickupclr[role]
 	pickup.amount = tostring(amount)
 	
 	surface.SetFont(pickup.font)

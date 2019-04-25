@@ -17,6 +17,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
+SWEP.LimitedStock = false
 SWEP.WeaponID = AMMO_M16
 
 SWEP.Primary.Delay = 0.19
@@ -84,4 +85,10 @@ function SWEP:Holster()
 	self:SetIronsights(false)
 	self:SetZoom(false)
 	return true
+end
+
+function SWEP:WasBought(buyer)
+	if IsValid(buyer) then
+		buyer:GiveAmmo(20, "Pistol")
+	end
 end

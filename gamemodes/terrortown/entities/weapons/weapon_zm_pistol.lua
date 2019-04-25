@@ -17,6 +17,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_PISTOL
 SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
+SWEP.LimitedStock = false
 SWEP.WeaponID = AMMO_PISTOL
 
 SWEP.Primary.Recoil = 1.5
@@ -39,3 +40,9 @@ SWEP.WorldModel = "models/weapons/w_pist_fiveseven.mdl"
 
 SWEP.IronSightsPos = Vector(-5.95, -4, 2.799)
 SWEP.IronSightsAng = Vector(0, 0, 0)
+
+function SWEP:WasBought(buyer)
+	if IsValid(buyer) then
+		buyer:GiveAmmo(20, "AlyxGun")
+	end
+end

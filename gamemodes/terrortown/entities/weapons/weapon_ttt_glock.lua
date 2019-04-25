@@ -32,6 +32,7 @@ SWEP.AmmoEnt = "item_ammo_revolver_ttt"
 SWEP.Kind = WEAPON_PISTOL
 SWEP.WeaponID = AMMO_GLOCK
 SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
+SWEP.LimitedStock = false
 
 SWEP.HeadshotMultiplier = 1.8
 
@@ -40,3 +41,9 @@ SWEP.ViewModel = "models/weapons/cstrike/c_pist_glock18.mdl"
 SWEP.WorldModel = "models/weapons/w_pist_glock18.mdl"
 
 SWEP.IronSightsPos = Vector(-5.79, -3.9982, 2.8289)
+
+function SWEP:WasBought(buyer)
+	if IsValid(buyer) then
+		buyer:GiveAmmo(20, "AlyxGun")
+	end
+end

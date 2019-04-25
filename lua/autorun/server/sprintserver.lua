@@ -33,40 +33,48 @@ net.Receive("SprintGetConVars", function(len, ply)
 end)
 -- return Speed for old TTT Servers
 hook.Add("TTTPlayerSpeed", "TTTSprint4TTTPlayerSpeed", function(ply)
-	local wep = ply:GetActiveWeapon()
-	if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
-		return 1.4 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
-		return 1.25 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
-		return 3 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_zom_claws" then
-		if ply:HasEquipmentItem(EQUIP_SPEED) then
-			return 1.5 * ply.mult
+	if ply.mult then
+		local wep = ply:GetActiveWeapon()
+		if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
+			return 1.4 * ply.mult
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
+			return 1.25 * ply.mult
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
+			return 3 * ply.mult
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_zom_claws" then
+			if ply:HasEquipmentItem(EQUIP_SPEED) then
+				return 1.5 * ply.mult
+			else
+				return 1.35 * ply.mult
+			end
 		else
-			return 1.35 * ply.mult
+			return ply.mult
 		end
 	else
-		return ply.mult
+		return 1
 	end
 end)
 
 -- return Speed
 hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, _)
-	local wep = ply:GetActiveWeapon()
-	if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
-		return 1.4 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
-		return 1.25 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
-		return 3 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_zom_claws" then
-		if ply:HasEquipmentItem(EQUIP_SPEED) then
-			return 1.5 * ply.mult
+	if ply.mult then
+		local wep = ply:GetActiveWeapon()
+		if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
+			return 1.4 * ply.mult
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
+			return 1.25 * ply.mult
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
+			return 3 * ply.mult
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_zom_claws" then
+			if ply:HasEquipmentItem(EQUIP_SPEED) then
+				return 1.5 * ply.mult
+			else
+				return 1.35 * ply.mult
+			end
 		else
-			return 1.35 * ply.mult
+			return ply.mult
 		end
 	else
-		return ply.mult
+		return 1
 	end
 end)

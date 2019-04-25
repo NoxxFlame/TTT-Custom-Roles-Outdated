@@ -243,7 +243,9 @@ function GM:Initialize()
 	
 	GAMEMODE.MapWin = WIN_NONE
 	GAMEMODE.AwardedCredits = false
+	GAMEMODE.AwardedKillerCredits = false
 	GAMEMODE.AwardedCreditsDead = 0
+	GAMEMODE.AwardedKillerCreditsDead = 0
 	
 	GAMEMODE.round_state = ROUND_WAIT
 	GAMEMODE.FirstRound = true
@@ -552,7 +554,9 @@ function PrepareRound()
 	
 	GAMEMODE.MapWin = WIN_NONE
 	GAMEMODE.AwardedCredits = false
+	GAMEMODE.AwardedKillerCredits = false
 	GAMEMODE.AwardedCreditsDead = 0
+	GAMEMODE.AwardedKillerCreditsDead = 0
 	
 	SCORE:Reset()
 	

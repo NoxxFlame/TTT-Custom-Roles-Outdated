@@ -17,6 +17,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
+SWEP.LimitedStock = false
 SWEP.WeaponID = AMMO_MAC10
 
 SWEP.Primary.Damage = 11
@@ -51,4 +52,10 @@ function SWEP:GetHeadshotMultiplier(victim, dmginfo)
 	
 	-- decay from 3.2 to 1.7
 	return 1.7 + math.max(0, (1.5 - 0.002 * (d ^ 1.25)))
+end
+
+function SWEP:WasBought(buyer)
+	if IsValid(buyer) then
+		buyer:GiveAmmo(30, "smg1")
+	end
 end

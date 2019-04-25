@@ -112,7 +112,6 @@ end
 
 -- listen for sprinting
 hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
-	local client = LocalPlayer()
 	-- reset every round
 	realProzent = 100
 	
@@ -120,16 +119,20 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 	
 	-- listen for activation
 	hook.Add("Think", "TTTSprint4Think", function()
-		if LocalPlayer():KeyReleased(IN_FORWARD) and DoubleTapEnabled:GetBool() then -- Double tap
+		local client = LocalPlayer()
+		
+		if client:KeyReleased(IN_FORWARD) and DoubleTapEnabled:GetBool() then
+			-- Double tap
 			lastReleased = CurTime()
 		end
 		
-		if DoubleTapEnabled:GetBool() and LocalPlayer():KeyDown(IN_FORWARD) and (lastReleased + math.min(math.max(DoubleTapTime:GetFloat(), 0.001), 1) >= CurTime() or DoubleTapActivated) then
+		if DoubleTapEnabled:GetBool() and client:KeyDown(IN_FORWARD) and (lastReleased + math.min(math.max(DoubleTapTime:GetFloat(), 0.001), 1) >= CurTime() or DoubleTapActivated) then
 			SprintFunction()
 			
 			DoubleTapActivated = true
 			TimerReg = CurTime()
-		elseif LocalPlayer():KeyDown(IN_FORWARD) and SprintKey() then -- forward + selected key
+		elseif client:KeyDown(IN_FORWARD) and SprintKey() then
+			-- forward + selected key
 			SprintFunction()
 			
 			DoubleTapActivated = false
@@ -163,26 +166,33 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 		elseif realProzent > 100 then
 			realProzent = 100
 		end
-		client:SetPData("sprintMeter", realProzent)
+		if IsValid(client) and client:IsPlayer() then
+			client:SetNWFloat("sprintMeter", realProzent)
+		end
 	end)
 end)
 
 -- Set Sprint Speed
 hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, _)
-	local wep = ply:GetActiveWeapon()
-	if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
-		return 1.4 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
-		return 1.25 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
-		return 3 * ply.mult
-	elseif wep and IsValid(wep) and wep:GetClass() == "weapon_zom_claws" then
-		if ply:HasEquipmentItem(EQUIP_SPEED) then
-			return 1.5 * ply.mult
+	if multi then
+		local wep = ply:GetActiveWeapon()
+		local multi = Multiplier + 1
+		if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
+			return 1.4 * multi
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
+			return 1.25 * multi
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
+			return 3 * multi
+		elseif wep and IsValid(wep) and wep:GetClass() == "weapon_zom_claws" then
+			if ply:HasEquipmentItem(EQUIP_SPEED) then
+				return 1.5 * multi
+			else
+				return 1.35 * multi
+			end
 		else
-			return 1.35 * ply.mult
+			return multi
 		end
 	else
-		return ply.mult
+		return 1
 	end
 end)

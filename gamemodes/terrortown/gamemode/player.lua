@@ -539,7 +539,7 @@ local function CheckCreditAward(victim, attacker)
 	if not IsValid(victim) then return end
 	
 	-- DETECTIVE AWARD
-	if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActiveDetective() and (victim:IsTraitor() or victim:IsHypnotist() or victim:IsVampire() or victim:IsAssassin() or victim:IsZombie()) then
+	if IsValid(attacker) and attacker:IsPlayer() and attacker:IsActiveDetective() and (victim:IsTraitor() or victim:IsHypnotist() or victim:IsVampire() or victim:IsAssassin() or victim:IsZombie() or victim:IsKiller()) then
 		local amt = GetConVarNumber("ttt_det_credits_traitordead") or 1
 		for _, ply in pairs(player.GetAll()) do
 			if ply:IsActiveDetective() then
@@ -600,6 +600,54 @@ local function CheckCreditAward(victim, attacker)
 			GAMEMODE.AwardedCreditsDead = inno_dead + GAMEMODE.AwardedCreditsDead
 		end
 	end
+	
+	-- KILLER AWARD
+	if (not victim:IsKiller()) and (not GAMEMODE.AwardedKillerCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+		local ply_alive = 0
+		local ply_dead = 0
+		local ply_total = 0
+		
+		for _, ply in pairs(player.GetAll()) do
+			if not ply:GetKiller() then
+				if ply:IsTerror() then
+					ply_alive = ply_alive + 1
+				elseif ply:IsDeadTerror() then
+					ply_dead = ply_dead + 1
+				end
+			end
+		end
+		
+		-- we check this at the death of an innocent who is still technically
+		-- Alive(), so add one to dead count and sub one from living
+		ply_dead = ply_dead + 1
+		ply_alive = math.max(ply_alive - 1, 0)
+		ply_total = ply_alive + ply_dead
+		
+		-- Only repeat-award if we have reached the pct again since last time
+		if GAMEMODE.AwardedKillerCredits then
+			ply_dead = ply_dead - GAMEMODE.AwardedKillerCreditsDead
+		end
+		
+		local pct = ply_dead / ply_total
+		if pct >= GetConVarNumber("ttt_credits_award_pct") then
+			-- Traitors have killed sufficient people to get an award
+			local amt = GetConVarNumber("ttt_credits_award_size")
+			
+			-- If size is 0, awards are off
+			if amt > 0 then
+				LANG.Msg(GetKillerFilter(true), "credit_kil", { num = amt })
+				
+				for _, ply in pairs(player.GetAll()) do
+					if ply:IsActiveKiller() then
+						ply:AddCredits(amt)
+					end
+				end
+			end
+			
+			GAMEMODE.AwardedKillerCredits = true
+			GAMEMODE.AwardedKillerCreditsDead = ply_dead + GAMEMODE.AwardedKillerCreditsDead
+		end
+	end
 end
 
 local offsets = {}
@@ -637,11 +685,11 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	
 	local timestamp = os.time()
 	local date = os.date("%d/%m", timestamp)
-	local names = { "B1andy413", "NegroniPepperoni", "The_Samarox", "Arack12", "Noxx", "Kommandos0", "FunCheetah", "Cooliew", "Lix3" }
+	local ids = { "STEAM_1:0:38788157", "STEAM_1:1:71286217", "STEAM_1:0:43331008", "STEAM_1:0:66954523", "STEAM_1:0:43804311", "STEAM_1:1:55391812", "STEAM_1:0:219004249", "STEAM_1:0:40018189", "STEAM_1:0:41981997" }
 	local dates = { "01/01", "31/01", "01/02", "29/03", "31/07", "15/09", "05/11", "01/12", "12/12" }
 	
 	for i = 1, 9 do
-		if (ply:Nick() == names[i] and date == dates[i]) then
+		if (ply:SteamID() == ids[i] and date == dates[i]) then
 			net.Start("TTT_Birthday")
 			net.WriteEntity(ply)
 			net.Broadcast()

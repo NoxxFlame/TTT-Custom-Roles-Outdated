@@ -20,6 +20,7 @@ SWEP.AutoSpawnable = true
 
 SWEP.Kind = WEAPON_HEAVY
 SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
+SWEP.LimitedStock = false
 SWEP.WeaponID = AMMO_M249
 
 SWEP.Primary.Damage = 8
@@ -42,3 +43,9 @@ SWEP.HeadshotMultiplier = 2.2
 
 SWEP.IronSightsPos = Vector(-5.96, -5.119, 2.349)
 SWEP.IronSightsAng = Vector(0, 0, 0)
+
+function SWEP:WasBought(buyer)
+	if IsValid(buyer) then
+		buyer:GiveAmmo(150, "smg1")
+	end
+end

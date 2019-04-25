@@ -17,6 +17,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_HEAVY
 SWEP.CanBuy = { ROLE_MERCENARY, ROLE_KILLER }
+SWEP.LimitedStock = false
 SWEP.WeaponID = AMMO_RIFLE
 
 SWEP.Primary.Delay = 1.5
@@ -150,5 +151,11 @@ if CLIENT then
 	
 	function SWEP:AdjustMouseSensitivity()
 		return (self:GetIronsights() and 0.2) or nil
+	end
+end
+
+function SWEP:WasBought(buyer)
+	if IsValid(buyer) then
+		buyer:GiveAmmo(10, "357")
 	end
 end

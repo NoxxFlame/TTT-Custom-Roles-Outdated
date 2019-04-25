@@ -316,7 +316,7 @@ local function InfoPaint(client)
 	local sprint_y = health_y + (2 * (bar_height + margin))
 	bar_height = 4
 	
-	PaintBar(2, x + margin, sprint_y, bar_width, bar_height, sprint_colors, client:GetPData("sprintMeter", 0) / 100)
+	PaintBar(2, x + margin, sprint_y, bar_width, bar_height, sprint_colors, client:GetNWFloat("sprintMeter", 0) / 100)
 	
 	-- Draw traitor state
 	local round_state = GAMEMODE.round_state
@@ -351,7 +351,7 @@ local function InfoPaint(client)
 	
 	-- Draw round time
 	local is_haste = HasteMode() and round_state == ROUND_ACTIVE
-	local is_traitor = client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveZombie() or client:IsActiveVampire() or client:IsActiveAssassin()
+	local is_traitor = client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveZombie() or client:IsActiveVampire() or client:IsActiveAssassin() or client:IsActiveKiller()
 	
 	local endtime = GetGlobalFloat("ttt_round_end", 0) - CurTime()
 	
