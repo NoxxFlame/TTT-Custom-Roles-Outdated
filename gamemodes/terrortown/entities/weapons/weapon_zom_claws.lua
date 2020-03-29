@@ -26,7 +26,7 @@ SWEP.Primary.Delay = 0.6
 SWEP.Primary.Ammo = "none"
 SWEP.AllowDrop = false
 
-SWEP.Kind = WEAPON_ROLE
+SWEP.Kind = WEAPON_ROLEZOM
 SWEP.InLoadoutFor = { ROLE_ZOMBIE }
 
 SWEP.IsSilent = true
