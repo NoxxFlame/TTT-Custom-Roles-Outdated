@@ -1,6 +1,6 @@
 AddCSLuaFile()
 
-SWEP.HoldType = "knife"
+SWEP.HoldType = "fist"
 
 if CLIENT then
 	SWEP.PrintName = "Claws"
@@ -15,20 +15,28 @@ end
 SWEP.Base = "weapon_tttbase"
 
 SWEP.UseHands = true
-SWEP.ViewModel = Model("models/weapons/cstrike/c_knife_t.mdl")
-SWEP.WorldModel = Model("models/weapons/w_knife_t.mdl")
+SWEP.ViewModel = Model("models/weapons/c_arms_cstrike.mdl")
+SWEP.WorldModel = ""
 
-SWEP.Primary.Damage = 50
-SWEP.Primary.ClipSize = -1
-SWEP.Primary.DefaultClip = -1
-SWEP.Primary.Automatic = true
-SWEP.Primary.Delay = 0.6
-SWEP.Primary.Ammo = "none"
-SWEP.AllowDrop = false
+SWEP.HitDistance = 250
 
-SWEP.Kind = WEAPON_ROLE
+SWEP.Primary.Damage = 75
+SWEP.Primary.ClipSize		= 1
+SWEP.Primary.DefaultClip	= 1
+SWEP.Primary.Automatic		= true
+SWEP.Primary.Ammo			= "none"
+SWEP.Primary.Delay = 1.1
+ 
+SWEP.Secondary.ClipSize		= 5
+SWEP.Secondary.DefaultClip	= 5
+SWEP.Secondary.Automatic	= false
+SWEP.Secondary.Ammo			= "none"
+SWEP.Secondary.Delay = 1.3
+
+SWEP.Kind = WEAPON_ROLEZOM
 SWEP.InLoadoutFor = { ROLE_ZOMBIE }
 
+SWEP.AllowDrop = false
 SWEP.IsSilent = true
 
 -- Pull out faster than standard guns
@@ -127,6 +135,15 @@ function SWEP:PrimaryAttack()
 end
 
 function SWEP:SecondaryAttack()
+	if (SERVER) then
+		if (not self:CanSecondaryAttack()) or self.Owner:IsOnGround() == false then return end
+        
+		local JumpSounds = { "npc/fast_zombie/leap1.wav", "npc/zombie/zo_attack2.wav", "npc/fast_zombie/fz_alert_close1.wav", "npc/zombie/zombie_alert1.wav" }
+		self.SecondaryDelay = CurTime()+10
+		self.Owner:SetVelocity(self.Owner:GetForward() * 200 + Vector(0,0,400))
+		self.Owner:EmitSound(JumpSounds[math.random(4)], 100, 100)
+		self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+	end
 end
 
 function SWEP:OnDrop()
