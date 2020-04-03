@@ -782,8 +782,10 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	-- Drop all weapons
 	for k, wep in pairs(ply:GetWeapons()) do
         if wep ~= nil then
-            WEPS.DropNotifiedWeapon(ply, wep, true) -- with ammo in them
-            wep:DampenDrop()
+			WEPS.DropNotifiedWeapon(ply, wep, true) -- with ammo in them
+			if wep.DampenDrop ~= nil then
+				wep:DampenDrop()
+			end
         end
 	end
 
@@ -1115,7 +1117,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
 
 		local wep = util.WeaponFromDamage(dmginfo)
 
-		if IsValid(wep) then
+		if IsValid(wep) and wep.GetHeadshotMultiplier ~= nil then
 			local s = wep:GetHeadshotMultiplier(ply, dmginfo) or 2
 			dmginfo:ScaleDamage(s)
 		end
