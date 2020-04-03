@@ -206,6 +206,9 @@ function GM:PostDrawTranslucentRenderables()
 					elseif v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
 						render.SetMaterial(indicator_matjes)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                    else
+                        render.SetMaterial(indicator_matkil_noz)
+						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
 				end
 			end
@@ -388,8 +391,13 @@ function GM:HUDDrawTargetID()
 			target_killer = ent:IsRole(ROLE_KILLER)
 		end
 		if (client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE or client:GetRole() == ROLE_ASSASSIN) and GetRoundState() == ROUND_ACTIVE then
-			target_fellow_traitor = ent:IsRole(ROLE_TRAITOR)
-			target_fellow_zombie = ent:IsRole(ROLE_ZOMBIE)
+			if client:GetRole() == ROLE_ZOMBIE then
+                target_traitor = ent:IsRole(ROLE_TRAITOR)
+                target_fellow_zombie = ent:IsRole(ROLE_ZOMBIE)
+            else
+                target_fellow_traitor = ent:IsRole(ROLE_TRAITOR)
+                target_zombie = ent:IsRole(ROLE_ZOMBIE)
+            end
 			target_hypnotist = ent:IsRole(ROLE_HYPNOTIST)
 			target_glitch = ent:IsRole(ROLE_GLITCH)
 			target_jester = ent:IsRole(ROLE_JESTER) or ent:IsRole(ROLE_SWAPPER)

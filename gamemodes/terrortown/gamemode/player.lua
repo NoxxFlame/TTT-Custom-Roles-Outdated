@@ -781,8 +781,10 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	
 	-- Drop all weapons
 	for k, wep in pairs(ply:GetWeapons()) do
-		WEPS.DropNotifiedWeapon(ply, wep, true) -- with ammo in them
-		wep:DampenDrop()
+        if wep ~= nil then
+            WEPS.DropNotifiedWeapon(ply, wep, true) -- with ammo in them
+            wep:DampenDrop()
+        end
 	end
 	
 	if IsValid(ply.hat) then
@@ -1149,7 +1151,7 @@ local fallsounds = {
 };
 
 function GM:OnPlayerHitGround(ply, in_water, on_floater, speed)
-	if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
+	if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER or ply:GetRole() == ROLE_ZOMBIE) and GetRoundState() >= ROUND_ACTIVE then
 	else
 		if in_water or speed < 450 or not IsValid(ply) then return end
 		
