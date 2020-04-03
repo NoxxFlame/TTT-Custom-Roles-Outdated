@@ -1222,6 +1222,7 @@ function SelectRoles()
 				elseif role == ROLE_ZOMBIE then
 					ts = ts + 1
 					print(v:Nick() .. " (" .. v:SteamID() .. ") - Zombie")
+					v:SetZombiePrime(true)
 					hasZombie = true
 				elseif role == ROLE_HYPNOTIST then
 					ts = ts + 1
@@ -1275,6 +1276,7 @@ function SelectRoles()
 			if IsValid(pply) and (not (table.HasValue(prev_roles[ROLE_TRAITOR], pply) or table.HasValue(prev_roles[ROLE_ZOMBIE], pply) or table.HasValue(prev_roles[ROLE_HYPNOTIST], pply) or table.HasValue(prev_roles[ROLE_VAMPIRE], pply) or table.HasValue(prev_roles[ROLE_ASSASSIN], pply)) or (math.random(1, 3) == 2)) and pply:SteamID() ~= "STEAM_0:1:22691201" then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Zombie")
 				pply:SetRole(ROLE_ZOMBIE)
+				pply:SetZombiePrime(true)
 				table.remove(choices, pick)
 				ts = ts + 1
 			end

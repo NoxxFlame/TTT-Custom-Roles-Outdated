@@ -98,7 +98,7 @@ function SWEP:PrimaryAttack()
 
 		if hitEnt and hitEnt:IsValid() then
 			if hitEnt:IsPlayer() and not hitEnt:IsZombie() then
-				if hitEnt:Health() <= 50 and not hitEnt:IsJester() and not hitEnt:IsSwapper() then
+				if hitEnt:Health() <= self.Primary.Damage and not hitEnt:IsJester() and not hitEnt:IsSwapper() then
 					self:GetOwner():AddCredits(1)
 					LANG.Msg(self:GetOwner(), "credit_zom", { num = 1 })
 					hitEnt:PrintMessage(HUD_PRINTCENTER, "You will respawn as a zombie in 3 seconds.")
@@ -115,8 +115,13 @@ function SWEP:PrimaryAttack()
 						hitEnt:SetPos(FindRespawnLocation(body:GetPos()) or body:GetPos())
 						hitEnt:SetEyeAngles(Angle(0, body:GetAngles().y, 0))
 						hitEnt:SetRole(ROLE_ZOMBIE)
+						hitEnt:SetZombiePrime(false)
 						hitEnt:SetHealth(100)
+						hitEnt:RemoveAllItems()
 						hitEnt:Give("weapon_zom_claws")
+						hitEnt:SetColor(Color(70, 100, 25, 255))
+						local vm = hitEnt:GetViewModel()
+						vm:SendViewModelMatchingSequence(vm:LookupSequence("fists_draw"))
 						hitEnt:SetPData("IsZombifying", 0)
 						body:Remove()
 						for k, v in pairs(player.GetAll()) do
@@ -153,7 +158,7 @@ Jump Attack
 function SWEP:SecondaryAttack()
 	if (SERVER) then
 		if (not self:CanSecondaryAttack()) or self.Owner:IsOnGround() == false then return end
-        
+
 		local JumpSounds = { "npc/fast_zombie/leap1.wav", "npc/zombie/zo_attack2.wav", "npc/fast_zombie/fz_alert_close1.wav", "npc/zombie/zombie_alert1.wav" }
 		self.SecondaryDelay = CurTime()+10
 		self.Owner:SetVelocity(self.Owner:GetForward() * 200 + Vector(0,0,400))
@@ -169,7 +174,7 @@ Spit Attack
 function SWEP:Reload()
 	if self.NextReload > CurTime() then return end
 	self.NextReload = CurTime() + 3
-	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
+	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
 	self:CSShootBullet(self.Tertiary.Damage, self.Tertiary.Recoil, self.Tertiary.NumShots, self.Tertiary.Cone)
 end

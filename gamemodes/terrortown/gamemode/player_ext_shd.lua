@@ -28,6 +28,8 @@ function plymeta:GetPhantom() return self:GetRole() == ROLE_PHANTOM end
 
 function plymeta:GetZombie() return self:GetRole() == ROLE_ZOMBIE end
 
+function plymeta:GetZombiePrime() return self:GetRole() == ROLE_ZOMBIE and self:GetNWBool("zombie_prime", false) end
+
 function plymeta:GetVampire() return self:GetRole() == ROLE_VAMPIRE end
 
 function plymeta:GetSwapper() return self:GetRole() == ROLE_SWAPPER end
@@ -44,6 +46,7 @@ plymeta.IsGlitch = plymeta.GetGlitch
 plymeta.IsJester = plymeta.GetJester
 plymeta.IsPhantom = plymeta.GetPhantom
 plymeta.IsZombie = plymeta.GetZombie
+plymeta.IsZombiePrime = plymeta.GetZombiePrime
 plymeta.IsVampire = plymeta.GetVampire
 plymeta.IsSwapper = plymeta.GetSwapper
 plymeta.IsAssassin = plymeta.GetAssassin
@@ -127,19 +130,19 @@ function plymeta:HasEquipmentWeapon()
 			return true
 		end
 	end
-	
+
 	return false
 end
 
 function plymeta:CanCarryWeapon(wep)
 	if (not wep) or (not wep.Kind) then return false end
-	
+
 	return self:CanCarryType(wep.Kind)
 end
 
 function plymeta:CanCarryType(t)
 	if not t then return false end
-	
+
 	for _, w in pairs(self:GetWeapons()) do
 		if w.Kind and w.Kind == t then
 			return false
@@ -182,10 +185,10 @@ if CLIENT then
 				return true
 			end
 		end
-		
+
 		return false
 	end
-	
+
 	local ply = LocalPlayer
 	local gmod_GetWeapons = plymeta.GetWeapons
 	function plymeta:GetWeapons()
@@ -204,24 +207,24 @@ function plymeta:GetEyeTrace(mask)
 	if self.LastPlayerTraceMask == mask and self.LastPlayerTrace == CurTime() then
 		return self.PlayerTrace
 	end
-	
+
 	local tr = util.GetPlayerTrace(self)
 	tr.mask = mask
-	
+
 	self.PlayerTrace = util.TraceLine(tr)
 	self.LastPlayerTrace = CurTime()
 	self.LastPlayerTraceMask = mask
-	
+
 	return self.PlayerTrace
 end
 
 if CLIENT then
-	
+
 	function plymeta:AnimApplyGesture(act, weight)
 		self:AnimRestartGesture(GESTURE_SLOT_CUSTOM, act, true) -- true = autokill
 		self:AnimSetGestureWeight(GESTURE_SLOT_CUSTOM, weight)
 	end
-	
+
 	local function MakeSimpleRunner(act)
 		return function(ply, w)
 			-- just let this gesture play itself and get out of its way
@@ -233,7 +236,7 @@ if CLIENT then
 			end
 		end
 	end
-	
+
 	-- act -> gesture runner fn
 	local act_runner = {
 		-- ear grab needs weight control
@@ -248,7 +251,7 @@ if CLIENT then
 			return w
 		end
 	};
-	
+
 	-- Insert all the "simple" gestures that do not need weight control
 	for _, a in pairs {
 		ACT_GMOD_GESTURE_AGREE, ACT_GMOD_GESTURE_DISAGREE,
@@ -260,42 +263,42 @@ if CLIENT then
 	} do
 		act_runner[a] = MakeSimpleRunner(a)
 	end
-	
+
 	CreateConVar("ttt_show_gestures", "1", FCVAR_ARCHIVE)
-	
+
 	-- Perform the gesture using the GestureRunner system. If custom_runner is
 	-- non-nil, it will be used instead of the default runner for the act.
 	function plymeta:AnimPerformGesture(act, custom_runner)
 		if GetConVarNumber("ttt_show_gestures") == 0 then return end
-		
+
 		local runner = custom_runner or act_runner[act]
 		if not runner then return false end
-		
+
 		self.GestureWeight = 0
 		self.GestureRunner = runner
-		
+
 		return true
 	end
-	
+
 	-- Perform a gesture update
 	function plymeta:AnimUpdateGesture()
 		if self.GestureRunner then
 			self.GestureWeight = self:GestureRunner(self.GestureWeight)
-			
+
 			if self.GestureWeight <= 0 then
 				self.GestureRunner = nil
 			end
 		end
 	end
-	
+
 	function GM:UpdateAnimation(ply, vel, maxseqgroundspeed)
 		ply:AnimUpdateGesture()
-		
+
 		return self.BaseClass.UpdateAnimation(self, ply, vel, maxseqgroundspeed)
 	end
-	
+
 	function GM:GrabEarAnimation(ply) end
-	
+
 	net.Receive("TTT_PerformGesture", function()
 		local ply = net.ReadEntity()
 		local act = net.ReadUInt(16)
@@ -305,14 +308,14 @@ if CLIENT then
 	end)
 
 else -- SERVER
-	
+
 	-- On the server, we just send the client a message that the player is
 	-- performing a gesture. This allows the client to decide whether it should
 	-- play, depending on eg. a cvar.
 	function plymeta:AnimPerformGesture(act)
-		
+
 		if not act then return end
-		
+
 		net.Start("TTT_PerformGesture")
 		net.WriteEntity(self)
 		net.WriteUInt(act, 16)

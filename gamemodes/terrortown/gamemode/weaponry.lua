@@ -8,7 +8,7 @@ local IsEquipment = WEPS.IsEquipment
 function GM:PlayerCanPickupWeapon(ply, wep)
 	if not IsValid(wep) or not IsValid(ply) then return end
 	if ply:IsSpec() then return false end
-	
+
 	-- Disallow picking up for ammo
 	if ply:HasWeapon(wep:GetClass()) then
 		return false
@@ -22,13 +22,15 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		return false
 	elseif IsEquipment(wep) and wep.IsDropped and (not ply:KeyDown(IN_USE)) then
 		return false
+	elseif ply:GetZombie() and not ply:GetZombiePrime() then
+		return false
 	end
-	
+
 	local tr = util.TraceEntity({ start = wep:GetPos(), endpos = ply:GetShootPos(), mask = MASK_SOLID }, wep)
 	if tr.Fraction == 1.0 or tr.Entity == ply then
 		wep:SetPos(ply:GetShootPos())
 	end
-	
+
 	return true
 end
 
