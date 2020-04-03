@@ -55,6 +55,7 @@ local indicator_matvam = Material("vgui/ttt/sprite_let_vam")
 local indicator_matswa = Material("vgui/ttt/sprite_let_swa")
 local indicator_matass = Material("vgui/ttt/sprite_let_ass")
 local indicator_matkil = Material("vgui/ttt/sprite_let_kil")
+local indicator_matzom_target = Material("vgui/ttt/sprite_let_zom_target")
 
 local indicator_col = Color(255, 255, 255, 130)
 
@@ -96,6 +97,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa = Material("vgui/ttt/sprite_sym_swa")
 		indicator_matass = Material("vgui/ttt/sprite_sym_ass")
 		indicator_matkil = Material("vgui/ttt/sprite_sym_kil")
+		indicator_matzom_target = Material("vgui/ttt/sprite_sym_zom_target")
 	else
 		indicator_mattra_noz = Material("vgui/ttt/sprite_let_tra_noz")
 		indicator_matjes_noz = Material("vgui/ttt/sprite_let_jes_noz")
@@ -123,6 +125,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa = Material("vgui/ttt/sprite_let_swa")
 		indicator_matass = Material("vgui/ttt/sprite_let_ass")
 		indicator_matkil = Material("vgui/ttt/sprite_let_kil")
+		indicator_matzom_target = Material("vgui/ttt/sprite_let_zom_target")
 	end
 	client = LocalPlayer()
 	plys = GetPlayers()
@@ -207,7 +210,7 @@ function GM:PostDrawTranslucentRenderables()
 						render.SetMaterial(indicator_matjes)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     else
-                        render.SetMaterial(indicator_matkil_noz)
+                        render.SetMaterial(indicator_matzom_target)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
 				end
