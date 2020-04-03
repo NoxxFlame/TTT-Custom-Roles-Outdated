@@ -873,13 +873,16 @@ function PrintResultMessage(type)
 		ServerLog("Result: Traitors win.\n")
 	elseif type == WIN_INNOCENT then
 		LANG.Msg("win_innocent")
-		ServerLog("Result: Innocent win.\n")
+		ServerLog("Result: Innocents win.\n")
 	elseif type == WIN_JESTER then
 		LANG.Msg("win_jester")
 		ServerLog("Result: Jester wins.\n")
 	elseif type == WIN_KILLER then
 		LANG.Msg("killer")
 		ServerLog("Result: Killer wins.\n")
+	elseif type == WIN_MONSTER then
+		LANG.Msg("monster")
+		ServerLog("Result: Monsters win.\n")
 	else
 		ServerLog("Result: Unknown victory condition!\n")
 	end
@@ -930,7 +933,7 @@ function LogScore(type)
 	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer" }
 	
 	for k, v in pairs(player.GetAll()) do
-		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
+		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST)) or (type == WIN_MONSTER and (v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
 		
 		if not playerStats[v:Nick()] then
 			playerStats[v:Nick()] = { 0, 0 } -- Wins, Rounds
@@ -1024,9 +1027,10 @@ function GM:TTTCheckForWin()
 	local jester_alive = false
 	local swapper_alive = false
 	local killer_alive = false
+	local monster_alive = false
 	for k, v in pairs(player.GetAll()) do
 		if (v:Alive() and v:IsTerror()) or v:GetPData("IsZombifying", 0) == 1 then
-			if v:GetTraitor() or v:GetHypnotist() or v:GetZombie() or v:GetVampire() or v:GetAssassin() or v:GetPData("IsZombifying", 0) == 1 then
+			if v:GetTraitor() or v:GetHypnotist() or v:GetAssassin() or v:GetPData("IsZombifying", 0) == 1 then
 				traitor_alive = true
 			elseif v:GetJester() then
 				jester_alive = true
@@ -1034,6 +1038,8 @@ function GM:TTTCheckForWin()
 				swapper_alive = true
 			elseif v:GetKiller() then
 				killer_alive = true
+            elseif v:GetZombie() or v:GetVampire() then
+                monster_alive = true
 			else
 				innocent_alive = true
 			end
@@ -1044,25 +1050,27 @@ function GM:TTTCheckForWin()
 		end
 	end
 	
-	if traitor_alive and not innocent_alive and not killer_alive and jester_alive then
+	if traitor_alive and not innocent_alive and not killer_alive and jester_alive and not monster_alive then
 		return WIN_TRAITOR
-	elseif traitor_alive and not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 then
+	elseif traitor_alive and not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 and not monster_alive then
 		return WIN_TRAITOR
-	elseif not traitor_alive and innocent_alive and not killer_alive and jester_alive then
+	elseif not traitor_alive and innocent_alive and not killer_alive and jester_alive and not monster_alive then
 		return WIN_INNOCENT
-	elseif not traitor_alive and innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 then
+	elseif not traitor_alive and innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 and not monster_alive then
 		return WIN_INNOCENT
-	elseif not innocent_alive and not killer_alive and jester_alive then
+	elseif not innocent_alive and not killer_alive and jester_alive and not monster_alive then
 		-- ultimately if no one is alive, traitors win
 		return WIN_TRAITOR
-	elseif not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 then
-		-- ultimately if no one is alive, traitors win
+	elseif not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 and not monster_alive then
 		return WIN_TRAITOR
-	elseif not traitor_alive and not innocent_alive and killer_alive then
+	elseif not traitor_alive and not innocent_alive and killer_alive and not monster_alive then
 		return WIN_KILLER
 	elseif not jester_alive and jesterkilled == 1 then
-		-- ultimately if no one is alive, traitors win
 		return WIN_JESTER
+    elseif not traitor_alive and not innocent_alive and not killer_alive and jester_alive and monster_alive then
+        return WIN_MONSTER
+    elseif not traitor_alive and not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 and monster_alive then
+        return WIN_MONSTER
 	end
 	return WIN_NONE
 end

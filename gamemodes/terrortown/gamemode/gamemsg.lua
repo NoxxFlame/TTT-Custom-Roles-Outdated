@@ -51,7 +51,7 @@ local function RoleChatMsg(sender, role, msg)
 	net.WriteUInt(role, 4)
 	net.WriteEntity(sender)
 	net.WriteString(msg)
-	if role == ROLE_TRAITOR or role == ROLE_ZOMBIE or role == ROLE_HYPNOTIST or role == ROLE_VAMPIRE or role == ROLE_ASSASSIN then
+	if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_VAMPIRE or role == ROLE_ASSASSIN then
 		net.Send(GetTraitorsFilter())
 	elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
 		net.Send(GetTraitorsAndJestersFilter())
