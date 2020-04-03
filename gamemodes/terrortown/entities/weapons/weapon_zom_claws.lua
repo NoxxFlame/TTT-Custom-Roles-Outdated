@@ -117,9 +117,6 @@ function SWEP:PrimaryAttack()
 						hitEnt:SetRole(ROLE_ZOMBIE)
 						hitEnt:SetZombiePrime(false)
 						hitEnt:SetHealth(100)
-						hitEnt:RemoveAllItems()
-						local weapon = hitEnt:Give("weapon_zom_claws")
-						hitEnt:SelectWeapon(weapon:GetClass())
 						hitEnt:SetPData("IsZombifying", 0)
 						body:Remove()
 						for k, v in pairs(player.GetAll()) do
@@ -212,14 +209,11 @@ function SWEP:OnDrop()
 end
 
 function SWEP:Deploy()
-	self:GetOwner():SetColor(Color(70, 100, 25, 255))
-
 	local vm = self.Owner:GetViewModel()
 	vm:SendViewModelMatchingSequence(vm:LookupSequence("fists_draw"))
 end
 
 function SWEP:Holster(weapon)
-	self:GetOwner():SetColor(Color(255, 255, 255, 255))
 	return true
 end
 

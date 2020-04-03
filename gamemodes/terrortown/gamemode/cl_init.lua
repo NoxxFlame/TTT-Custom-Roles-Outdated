@@ -55,33 +55,33 @@ CreateClientConVar("ttt_export_player_data", 0, true, false)
 
 function GM:Initialize()
 	MsgN("TTT Client initializing...")
-	
+
 	GAMEMODE.round_state = ROUND_WAIT
-	
+
 	LANG.Init()
-	
+
 	self.BaseClass:Initialize()
 end
 
 function GM:InitPostEntity()
 	MsgN("TTT Client post-init...")
-	
+
 	net.Start("TTT_Spectate")
 	net.WriteBool(GetConVar("ttt_spectator_mode"):GetBool())
 	net.SendToServer()
-	
+
 	if not game.SinglePlayer() then
 		timer.Create("idlecheck", 5, 0, CheckIdle)
 	end
-	
+
 	-- make sure player class extensions are loaded up, and then do some
 	-- initialization on them
 	if IsValid(LocalPlayer()) and LocalPlayer().GetTraitor then
 		GAMEMODE:ClearClientState()
 	end
-	
+
 	timer.Create("cache_ents", 1, 0, GAMEMODE.DoCacheEnts)
-	
+
 	RunConsoleCommand("_ttt_request_serverlang")
 	RunConsoleCommand("_ttt_request_rolelist")
 end
@@ -109,33 +109,33 @@ local function RoundStateChange(o, n)
 		-- prep starts
 		GAMEMODE:ClearClientState()
 		GAMEMODE:CleanUpMap()
-		
+
 		-- show warning to spec mode players
 		if GetConVar("ttt_spectator_mode"):GetBool() and IsValid(LocalPlayer()) then
 			LANG.Msg("spec_mode_warning")
 		end
-		
+
 		-- reset cached server language in case it has changed
 		RunConsoleCommand("_ttt_request_serverlang")
 	elseif n == ROUND_ACTIVE then
 		-- round starts
 		VOICE.CycleMuteState(MUTE_NONE)
-		
+
 		CLSCORE:ClearPanel()
-		
+
 		-- people may have died and been searched during prep
 		for _, p in pairs(player.GetAll()) do
 			p.search_result = nil
 		end
-		
+
 		-- clear blood decals produced during prep
 		RunConsoleCommand("r_cleardecals")
-		
+
 		GAMEMODE.StartingPlayers = #util.GetAlivePlayers()
 	elseif n == ROUND_POST then
 		RunConsoleCommand("ttt_cl_traitorpopup_close")
 	end
-	
+
 	-- stricter checks when we're talking about hooks, because this function may
 	-- be called with for example o = WAIT and n = POST, for newly connecting
 	-- players, which hooking code may not expect
@@ -147,7 +147,7 @@ local function RoundStateChange(o, n)
 	elseif (o == ROUND_ACTIVE) and (n == ROUND_POST) then
 		hook.Call("TTTEndRound", GAMEMODE)
 	end
-	
+
 	-- whatever round state we get, clear out the voice flags
 	for k, v in pairs(player.GetAll()) do
 		v.traitor_gvoice = false
@@ -180,11 +180,11 @@ net.Receive("TTT_Birthday", function()
 	if ent.GetShootPos then
 		pos = ent:GetShootPos()
 	end
-	
+
 	local velMax = 200
 	local gravMax = 50
 	local gravity = Vector(math.random(-gravMax, gravMax), math.random(-gravMax, gravMax), math.random(-gravMax, 0))
-	
+
 	--Handles particles
 	local emitter = ParticleEmitter(pos, true)
 	for I = 1, 150 do
@@ -205,13 +205,13 @@ end)
 local function ReceiveRole()
 	local client = LocalPlayer()
 	local role = net.ReadUInt(4)
-	
+
 	-- after a mapswitch, server might have sent us this before we are even done
 	-- loading our code
 	if not client.SetRole then return end
-	
+
 	client:SetRole(role)
-	
+
 	Msg("You are: ")
 	if client:IsTraitor() then MsgN("TRAITOR")
 	elseif client:IsDetective() then MsgN("DETECTIVE")
@@ -234,13 +234,13 @@ net.Receive("TTT_Role", ReceiveRole)
 local function ReceiveRoleList()
 	local role = net.ReadUInt(4)
 	local num_ids = net.ReadUInt(8)
-	
+
 	for i = 1, num_ids do
 		local eidx = net.ReadUInt(7) + 1 -- we - 1 worldspawn=0
 		local ply = player.GetByID(eidx)
 		if IsValid(ply) and ply.SetRole then
 			ply:SetRole(role)
-			
+
 			if ply:IsTraitor() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsZombie() then
 				ply.traitor_gvoice = false -- assume traitorchat by default
 			end
@@ -254,11 +254,11 @@ net.Receive("TTT_RoleList", ReceiveRoleList)
 local function ReceiveRoundState()
 	local o = GetRoundState()
 	GAMEMODE.round_state = net.ReadUInt(3)
-	
+
 	if o ~= GAMEMODE.round_state then
 		RoundStateChange(o, GAMEMODE.round_state)
 	end
-	
+
 	MsgN("Round state: " .. GAMEMODE.round_state)
 end
 
@@ -267,21 +267,21 @@ net.Receive("TTT_RoundState", ReceiveRoundState)
 -- Cleanup at start of new round
 function GM:ClearClientState()
 	GAMEMODE:HUDClear()
-	
+
 	local client = LocalPlayer()
 	if not client.SetRole then return end -- code not loaded yet
-	
+
 	client:SetRole(ROLE_INNOCENT)
-	
+
 	client.equipment_items = EQUIP_NONE
 	client.equipment_credits = 0
 	client.bought = {}
 	client.last_id = nil
 	client.radio = nil
 	client.called_corpses = {}
-	
+
 	VOICE.InitBattery()
-	
+
 	for _, p in pairs(player.GetAll()) do
 		if IsValid(p) then
 			p.sb_tag = nil
@@ -289,10 +289,10 @@ function GM:ClearClientState()
 			p.search_result = nil
 		end
 	end
-	
+
 	VOICE.CycleMuteState(MUTE_NONE)
 	RunConsoleCommand("ttt_mute_team_check", "0")
-	
+
 	if GAMEMODE.ForcedMouse then
 		gui.EnableScreenClicker(false)
 	end
@@ -308,13 +308,13 @@ function GM:CleanUpMap()
 			ent:SetNoDraw(true)
 			ent:SetSolid(SOLID_NONE)
 			ent:SetColor(Color(0, 0, 0, 0))
-			
+
 			-- Horrible hack to make targetid ignore this ent, because we can't
 			-- modify the collision group clientside.
 			ent.NoTarget = true
 		end
 	end
-	
+
 	-- This cleans up decals since GMod v100
 	game.CleanUpMap()
 end
@@ -344,7 +344,7 @@ function GM:CalcView(ply, origin, angles, fov)
 	view.origin = origin
 	view.angles = angles
 	view.fov = fov
-	
+
 	-- first person ragdolling
 	if ply:Team() == TEAM_SPEC and ply:GetObserverMode() == OBS_MODE_IN_EYE then
 		local tgt = ply:GetObserverTarget()
@@ -358,7 +358,7 @@ function GM:CalcView(ply, origin, angles, fov)
 			end
 		end
 	end
-	
+
 	local wep = ply:GetActiveWeapon()
 	if IsValid(wep) then
 		local func = wep.CalcView
@@ -366,7 +366,7 @@ function GM:CalcView(ply, origin, angles, fov)
 			view.origin, view.angles, view.fov = func(wep, ply, origin * 1, angles * 1, fov)
 		end
 	end
-	
+
 	return view
 end
 
@@ -406,15 +406,15 @@ function GM:Think()
 			end
 		end
 	end
-	
+
 	if GetConVar("ttt_export_player_data"):GetBool() then
 		local client = LocalPlayer()
-		
+
 		local state = GetRoundState() == 3 and "1" or "0"
 		local role = tostring(client:GetRole())
 		local alive = client:IsActive() and "1" or "0"
 		local health = tostring(client:Health())
-		
+
 		local data = state .. "," .. role .. "," .. alive .. "," .. health
 		file.Write("playerdata/data.txt", data)
 	end
@@ -427,7 +427,7 @@ function GM:Tick()
 			WSWITCH:Think()
 			RADIO:StoreTarget()
 		end
-		
+
 		VOICE.Tick()
 	end
 end
@@ -437,7 +437,7 @@ local idle = { ang = nil, pos = nil, mx = 0, my = 0, t = 0 }
 function CheckIdle()
 	local client = LocalPlayer()
 	if not IsValid(client) then return end
-	
+
 	if not idle.ang or not idle.pos then
 		-- init things
 		idle.ang = client:GetAngles()
@@ -445,14 +445,14 @@ function CheckIdle()
 		idle.mx = gui.MouseX()
 		idle.my = gui.MouseY()
 		idle.t = CurTime()
-		
+
 		return
 	end
-	
+
 	if GetRoundState() == ROUND_ACTIVE and client:IsTerror() and client:Alive() then
 		local idle_limit = GetGlobalInt("ttt_idle_limit", 300) or 300
 		if idle_limit <= 0 then idle_limit = 300 end -- networking sucks sometimes
-		
+
 		if client:GetAngles() ~= idle.ang then
 			-- Normal players will move their viewing angles all the time
 			idle.ang = client:GetAngles()
@@ -468,7 +468,7 @@ function CheckIdle()
 			idle.t = CurTime()
 		elseif CurTime() > (idle.t + idle_limit) then
 			RunConsoleCommand("say", "(AUTOMATED MESSAGE) I have been moved to the Spectator team because I was idle/AFK.")
-			
+
 			timer.Simple(0.3, function()
 				RunConsoleCommand("ttt_spectator_mode", 1)
 				net.Start("TTT_Spectate")
@@ -487,13 +487,13 @@ function GM:OnEntityCreated(ent)
 	-- Make ragdolls look like the player that has died
 	if ent:IsRagdoll() then
 		local ply = CORPSE.GetPlayer(ent)
-		
+
 		if IsValid(ply) then
 			-- Only copy any decals if this ragdoll was recently created
 			if ent:GetCreationTime() > CurTime() - 1 then
 				ent:SnatchModelInstance(ply)
 			end
-			
+
 			-- Copy the color for the PlayerColor matproxy
 			local playerColor = ply:GetPlayerColor()
 			ent.GetPlayerColor = function()
@@ -501,6 +501,60 @@ function GM:OnEntityCreated(ent)
 			end
 		end
 	end
-	
+
 	return self.BaseClass.OnEntityCreated(self, ent)
+end
+
+local showHighlights = false
+
+net.Receive("TTT_Killer_PlayerHighlightOn", function(len, ply)
+	hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
+		showHighlights = true
+		OnPlayerHightlightEnabled(ROLE_KILLER)
+	end)
+end)
+net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
+	hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
+		showHighlights = true
+		OnPlayerHightlightEnabled(ROLE_ZOMBIE, ROLE_VAMPIRE)
+	end)
+end)
+net.Receive("TTT_Vampire_PlayerHighlightOn", function(len, ply)
+	hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
+		showHighlights = true
+		OnPlayerHightlightEnabled(ROLE_VAMPIRE, ROLE_ZOMBIE)
+	end)
+end)
+net.Receive("TTT_PlayerHighlightOff", function(len, ply)
+	showHighlights = false
+	hook.Remove("PreDrawHalos", "AddPlayerHighlights")
+end)
+
+function OnPlayerHightlightEnabled(role, allied_role)
+	local client = LocalPlayer()
+	if not IsValid(client) then return end
+	if client:GetRole() == role then
+		local enemies = {}
+		local friends = {}
+		local jesters = {}
+		if GetRoundState() == ROUND_ACTIVE then
+			for k, v in pairs(player.GetAll()) do
+				local isJester = v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER
+				local isFriend = v:GetRole() == role or (allied_role and v:GetRole() == allied_role)
+				if v:Alive() and isJester then
+					table.insert(jesters, v)
+				elseif v:Alive() and isFriend then
+					table.insert(friends, v)
+				elseif v:Alive() then
+					table.insert(enemies, v)
+				end
+			end
+
+			if showHighlights then
+				halo.Add(enemies, Color(255, 0, 0), 0, 0, 2, true, true)
+				halo.Add(friends, Color(0, 255, 0), 0, 0, 2, true, true)
+				halo.Add(jesters, Color(255, 85, 100), 0, 0, 2, true, true)
+			end
+		end
+	end
 end

@@ -6,7 +6,7 @@ if CLIENT then
 		type = "Weapon",
 		desc = "Left click to eat bodies. Right click to fade."
 	};
-	
+
 	SWEP.Slot = 8 -- add 1 to get the slot number key
 	SWEP.ViewModelFOV = 54
 	SWEP.ViewModelFlip = false
@@ -48,7 +48,7 @@ function SWEP:Initialize()
 	self:SetHoldType(self.HoldType)
 	self.lastTickSecond = 0
 	self.fading = false
-	
+
 	if CLIENT then
 		self:AddHUDHelp("Left click to eat bodies", "Right click to fade", false)
 	end
@@ -65,18 +65,18 @@ end
 
 function SWEP:PrimaryAttack()
 	if CLIENT then return end
-	
+
 	local tr = util.TraceLine({
 		start = self:GetOwner():GetShootPos(),
 		endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 100,
 		filter = self:GetOwner()
 	})
-	
+
 	if IsValid(tr.Entity) and tr.Entity:GetClass() == "prop_ragdoll" then
 		if not tr.Entity.uqid then return end
-		
+
 		local ply = player.GetByUniqueID(tr.Entity.uqid)
-		
+
 		if IsValid(ply) and ply:Alive() then
 		else
 			self:Eat(tr.Entity)
@@ -94,42 +94,42 @@ end
 function SWEP:Eat(ragdoll)
 	self:SetState(STATE_EAT)
 	self:SetStartTime(CurTime())
-	
+
 	self.TargetRagdoll = ragdoll
-	
+
 	self:SetNextPrimaryFire(CurTime() + 5)
 end
 
 function SWEP:FireError()
 	self:SetState(STATE_NONE)
-	
+
 	self:SetNextPrimaryFire(CurTime() + 0.1)
 end
 
 function SWEP:DropBones()
 	local pos = self.TargetRagdoll:GetPos()
-	
+
 	local skull = ents.Create("prop_physics")
 	if not IsValid(skull) then return end
 	skull:SetModel("models/Gibs/HGIBS.mdl")
 	skull:SetPos(pos)
 	skull:Spawn()
 	skull:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-	
+
 	local ribs = ents.Create("prop_physics")
 	if not IsValid(ribs) then return end
 	ribs:SetModel("models/Gibs/HGIBS_rib.mdl")
 	ribs:SetPos(pos + Vector(0, 0, 15))
 	ribs:Spawn()
 	ribs:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-	
+
 	local spine = ents.Create("prop_physics")
 	if not IsValid(ribs) then return end
 	spine:SetModel("models/Gibs/HGIBS_spine.mdl")
 	spine:SetPos(pos + Vector(0, 0, 30))
 	spine:Spawn()
 	spine:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-	
+
 	local scapula = ents.Create("prop_physics")
 	if not IsValid(scapula) then return end
 	scapula:SetModel("models/Gibs/HGIBS_scapula.mdl")
@@ -140,12 +140,12 @@ end
 
 function SWEP:Think()
 	if CLIENT then return end
-	
+
 	if (CurTime() - self.lastTickSecond > 0.08) and (self:Clip1() <= 100) then
 		self:SetClip1(self:Clip1() + math.min(1, 100 - self:Clip1()))
 		self.lastTickSecond = CurTime()
 	end
-	
+
 	if self:Clip1() < 13 and not self.fading then
 		self.fading = true
 		self:GetOwner():SetColor(Color(255, 255, 255, 0))
@@ -156,36 +156,36 @@ function SWEP:Think()
 		self:GetOwner():SetMaterial("models/glass")
 		self:GetOwner():EmitSound("weapons/ttt/unfade.wav")
 	end
-	
+
 	if self:GetState() == STATE_EAT then
 		if not IsValid(self:GetOwner()) then
 			self:FireError()
 			return
 		end
-		
+
 		if not IsValid(self.TargetRagdoll) then
 			self:FireError()
 			return
 		end
-		
+
 		local tr = util.TraceLine({
 			start = self:GetOwner():GetShootPos(),
 			endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 100,
 			filter = self:GetOwner()
 		})
-		
+
 		if tr.Entity ~= self.TargetRagdoll then
 			self:FireError()
 			return
 		end
-		
+
 		if CurTime() >= self:GetStartTime() + 5 then
 			self:SetState(STATE_NONE)
-			
+
 			self:GetOwner():SetHealth(math.min(self:GetOwner():Health() + 50, self:GetOwner():GetMaxHealth() + 25))
-			
+
 			self:DropBones()
-			
+
 			self.TargetRagdoll:Remove()
 		end
 	end
@@ -193,27 +193,27 @@ end
 
 if CLIENT then
 	function SWEP:DrawHUD()
-		
+
 		local x = ScrW() / 2.0
 		local y = ScrH() / 2.0
-		
+
 		y = y + (y / 3)
-		
+
 		local w, h = 255, 20
-		
+
 		if self:GetState() == STATE_EAT then
 			local progress = math.TimeFraction(self:GetStartTime(), self:GetStartTime() + 5, CurTime())
-			
+
 			if progress < 0 then return end
-			
+
 			progress = math.Clamp(progress, 0, 1)
-			
+
 			surface.SetDrawColor(0, 255, 0, 155)
-			
+
 			surface.DrawOutlinedRect(x - w / 2, y - h, w, h)
-			
+
 			surface.DrawRect(x - w / 2, y - h, w * progress, h)
-			
+
 			surface.SetFont("TabLarge")
 			surface.SetTextColor(255, 255, 255, 180)
 			surface.SetTextPos((x - w / 2) + 3, y - h - 15)

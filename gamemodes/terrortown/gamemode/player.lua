@@ -1529,3 +1529,56 @@ end
 function GM:PlayerShouldTaunt(ply, actid)
 	return true
 end
+
+timer.Create("infectedchangeupdate", 0.1, 0, function()
+	for k, v in pairs(player.GetAll()) do
+		if not IsValid(v) then return end
+
+		if v:GetRole() == ROLE_KILLER then
+			net.Start("TTT_Killer_PlayerHighlightOn")
+			net.WriteEntity(v)
+			net.Send(v)
+		elseif v:GetRole() == ROLE_ZOMBIE then
+			if not v.GetActiveWeapon or not IsValid(v:GetActiveWeapon()) then return end
+			if v:GetActiveWeapon():GetClass() == "weapon_zom_claws" then
+				v:SetColor(Color(70, 100, 25, 255))
+				v:SetRenderMode(RENDERMODE_NORMAL)
+				net.Start("TTT_Zombie_PlayerHighlightOn")
+				net.WriteEntity(v)
+				net.Send(v)
+			else
+				v:SetColor(Color(255, 255, 255, 255))
+				v:SetRenderMode(RENDERMODE_TRANSALPHA)
+				net.Start("TTT_PlayerHighlightOff")
+				net.WriteEntity(v)
+				net.Send(v)
+			end
+
+			if GetRoundState() == ROUND_ACTIVE then
+				if v:HasWeapon("weapon_zom_claws") == false then
+					if not v:GetZombiePrime() then
+						v:RemoveAllItems()
+					end
+					v:Give("weapon_zom_claws")
+				end
+			end
+		elseif v:GetRole() == ROLE_VAMPIRE then
+			if not v.GetActiveWeapon or not IsValid(v:GetActiveWeapon()) then return end
+			if v:GetActiveWeapon():GetClass() == "weapon_vam_fangs" then
+				net.Start("TTT_Vampire_PlayerHighlightOn")
+				net.WriteEntity(v)
+				net.Send(v)
+			else
+				net.Start("TTT_PlayerHighlightOff")
+				net.WriteEntity(v)
+				net.Send(v)
+			end
+
+			if GetRoundState() == ROUND_ACTIVE then
+				if v:HasWeapon("weapon_vam_fangs") == false then
+					v:Give("weapon_vam_fangs")
+				end
+			end
+		end
+	end
+end)

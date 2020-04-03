@@ -214,6 +214,10 @@ util.AddNetworkString("TTT_ClearTeleportMarks")
 util.AddNetworkString("TTT_PlayerDisconnected")
 util.AddNetworkString("TTT_SpawnedPlayers")
 util.AddNetworkString("TTT_Defibrillated")
+util.AddNetworkString("TTT_Killer_PlayerHighlightOn")
+util.AddNetworkString("TTT_Zombie_PlayerHighlightOn")
+util.AddNetworkString("TTT_Vampire_PlayerHighlightOn")
+util.AddNetworkString("TTT_PlayerHighlightOff")
 
 jesterkilled = 0
 
