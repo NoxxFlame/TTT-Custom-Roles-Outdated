@@ -113,7 +113,7 @@ CreateConVar("ttt_swapper_required_innos", "2")
 CreateConVar("ttt_assassin_required_traitors", "2")
 CreateConVar("ttt_killer_required_innos", "3")
 
-CreateConVar("ttt_zombie_pct", "0.33")
+CreateConVar("ttt_monster_pct", "0.33")
 
 -- Traitor credits
 CreateConVar("ttt_credits_starting", "2")
@@ -1030,20 +1030,17 @@ function GM:TTTCheckForWin()
 	local traitor_alive = false
 	local innocent_alive = false
 	local jester_alive = false
-	local swapper_alive = false
 	local killer_alive = false
 	local monster_alive = false
 	for k, v in pairs(player.GetAll()) do
 		if (v:Alive() and v:IsTerror()) or v:GetPData("IsZombifying", 0) == 1 then
-			if v:GetTraitor() or v:GetHypnotist() or v:GetAssassin() or v:GetPData("IsZombifying", 0) == 1 then
+			if v:GetTraitor() or v:GetHypnotist() or v:GetAssassin() then
 				traitor_alive = true
-			elseif v:GetJester() then
+			elseif v:GetJester() or v:GetSwapper() then
 				jester_alive = true
-			elseif v:GetSwapper() then
-				swapper_alive = true
 			elseif v:GetKiller() then
 				killer_alive = true
-            elseif v:GetZombie() or v:GetVampire() then
+            elseif v:GetZombie() or v:GetVampire() or v:GetPData("IsZombifying", 0) == 1 then
                 monster_alive = true
 			else
 				innocent_alive = true
@@ -1089,13 +1086,13 @@ local function GetTraitorCount(ply_count)
 	return traitor_count
 end
 
-local function GetZombieCount(ply_count)
-	-- get number of zombies: pct of players rounded down
-	local zombie_count = math.ceil(ply_count * GetConVar("ttt_zombie_pct"):GetFloat())
-	-- make sure there is at least 1 zombie
-	zombie_count = math.max(zombie_count, 1)
+local function GetMonsterCount(ply_count)
+	-- get number of monsters: pct of players rounded down
+	local monster_count = math.ceil(ply_count * GetConVar("ttt_monster_pct"):GetFloat())
+	-- make sure there is at least 1 monster
+	monster_count = math.max(monster_count, 1)
 
-	return zombie_count
+	return monster_count
 end
 
 local function GetDetectiveCount(ply_count)
@@ -1146,7 +1143,7 @@ function SelectRoles()
 	-- determine how many of each role we want
 	local choice_count = #choices
 	local traitor_count = GetTraitorCount(choice_count)
-	local zombie_count = GetZombieCount(choice_count)
+	local monster_count = GetMonsterCount(choice_count)
 	local det_count = GetDetectiveCount(choice_count)
 
 	local zombie_chance = GetConVar("ttt_zombie_chance"):GetFloat()
@@ -1223,7 +1220,6 @@ function SelectRoles()
 				if role == ROLE_TRAITOR then
 					ts = ts + 1
 					print(v:Nick() .. " (" .. v:SteamID() .. ") - Traitor")
-					hasTraitor = true
 				elseif role == ROLE_ZOMBIE then
 					ms = ms + 1
 					print(v:Nick() .. " (" .. v:SteamID() .. ") - Zombie")
@@ -1295,7 +1291,7 @@ function SelectRoles()
 		end
 	end
 
-	while ms < zombie_count and #choices > 0 do
+	while ms < monster_count and #choices > 0 do
 		-- select random index in choices table
 		local pick = math.random(1, #choices)
 
