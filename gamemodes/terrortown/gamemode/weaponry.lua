@@ -22,7 +22,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		return false
 	elseif IsEquipment(wep) and wep.IsDropped and (not ply:KeyDown(IN_USE)) then
 		return false
-	elseif ply:GetZombie() and not ply:GetZombiePrime() and wep:GetClass() ~= "weapon_zom_claws" then
+	elseif ply:GetZombie() and not ply:GetZombiePrime() and wep:GetClass() ~= "weapon_zom_claws" and GetRoundState() == ROUND_ACTIVE then
 		return false
 	end
 
