@@ -141,7 +141,9 @@ function GM:PostDrawTranslucentRenderables()
 			pos = v:GetPos()
 			pos.z = pos.z + 74
 			local revealed = v:GetNWBool('RoleRevealed', false)
-			if v:GetRole() == ROLE_DETECTIVE then
+
+			-- Don't show the detective icon for the roles that have "KILL" above everyone's head
+			if v:GetRole() == ROLE_DETECTIVE and client:GetRole() ~= ROLE_ZOMBIE and client:GetRole() ~= ROLE_VAMPIRE and client:GetRole() ~= ROLE_KILLER then
 				render.SetMaterial(indicator_matdet)
 				render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 			end
