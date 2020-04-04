@@ -551,13 +551,13 @@ local function CheckCreditAward(victim, attacker)
 	end
 
 	-- TRAITOR AWARD
-	if (not (victim:IsTraitor() or victim:IsHypnotist() or victim:IsVampire() or victim:IsAssassin() or victim:IsZombie())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+	if (not (victim:IsTraitor() or victim:IsHypnotist() or victim:IsAssassin())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
 		local inno_alive = 0
 		local inno_dead = 0
 		local inno_total = 0
 
 		for _, ply in pairs(player.GetAll()) do
-			if not (ply:GetTraitor() or ply:GetHypnotist() or ply:GetVampire() or ply:GetAssassin() or ply:GetZombie()) then
+			if not (ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()) then
 				if ply:IsTerror() then
 					inno_alive = inno_alive + 1
 				elseif ply:IsDeadTerror() then
@@ -584,13 +584,22 @@ local function CheckCreditAward(victim, attacker)
 
 			-- If size is 0, awards are off
 			if amt > 0 then
-				LANG.Msg(GetTraitorFilter(true), "credit_tr_all", { num = amt })
-				LANG.Msg(GetHypnotistFilter(true), "credit_tr_all", { num = amt })
-				LANG.Msg(GetVampireFilter(true), "credit_tr_all", { num = amt })
-				LANG.Msg(GetAssassinFilter(true), "credit_tr_all", { num = amt })
+				-- If the victim was killed by a vampire, only award the vampire(s)
+				if attacker:IsActiveVampire() then
+					LANG.Msg(GetVampireFilter(true), "credit_tr_all", { num = amt })
+				else
+					LANG.Msg(GetTraitorFilter(true), "credit_tr_all", { num = amt })
+					LANG.Msg(GetHypnotistFilter(true), "credit_tr_all", { num = amt })
+					LANG.Msg(GetAssassinFilter(true), "credit_tr_all", { num = amt })
+				end
 
 				for _, ply in pairs(player.GetAll()) do
-					if ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveVampire() or ply:IsActiveAssassin() then
+					-- If the victim was killed by a vampire, only award the vampire(s)
+					if attacker:IsActiveVampire() then
+						if ply:IsActiveVampire() then
+							ply:AddCredits(amt)
+						end
+					elseif ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() then
 						ply:AddCredits(amt)
 					end
 				end
@@ -832,7 +841,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 						end
 						DRINKS.AddPlayerAction("death", ply)
 					end
-				elseif ply:IsRole(ROLE_TRAITOR) or ply:IsRole(ROLE_ASSASSIN) or ply:IsRole(ROLE_HYPNOTIST) or ply:IsRole(ROLE_VAMPIRE) or ply:IsRole(ROLE_ZOMBIE) then
+				elseif ply:IsRole(ROLE_TRAITOR) or ply:IsRole(ROLE_ASSASSIN) or ply:IsRole(ROLE_HYPNOTIST) then
 					if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) or attacker:IsRole(ROLE_KILLER) then
 						if GetConVar("ttt_drinking_death"):GetString() == "drink" then
 							DRINKS.AddDrink(ply)
@@ -840,13 +849,29 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 							DRINKS.AddShot(ply)
 						end
 						DRINKS.AddPlayerAction("death", ply)
-					elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) or attacker:IsRole(ROLE_VAMPIRE) or attacker:IsRole(ROLE_ZOMBIE) then
+					elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) then
 						if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
 							DRINKS.AddDrink(attacker)
 						elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
 							DRINKS.AddShot(attacker)
 						end
 						DRINKS.AddPlayerAction("teamkill", attacker)
+					end
+				elseif ply:IsRole(ROLE_ZOMBIE) or ply:IsRole(ROLE_VAMPIRE) then
+					if attacker:IsRole(ROLE_ZOMBIE) or attacker:IsRole(ROLE_VAMPIRE) then
+						if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
+							DRINKS.AddDrink(attacker)
+						elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
+							DRINKS.AddShot(attacker)
+						end
+						DRINKS.AddPlayerAction("teamkill", attacker)
+					elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) or attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) or attacker:IsRole(ROLE_KILLER) then
+						if GetConVar("ttt_drinking_death"):GetString() == "drink" then
+							DRINKS.AddDrink(ply)
+						elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
+							DRINKS.AddShot(ply)
+						end
+						DRINKS.AddPlayerAction("death", ply)
 					end
 				elseif ply:IsRole(ROLE_JESTER) or ply:IsRole(ROLE_SWAPPER) then
 					if GetConVar("ttt_drinking_jester_kill"):GetString() == "drink" then

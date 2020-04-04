@@ -162,8 +162,8 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
 		elseif ply:IsAssassin() then
 			return rolecolor.assassin
 		end
-	elseif LocalPlayer():IsZombie() then
-		if ply:IsZombie() or ply:IsGlitch() then
+	elseif LocalPlayer():IsZombie() or LocalPlayer():IsVampire() then
+		if ply:IsZombie() then
 			return rolecolor.zombie
 		elseif ply:IsJester() or ply:IsSwapper() then
 			return rolecolor.jester
@@ -315,7 +315,7 @@ function PANEL:UpdatePlayerData()
 	self.nick:SetText(ply:Nick())
 	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") and GetRoundState() >= ROUND_ACTIVE then
 		self.nick:SetText(ply:Nick() .. " (TARGET)")
-	elseif (LocalPlayer():GetTraitor() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetZombie()) and GetRoundState() >= ROUND_ACTIVE then
+	elseif (LocalPlayer():GetTraitor() or LocalPlayer():GetHypnotist()) and GetRoundState() >= ROUND_ACTIVE then
 		for k, v in pairs(player.GetAll()) do
 			if ply:Nick() == v:GetNWString("AssassinTarget", "") then
 				self.nick:SetText(ply:Nick() .. " (" .. v:Nick() .. "'s Target)")

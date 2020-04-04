@@ -55,7 +55,7 @@ local indicator_matvam = Material("vgui/ttt/sprite_let_vam")
 local indicator_matswa = Material("vgui/ttt/sprite_let_swa")
 local indicator_matass = Material("vgui/ttt/sprite_let_ass")
 local indicator_matkil = Material("vgui/ttt/sprite_let_kil")
-local indicator_matzom_target = Material("vgui/ttt/sprite_let_zom_target")
+local indicator_mat_target = Material("vgui/ttt/sprite_let_target")
 
 local indicator_col = Color(255, 255, 255, 130)
 
@@ -97,7 +97,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa = Material("vgui/ttt/sprite_sym_swa")
 		indicator_matass = Material("vgui/ttt/sprite_sym_ass")
 		indicator_matkil = Material("vgui/ttt/sprite_sym_kil")
-		indicator_matzom_target = Material("vgui/ttt/sprite_sym_zom_target")
+		indicator_mat_target = Material("vgui/ttt/sprite_sym_target")
 	else
 		indicator_mattra_noz = Material("vgui/ttt/sprite_let_tra_noz")
 		indicator_matjes_noz = Material("vgui/ttt/sprite_let_jes_noz")
@@ -125,7 +125,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa = Material("vgui/ttt/sprite_let_swa")
 		indicator_matass = Material("vgui/ttt/sprite_let_ass")
 		indicator_matkil = Material("vgui/ttt/sprite_let_kil")
-		indicator_matzom_target = Material("vgui/ttt/sprite_let_zom_target")
+		indicator_mat_target = Material("vgui/ttt/sprite_let_target")
 	end
 	client = LocalPlayer()
 	plys = GetPlayers()
@@ -201,8 +201,8 @@ function GM:PostDrawTranslucentRenderables()
 						render.SetMaterial(indicator_matjes)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
-				elseif client:GetRole() == ROLE_ZOMBIE then
-					if v:GetRole() == ROLE_ZOMBIE or v:GetRole() == ROLE_GLITCH then
+				elseif client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE then
+					if v:GetRole() == ROLE_ZOMBIE then
 						render.SetMaterial(indicator_matzom_noz)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					elseif v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
@@ -212,21 +212,7 @@ function GM:PostDrawTranslucentRenderables()
 						render.SetMaterial(indicator_matvam_noz)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     else
-                        render.SetMaterial(indicator_matzom_target)
-						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					end
-				elseif client:GetRole() == ROLE_VAMPIRE then
-					if v:GetRole() == ROLE_ZOMBIE then
-						render.SetMaterial(indicator_matzom_noz)
-						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					elseif v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
-						render.SetMaterial(indicator_matjes)
-						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-					elseif v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_GLITCH then
-						render.SetMaterial(indicator_matvam_noz)
-						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    else
-                        render.SetMaterial(indicator_matzom_target)
+                        render.SetMaterial(indicator_mat_target)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
 				elseif client:GetRole() == ROLE_KILLER then
@@ -234,7 +220,7 @@ function GM:PostDrawTranslucentRenderables()
 						render.SetMaterial(indicator_matjes)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					else
-						render.SetMaterial(indicator_matzom_target)
+						render.SetMaterial(indicator_mat_target)
 						render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
 					end
 				end
@@ -434,7 +420,6 @@ function GM:HUDDrawTargetID()
             else
                 target_zombie = ent:IsRole(ROLE_ZOMBIE)
             end
-			target_glitch = ent:IsRole(ROLE_GLITCH)
 			target_vampire = ent:IsRole(ROLE_VAMPIRE)
 		end
 		if client:GetRole() == ROLE_ASSASSIN and GetRoundState() == ROUND_ACTIVE then
@@ -484,9 +469,9 @@ function GM:HUDDrawTargetID()
 			surface.SetDrawColor(112, 50, 0, 200)
 		elseif target_hypnotist then
 			surface.SetDrawColor(255, 80, 235, 200)
-		elseif target_vampire or (target_glitch and client:GetRole() == ROLE_VAMPIRE) then
+		elseif target_vampire then
 			surface.SetDrawColor(45, 45, 45, 200)
-		elseif target_zombie or target_fellow_zombie or (target_glitch and client:GetRole() == ROLE_ZOMBIE) then
+		elseif target_zombie or target_fellow_zombie then
 			surface.SetDrawColor(69, 97, 0, 200)
 		elseif target_jester then
 			surface.SetDrawColor(180, 23, 253, 200)
@@ -608,7 +593,7 @@ function GM:HUDDrawTargetID()
 	elseif target_hypnotist then
 		text = L.target_hypnotist
 		clr = Color(255, 80, 235, 200)
-	elseif target_vampire or (target_glitch and client:GetRole() == ROLE_VAMPIRE) then
+	elseif target_vampire then
 		text = L.target_vampire
 		clr = Color(45, 45, 45, 200)
 	elseif target_zombie then
@@ -629,7 +614,7 @@ function GM:HUDDrawTargetID()
 	elseif target_fellow_traitor or (target_glitch and client:GetRole() == ROLE_TRAITOR) then
 		text = L.target_fellow_traitor
 		clr = Color(255, 0, 0, 200)
-	elseif target_fellow_zombie or (target_glitch and client:GetRole() == ROLE_ZOMBIE) then
+	elseif target_fellow_zombie then
 		text = L.target_fellow_zombie
 		clr = Color(69, 97, 0, 200)
 	elseif target_corpse and (client:IsActiveDetective() or client:IsActiveTraitor() or client:IsActiveMercenary() or client:IsActiveZombie() or client:IsActiveVampire() or client:IsActiveHypnotist() or client:IsActiveAssassin() or client:IsActiveKiller()) and CORPSE.GetCredits(ent, 0) > 0 then

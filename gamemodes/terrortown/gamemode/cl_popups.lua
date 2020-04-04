@@ -11,10 +11,10 @@ local function GetTextForRole(role)
 		return GetTranslation("info_popup_innocent")
 
 	elseif role == ROLE_DETECTIVE then
-		return GetPTranslation("info_popup_detective", { menukey = Key("+menu_context", "C") })
+		return GetPTranslation("info_popup_detective", { menukey = menukey })
 
 	elseif role == ROLE_MERCENARY then
-		return GetPTranslation("info_popup_mercenary", { menukey = Key("+menu_context", "C") })
+		return GetPTranslation("info_popup_mercenary", { menukey = menukey })
 
 	elseif role == ROLE_HYPNOTIST then
 		local traitors = {}
@@ -43,18 +43,25 @@ local function GetTextForRole(role)
 		return text
 
 	elseif role == ROLE_GLITCH then
-		return GetPTranslation("info_popup_glitch", { menukey = Key("+menu_context", "C") })
+		return GetPTranslation("info_popup_glitch", { menukey = menukey })
 
 	elseif role == ROLE_JESTER then
-		return GetPTranslation("info_popup_jester", { menukey = Key("+menu_context", "C") })
+		return GetPTranslation("info_popup_jester", { menukey = menukey })
 
 	elseif role == ROLE_PHANTOM then
-		return GetPTranslation("info_popup_phantom", { menukey = Key("+menu_context", "C") })
+		return GetPTranslation("info_popup_phantom", { menukey = menukey })
 
-	elseif role == ROLE_ZOMBIE then
+	elseif role == ROLE_ZOMBIE or role == ROLE_VAMPIRE then
+		local monsterlabel = "info_popup_"
+		if role == ROLE_ZOMBIE then
+			monsterlabel = monsterlabel .. "zombie"
+		else
+			monsterlabel = monsterlabel .. "vampire"
+		end
+
 		local monsters = {}
 		for _, ply in pairs(player.GetAll()) do
-			if ply:IsZombie() or ply:IsVampire() or ply:IsGlitch() then
+			if ply:IsZombie() or ply:IsVampire() then
 				table.insert(monsters, ply)
 			end
 		end
@@ -68,41 +75,16 @@ local function GetTextForRole(role)
 					monsterlist = monsterlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
 				end
 			end
-			text = GetPTranslation("info_popup_zombie", { menukey = menukey, monsterlist = monsterlist })
+
+			text = GetPTranslation(monsterlabel, { menukey = menukey, monsterlist = monsterlist })
 		else
-			text = GetPTranslation("info_popup_zombie_alone", { menukey = menukey })
-		end
-
-		return text
-
-	elseif role == ROLE_VAMPIRE then
-		local monsters = {}
-		for _, ply in pairs(player.GetAll()) do
-			if ply:IsZombie() or ply:IsVampire() or ply:IsGlitch() then
-				table.insert(monsters, ply)
-			end
-		end
-
-		local text
-		if #monsters > 0 then
-			local monsterlist = ""
-
-			for k, ply in pairs(monsters) do
-				if ply ~= LocalPlayer() then
-					monsterlist = monsterlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
-				end
-			end
-
-			text = GetPTranslation("info_popup_vampire",
-				{ menukey = menukey, monsterlist = monsterlist })
-		else
-			text = GetPTranslation("info_popup_vampire_alone", { menukey = menukey })
+			text = GetPTranslation(monsterlabel .. "_alone", { menukey = menukey })
 		end
 
 		return text
 
 	elseif role == ROLE_SWAPPER then
-		return GetPTranslation("info_popup_swapper", { menukey = Key("+menu_context", "C") })
+		return GetPTranslation("info_popup_swapper", { menukey = menukey })
 
 	elseif role == ROLE_ASSASSIN then
 		local traitors = {}
@@ -132,7 +114,7 @@ local function GetTextForRole(role)
 		return text
 
 	elseif role == ROLE_KILLER then
-		return GetPTranslation("info_popup_killer", { menukey = Key("+menu_context", "C") })
+		return GetPTranslation("info_popup_killer", { menukey = menukey })
 
 	elseif role == ROLE_TRAITOR then
 		local traitors = {}
