@@ -22,10 +22,90 @@ include("favorites_db.lua")
 -- Buyable weapons are loaded automatically. Buyable items are defined in
 -- equip_items_shd.luaslotnumber
 
+local BuyableWeapons = {
+	[ROLE_DETECTIVE] = {},
+	[ROLE_MERCENARY] = {},
+	[ROLE_VAMPIRE] = {},
+	[ROLE_ZOMBIE] = {},
+	[ROLE_TRAITOR] = {},
+	[ROLE_ASSASSIN] = {},
+	[ROLE_HYPNOTIST] = {},
+	[ROLE_KILLER] = {}
+}
+
+net.Receive("TTT_BuyableWeapon_Detective", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_DETECTIVE], v) then
+			table.insert(BuyableWeapons[ROLE_DETECTIVE], v)
+		end
+	end
+end)
+net.Receive("TTT_BuyableWeapon_Mercenary", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_MERCENARY], v) then
+			table.insert(BuyableWeapons[ROLE_MERCENARY], v)
+		end
+	end
+end)
+net.Receive("TTT_BuyableWeapon_Vampire", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_VAMPIRE], v) then
+			table.insert(BuyableWeapons[ROLE_VAMPIRE], v)
+		end
+	end
+end)
+net.Receive("TTT_BuyableWeapon_Zombie", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_ZOMBIE], v) then
+			table.insert(BuyableWeapons[ROLE_ZOMBIE], v)
+		end
+	end
+end)
+net.Receive("TTT_BuyableWeapon_Traitor", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_TRAITOR], v) then
+			table.insert(BuyableWeapons[ROLE_TRAITOR], v)
+		end
+	end
+end)
+net.Receive("TTT_BuyableWeapon_Assassin", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_ASSASSIN], v) then
+			table.insert(BuyableWeapons[ROLE_ASSASSIN], v)
+		end
+	end
+end)
+net.Receive("TTT_BuyableWeapon_Hypnotist", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_HYPNOTIST], v) then
+			table.insert(BuyableWeapons[ROLE_HYPNOTIST], v)
+		end
+	end
+end)
+net.Receive("TTT_BuyableWeapon_Killer", function()
+	for k,v in pairs(net.ReadTable()) do
+		if not table.HasValue(BuyableWeapons[ROLE_KILLER], v) then
+			table.insert(BuyableWeapons[ROLE_KILLER], v)
+		end
+	end
+end)
+
 local Equipment = niltr
 function GetEquipmentForRole(role)
 	-- need to build equipment cache?
 	if not Equipment then
+		-- Make sure each of the buyable weapons is in the role's equipment list
+		-- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
+		local roletable = BuyableWeapons[role]
+		if roletable then
+			for k, v in pairs(roletable) do
+				local weap = weapons.GetStored(v)
+				if weap and not table.HasValue(weap.CanBuy, role) then
+					table.insert(weap.CanBuy, role)
+				end
+			end
+		end
+
 		-- start with all the non-weapon goodies
 		local tbl = table.Copy(EquipmentItems)
 

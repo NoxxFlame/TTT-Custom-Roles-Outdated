@@ -356,6 +356,40 @@ function GM:TTTCanOrderEquipment(ply, id, is_item)
 	return true
 end
 
+local BuyableWeapons = {
+	[ROLE_DETECTIVE] = {},
+	[ROLE_MERCENARY] = {},
+	[ROLE_VAMPIRE] = {},
+	[ROLE_ZOMBIE] = {},
+	[ROLE_TRAITOR] = {},
+	[ROLE_ASSASSIN] = {},
+	[ROLE_HYPNOTIST] = {},
+	[ROLE_KILLER] = {}
+}
+-- If this logic or the list of roles who can buy is changed, it must also be updated in init.lua and cl_equip.lua
+local function ReadRoleEquipment(role, rolename)
+	local rolefiles, _ = file.Find("roleweapons/" .. rolename .. "/*.txt", "DATA")
+	for _, v in pairs(rolefiles) do
+		local lastdotpos = v:find("%.")
+		local weaponname
+		if lastdotpos == nil then
+			weaponname = v
+		else
+			weaponname = v:sub(0, lastdotpos - 1)
+		end
+		table.insert(BuyableWeapons[role], weaponname)
+	end
+end
+
+ReadRoleEquipment(ROLE_DETECTIVE, "Detective")
+ReadRoleEquipment(ROLE_MERCENARY, "Mercenary")
+ReadRoleEquipment(ROLE_VAMPIRE, "Vampire")
+ReadRoleEquipment(ROLE_ZOMBIE, "Zombie")
+ReadRoleEquipment(ROLE_TRAITOR, "Traitor")
+ReadRoleEquipment(ROLE_ASSASSIN, "Assassin")
+ReadRoleEquipment(ROLE_HYPNOTIST, "Hypnotist")
+ReadRoleEquipment(ROLE_KILLER, "Killer")
+
 -- Equipment buying
 local function OrderEquipment(ply, cmd, args)
 	if not IsValid(ply) or #args ~= 1 then return end
@@ -375,6 +409,14 @@ local function OrderEquipment(ply, cmd, args)
 	-- be modifying it
 	local swep_table = (not is_item) and weapons.GetStored(id) or nil
 
+	local role = ply:GetRole()
+	local roletable = BuyableWeapons[role]
+	-- If this role has a table of additional weapons and that table includes this weapon
+	-- and this weapon is not currently buyable by the role then mark this weapon as buyable
+	if swep_table and roletable and table.HasValue(roletable, id) and not table.HasValue(swep_table.CanBuy, role) then
+		table.insert(swep_table.CanBuy, role)
+	end
+
 	-- some weapons can only be bought once per player per round, this used to be
 	-- defined in a table here, but is now in the SWEP's table
 	if swep_table and swep_table.LimitedStock and ply:HasBought(id) then
@@ -388,7 +430,7 @@ local function OrderEquipment(ply, cmd, args)
 		id = tonumber(id)
 
 		-- item whitelist check
-		local allowed = GetEquipmentItem(ply:GetRole(), id)
+		local allowed = GetEquipmentItem(role, id)
 
 		if not allowed then
 			print(ply, "tried to buy item not buyable for his class:", id)
@@ -404,7 +446,7 @@ local function OrderEquipment(ply, cmd, args)
 		end
 	elseif swep_table then
 		-- weapon whitelist check
-		if not table.HasValue(swep_table.CanBuy, ply:GetRole()) then
+		if not table.HasValue(swep_table.CanBuy, role) then
 			print(ply, "tried to buy weapon his role is not permitted to buy")
 			return
 		end

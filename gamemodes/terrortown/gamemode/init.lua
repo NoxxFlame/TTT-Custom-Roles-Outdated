@@ -218,6 +218,14 @@ util.AddNetworkString("TTT_Killer_PlayerHighlightOn")
 util.AddNetworkString("TTT_Zombie_PlayerHighlightOn")
 util.AddNetworkString("TTT_Vampire_PlayerHighlightOn")
 util.AddNetworkString("TTT_PlayerHighlightOff")
+util.AddNetworkString("TTT_BuyableWeapon_Detective")
+util.AddNetworkString("TTT_BuyableWeapon_Mercenary")
+util.AddNetworkString("TTT_BuyableWeapon_Vampire")
+util.AddNetworkString("TTT_BuyableWeapon_Zombie")
+util.AddNetworkString("TTT_BuyableWeapon_Traitor")
+util.AddNetworkString("TTT_BuyableWeapon_Assassin")
+util.AddNetworkString("TTT_BuyableWeapon_Hypnotist")
+util.AddNetworkString("TTT_BuyableWeapon_Killer")
 
 jesterkilled = 0
 
@@ -756,7 +764,7 @@ function BeginRound()
 	if CheckForAbort() then return end
 
 	AnnounceVersion()
-
+	ReadRoleEquipment()
 	InitRoundEndTime()
 
 	if CheckForAbort() then return end
@@ -1459,3 +1467,25 @@ function AnnounceVersion()
 	end
 end
 
+-- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
+function ReadRoleEquipment()
+	local rolenames = { "Detective", "Mercenary", "Vampire", "Zombie", "Traitor", "Assassin", "Hypnotist", "Killer" }
+	for _, role in pairs(rolenames) do
+		local rolefiles, _ = file.Find("roleweapons/" .. role .. "/*.txt", "DATA")
+		local roleweapons = { }
+		for _, v in pairs(rolefiles) do
+			local lastdotpos = v:find("%.")
+			local weaponname
+			if lastdotpos == nil then
+				weaponname = v
+			else
+				weaponname = v:sub(0, lastdotpos - 1)
+			end
+			table.insert(roleweapons, weaponname)
+		end
+
+		net.Start("TTT_BuyableWeapon_" .. role)
+		net.WriteTable(roleweapons)
+		net.Broadcast()
+	end
+end
