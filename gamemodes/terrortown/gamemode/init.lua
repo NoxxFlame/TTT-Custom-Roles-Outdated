@@ -804,11 +804,16 @@ function BeginRound()
 			elseif #detectives > 0 then
 				v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
 			end
+
+			local targetCount
 			if #innocents + #detectives > 1 then
-				v:PrintMessage(HUD_PRINTCENTER, "Your first target is " .. v:GetNWString("AssassinTarget", ""))
+				targetCount = "first"
 			elseif #innocents + #detectives == 1 then
-				v:PrintMessage(HUD_PRINTCENTER, "Your final target is " .. v:GetNWString("AssassinTarget", ""))
+				targetCount = "final"
 			end
+			local targetMessage = "Your " .. targetCount .. " target is " .. v:GetNWString("AssassinTarget", "")
+			v:PrintMessage(HUD_PRINTCENTER, targetMessage)
+			v:PrintMessage(HUD_PRINTTALK, targetMessage)
 		elseif v:GetRole() == ROLE_HYPNOTIST then
 			v:Give("weapon_hyp_brainwash")
 		elseif v:GetRole() == ROLE_KILLER then

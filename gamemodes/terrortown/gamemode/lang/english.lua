@@ -679,12 +679,12 @@ L.spec_help = "Click to spectate players, or press {usekey} on a physics object 
 
 -- These are spread over multiple lines, hence the square brackets instead of
 -- quotes. That's a Lua thing. Every line break (enter) will show up in-game.
-L.info_popup_innocent = [[You are an innocent Terrorist! But there are traitors around...
+L.info_popup_innocent = [[You are an innocent Terrorist! But there are traitors and monsters around...
 Who can you trust, and who is out to fill you with bullets?
 
 Watch your back and work with your comrades to get out of this alive!]]
 
-L.info_popup_detective = [[You are a Detective! Terrorist HQ has given you special resources to find the traitors.
+L.info_popup_detective = [[You are a Detective! Terrorist HQ has given you special resources to find the traitors and monsters.
 Use them to help the innocent survive, but be careful:
 the traitors will be looking to take you down first!
 
@@ -711,10 +711,10 @@ You can use your brain washing device on a corpse to revive them as a traitor.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_glitch = [[You are a Glitch! The traitors think you are one of them.
+L.info_popup_glitch = [[You are a Glitch! The traitors and monsters think you are one of them.
 Try to blend in and don't give yourself away.]]
 
-L.info_popup_jester = [[You are a Jester! You hate your life, you want to die
+L.info_popup_jester = [[You are a Jester! You hate your life and want to die
 but you deal no damage so you must be killed by some one else.]]
 
 L.info_popup_phantom = [[You are a Phantom! Try to survive and help your innocent friends!
@@ -766,6 +766,9 @@ L.info_popup_assassin = [[You are an Assassin! Work with fellow traitors to kill
 These are your comrades:
 {traitorlist}
 
+Your first target is:
+{assassintarget}
+
 You will deal double damage to your target and half damage
 to all other players. But take care as killing the wrong
 player will result in you losing your double damage bonus.
@@ -775,6 +778,9 @@ Press {menukey} to receive your special equipment!]]
 L.info_popup_assassin_alone = [[You are an Assassin! You have no fellow traitors this round.
 
 Kill all others to win!
+
+Your first target is:
+{assassintarget}
 
 You will deal double damage to your target and half damage
 to all other players. But take care as killing the wrong
@@ -810,6 +816,18 @@ The following comrade is a hypnotist:
 
 Press {menukey} to receive your special equipment!]]
 
+L.info_popup_traitor_hypnotist_assassin = [[You are a TRAITOR! Work with fellow traitors to kill all others.
+But take care, or your treason may be discovered...
+
+These are your comrades:
+{traitorlist}
+The following comrade is a hypnotist:
+{hypnotistlist}
+The following comrade is an assassin:
+{assassinlist}
+
+Press {menukey} to receive your special equipment!]]
+
 L.info_popup_traitor_assassin = [[You are a TRAITOR! Work with fellow traitors to kill all others.
 But take care, or your treason may be discovered...
 
@@ -825,6 +843,38 @@ BUT BEWARE! There was a glitch in the system and one among you does not seek the
 
 These may or may not be your comrades:
 {traitorlist}
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_traitor_hypnotist_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
+BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
+
+These may or may not be your comrades:
+{traitorlist}
+The following comrade is a hypnotist:
+{hypnotistlist}
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_traitor_assassin_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
+BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
+
+These may or may not be your comrades:
+{traitorlist}
+The following comrade is an assassin:
+{assassinlist}
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_traitor_hypnotist_assassin_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
+BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
+
+These may or may not be your comrades:
+{traitorlist}
+The following comrade is a hypnotist:
+{hypnotistlist}
+The following comrade is an assassin:
+{assassinlist}
 
 Press {menukey} to receive your special equipment!]]
 

@@ -111,6 +111,7 @@ local function GetTextForRole(role)
 				table.insert(traitors, ply)
 			end
 		end
+		local assassintarget = LocalPlayer():GetNWString("AssassinTarget", "")
 
 		local text
 		if #traitors > 0 then
@@ -123,9 +124,9 @@ local function GetTextForRole(role)
 			end
 
 			text = GetPTranslation("info_popup_assassin",
-				{ menukey = menukey, traitorlist = traitorlist })
+				{ menukey = menukey, assassintarget = assassintarget, traitorlist = traitorlist })
 		else
-			text = GetPTranslation("info_popup_assassin_alone", { menukey = menukey })
+			text = GetPTranslation("info_popup_assassin_alone", { menukey = menukey, assassintarget = assassintarget })
 		end
 
 		return text
@@ -155,6 +156,7 @@ local function GetTextForRole(role)
 
 		local text
 		if #traitors > 1 then
+			local traitorlabel = "info_popup_traitor"
 			local traitorlist = ""
 
 			for k, ply in pairs(traitors) do
@@ -163,29 +165,31 @@ local function GetTextForRole(role)
 				end
 			end
 
+			local hypnotistlist = ""
 			if #hypnotists > 0 then
-				local hypnotistlist = ""
-
 				for k, ply in pairs(hypnotists) do
 					if ply ~= LocalPlayer() then
 						hypnotistlist = hypnotistlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
 					end
 				end
-				text = GetPTranslation("info_popup_traitor_hypnotist", { menukey = menukey, traitorlist = traitorlist, hypnotistlist = hypnotistlist })
-			elseif #assassins > 0 then
-				local assassinlist = ""
+				traitorlabel = traitorlabel .. "_hypnotist"
+			end
 
+			local assassinlist = ""
+			if #assassins > 0 then
 				for k, ply in pairs(assassins) do
 					if ply ~= LocalPlayer() then
 						assassinlist = assassinlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
 					end
 				end
-				text = GetPTranslation("info_popup_traitor_assassin", { menukey = menukey, traitorlist = traitorlist, assassinlist = assassinlist })
-			elseif #glitches > 0 then
-				text = GetPTranslation("info_popup_traitor_glitch", { menukey = menukey, traitorlist = traitorlist })
-			else
-				text = GetPTranslation("info_popup_traitor", { menukey = menukey, traitorlist = traitorlist })
+				traitorlabel = traitorlabel .. "_assassin"
 			end
+
+			if #glitches > 0 then
+				traitorlabel = traitorlabel .. "_glitch"
+			end
+
+			text = GetPTranslation(traitorlabel, { menukey = menukey, traitorlist = traitorlist, hypnotistlist = hypnotistlist, assassinlist = assassinlist })
 		else
 			text = GetPTranslation("info_popup_traitor_alone", { menukey = menukey })
 		end
