@@ -1525,8 +1525,6 @@ function HandlePlayerHighlights(ply)
 				if not ply:GetZombiePrime() and #ply:GetWeapons() > 0 then
 					ply:StripWeapons()
 				end
-				--print(ply:GetName() .. " is a zombie without the weapon, adding. CanCarry? " .. tostring(ply:CanCarryType(WEPS.TypeForWeapon("weapon_zom_claws"))))
-				-- TODO: This doesn't work!
 				ply:Give("weapon_zom_claws")
 			end
 		end
