@@ -19,7 +19,7 @@ local function GetTextForRole(role)
 	elseif role == ROLE_HYPNOTIST then
 		local traitors = {}
 		for _, ply in pairs(player.GetAll()) do
-			if ply:IsTraitor() then
+			if ply:IsTraitor() or ply:IsAssassin() or ply:IsHypnotist() then
 				table.insert(traitors, ply)
 			end
 		end
@@ -89,11 +89,11 @@ local function GetTextForRole(role)
 	elseif role == ROLE_ASSASSIN then
 		local traitors = {}
 		for _, ply in pairs(player.GetAll()) do
-			if ply:IsTraitor() then
+			if ply:IsTraitor() or ply:IsAssassin() or ply:IsHypnotist() then
 				table.insert(traitors, ply)
 			end
 		end
-		local assassintarget = LocalPlayer():GetNWString("AssassinTarget", "")
+		local assassintarget = string.rep(" ", 42) .. LocalPlayer():GetNWString("AssassinTarget", "")
 
 		local text
 		if #traitors > 0 then
