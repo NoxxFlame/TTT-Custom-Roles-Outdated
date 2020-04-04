@@ -420,6 +420,7 @@ function GM:HUDDrawTargetID()
             else
                 target_zombie = ent:IsRole(ROLE_ZOMBIE)
             end
+			target_glitch = ent:IsRole(ROLE_GLITCH)
 			target_vampire = ent:IsRole(ROLE_VAMPIRE)
 		end
 		if client:GetRole() == ROLE_ASSASSIN and GetRoundState() >= ROUND_ACTIVE then

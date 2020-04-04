@@ -516,13 +516,13 @@ end)
 net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
 	hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
 		showHighlights = true
-		OnPlayerHightlightEnabled(ROLE_ZOMBIE, ROLE_VAMPIRE)
+		OnPlayerHightlightEnabled(ROLE_ZOMBIE, ROLE_VAMPIRE, true)
 	end)
 end)
 net.Receive("TTT_Vampire_PlayerHighlightOn", function(len, ply)
 	hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
 		showHighlights = true
-		OnPlayerHightlightEnabled(ROLE_VAMPIRE, ROLE_ZOMBIE)
+		OnPlayerHightlightEnabled(ROLE_VAMPIRE, ROLE_ZOMBIE, true)
 	end)
 end)
 net.Receive("TTT_PlayerHighlightOff", function(len, ply)
@@ -530,7 +530,7 @@ net.Receive("TTT_PlayerHighlightOff", function(len, ply)
 	hook.Remove("PreDrawHalos", "AddPlayerHighlights")
 end)
 
-function OnPlayerHightlightEnabled(role, allied_role)
+function OnPlayerHightlightEnabled(role, alliedRole, isGlitchAllied)
 	local client = LocalPlayer()
 	if not IsValid(client) then return end
 	if client:GetRole() == role then
@@ -540,7 +540,7 @@ function OnPlayerHightlightEnabled(role, allied_role)
 		if GetRoundState() == ROUND_ACTIVE then
 			for k, v in pairs(player.GetAll()) do
 				local isJester = v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER
-				local isFriend = v:GetRole() == role or (allied_role and v:GetRole() == allied_role)
+				local isFriend = v:GetRole() == role or (alliedRole and v:GetRole() == alliedRole) or (isGlitchAllied and v:GetRole() == ROLE_GLITCH)
 				if v:Alive() and isJester then
 					table.insert(jesters, v)
 				elseif v:Alive() and isFriend then

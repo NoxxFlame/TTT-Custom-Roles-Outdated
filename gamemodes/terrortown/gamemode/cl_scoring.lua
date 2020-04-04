@@ -56,14 +56,12 @@ local disconnected = {}
 local spawnedplayers = {}
 
 local function FindTableIndex(playerTable, value)
-	local index = 0;
-	for name in playerTable do
-		index = index + 1
+	for k, name in pairs(playerTable) do
 		if name == value then
-			return index
+			return k
 		end
 	end
-	return index
+	return -1
 end
 
 local function InsertPlayerToTable(playerTable, name)
