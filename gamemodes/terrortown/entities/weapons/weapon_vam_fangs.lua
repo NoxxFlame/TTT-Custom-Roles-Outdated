@@ -19,19 +19,19 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.HoldType = "knife"
 
-SWEP.Primary.Automatic = false
-SWEP.Secondary.Automatic = false
-
 SWEP.ViewModel = Model("models/weapons/cstrike/c_knife_t.mdl")
 SWEP.WorldModel = Model("models/weapons/w_knife_t.mdl")
 
 SWEP.Primary.Ammo = "fade"
 SWEP.Primary.ClipSize = 100
 SWEP.Primary.DefaultClip = 100
+SWEP.Primary.Automatic = false
+
+SWEP.Secondary.Automatic = false
 
 SWEP.Kind = WEAPON_ROLE
 SWEP.LimitedStock = false
-SWEP.AllowDrop = true
+SWEP.AllowDrop = false
 
 local STATE_NONE, STATE_EAT = 0, 1
 

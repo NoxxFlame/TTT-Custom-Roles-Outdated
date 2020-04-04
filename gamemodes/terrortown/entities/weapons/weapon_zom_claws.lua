@@ -1,20 +1,26 @@
 AddCSLuaFile()
 
-SWEP.HoldType = "fist"
-
 if CLIENT then
 	SWEP.PrintName = "Claws"
-	SWEP.Slot = 8
+	SWEP.EquipMenuData = {
+		type = "Weapon",
+		desc = "Left click to attack. Right click to leap. Press reload to spit."
+	};
 
-	SWEP.ViewModelFlip = false
+	SWEP.Slot = 8 -- add 1 to get the slot number key
 	SWEP.ViewModelFOV = 54
+	SWEP.ViewModelFlip = false
+	SWEP.UseHands = true
 else
 	util.AddNetworkString("TTT_Zombified")
 end
 
+SWEP.InLoadoutFor = { ROLE_ZOMBIE }
+
 SWEP.Base = "weapon_tttbase"
 
-SWEP.UseHands = true
+SWEP.HoldType = "fist"
+
 SWEP.ViewModel = Model("models/weapons/c_arms_cstrike.mdl")
 SWEP.WorldModel = ""
 
@@ -40,16 +46,23 @@ SWEP.Tertiary.Recoil		= 5
 SWEP.Tertiary.Cone			= 0.02
 
 SWEP.Kind = WEAPON_ROLEZOM
-SWEP.InLoadoutFor = { ROLE_ZOMBIE }
 
 SWEP.AllowDrop = false
-SWEP.IsSilent = true
+SWEP.IsSilent = false
 
 SWEP.NextReload = CurTime()
 
 -- Pull out faster than standard guns
 SWEP.DeploySpeed = 2
 local sound_single = Sound("Weapon_Crowbar.Single")
+
+function SWEP:Initialize()
+	self:SetHoldType(self.HoldType)
+
+	if CLIENT then
+		self:AddHUDHelp("Left click to attack", "Right click to leap. Press reload to spit", false)
+	end
+end
 
 --[[
 Claw Attack
@@ -117,6 +130,8 @@ function SWEP:PrimaryAttack()
 						hitEnt:SetRole(ROLE_ZOMBIE)
 						hitEnt:SetZombiePrime(false)
 						hitEnt:SetHealth(100)
+						hitEnt:StripWeapons()
+						hitEnt:Give("weapon_zom_claws")
 						hitEnt:SetPData("IsZombifying", 0)
 						body:Remove()
 						for k, v in pairs(player.GetAll()) do
