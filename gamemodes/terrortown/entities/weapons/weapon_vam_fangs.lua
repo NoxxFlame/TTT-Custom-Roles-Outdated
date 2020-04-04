@@ -151,8 +151,9 @@ function SWEP:Think()
 		self:GetOwner():SetColor(Color(255, 255, 255, 0))
 		self:GetOwner():SetMaterial("sprites/heatwave")
 		self:GetOwner():EmitSound("weapons/ttt/fade.wav")
-	elseif self:Clip1() >= 13 and self.fading then
+	elseif self:Clip1() >= 40 and self.fading then
 		self.fading = false
+		self:GetOwner():SetColor(Color(255, 255, 255, 255))
 		self:GetOwner():SetMaterial("models/glass")
 		self:GetOwner():EmitSound("weapons/ttt/unfade.wav")
 	end
@@ -224,7 +225,7 @@ end
 
 hook.Add("TTTPlayerSpeedModifier", "FadeSpeed", function(ply, slowed, mv)
 	local wep = ply:GetActiveWeapon()
-	if wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
+	if wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 15 then
 		return 3
 	end
 end)
