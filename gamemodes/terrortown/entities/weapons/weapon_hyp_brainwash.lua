@@ -199,6 +199,8 @@ if SERVER then
 		ply:SetPos(self.Location or body:GetPos())
 		ply:SetEyeAngles(Angle(0, body:GetAngles().y, 0))
 		ply:SetRole(ROLE_TRAITOR)
+		ply:StripWeapon("weapon_zom_claws")
+		ply:StripWeapon("weapon_vam_fangs")
 		ply:PrintMessage(HUD_PRINTCENTER, "You have been brainwashed and are now a traitor.")
 		ply:SetHealth(spawnhealth)
 
