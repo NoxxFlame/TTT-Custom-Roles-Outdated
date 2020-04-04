@@ -788,27 +788,27 @@ function BeginRound()
 		v:SetPData("IsZombifying", 0)
 		v:SetNWString("AssassinTarget", "")
 		if v:GetRole() == ROLE_ASSASSIN then
-			local innocents = {}
+			local enemies = {}
 			local detectives = {}
 			for i, p in pairs(player.GetAll()) do
 				if p:Alive() and not p:IsSpec() then
-					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER then
-						table.insert(innocents, p:Nick())
+					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER or p:GetRole() == ROLE_VAMPIRE or p:GetRole() == ROLE_ZOMBIE then
+						table.insert(enemies, p:Nick())
 					elseif p:GetRole() == ROLE_DETECTIVE then
 						table.insert(detectives, p:Nick())
 					end
 				end
 			end
-			if #innocents > 0 then
-				v:SetNWString("AssassinTarget", innocents[math.random(#innocents)])
+			if #enemies > 0 then
+				v:SetNWString("AssassinTarget", enemies[math.random(#enemies)])
 			elseif #detectives > 0 then
 				v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
 			end
 
 			local targetCount
-			if #innocents + #detectives > 1 then
+			if #enemies + #detectives > 1 then
 				targetCount = "first"
-			elseif #innocents + #detectives == 1 then
+			elseif #enemies + #detectives == 1 then
 				targetCount = "final"
 			end
 			local targetMessage = "Your " .. targetCount .. " target is " .. v:GetNWString("AssassinTarget", "")
