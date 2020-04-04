@@ -1439,15 +1439,12 @@ end
 function GM:OnNPCKilled() end
 
 -- Drowning and such
-local tm = nil
-local ply = nil
-local plys = nil
 function GM:Tick()
 	-- three cheers for micro-optimizations
-	plys = player.GetAll()
+	local plys = player.GetAll()
 	for i = 1, #plys do
-		ply = plys[i]
-		tm = ply:Team()
+		local ply = plys[i]
+		local tm = ply:Team()
 		if tm == TEAM_TERROR and ply:Alive() then
 			-- Drowning
 			if ply:WaterLevel() == 3 then
@@ -1481,6 +1478,8 @@ function GM:Tick()
 			if IsValid(ply.scanner_weapon) and wep ~= ply.scanner_weapon then
 				ply.scanner_weapon:Think()
 			end
+
+			HandlePlayerHighlights(ply)
 		elseif tm == TEAM_SPEC then
 			if ply.propspec then
 				PROPSPEC.Recharge(ply)
@@ -1494,6 +1493,59 @@ function GM:Tick()
 			-- DeathThink doesn't run, so we have to SpecThink here
 			if ply:Alive() then
 				self:SpectatorThink(ply)
+			end
+		end
+	end
+end
+
+function HandlePlayerHighlights(ply)
+	if ply:GetRole() == ROLE_KILLER then
+		net.Start("TTT_Killer_PlayerHighlightOn")
+		net.WriteEntity(ply)
+		net.Send(ply)
+	elseif ply:GetRole() == ROLE_ZOMBIE then
+		if ply.GetActiveWeapon and IsValid(ply:GetActiveWeapon()) then
+			if ply:GetActiveWeapon():GetClass() == "weapon_zom_claws" then
+				ply:SetColor(Color(70, 100, 25, 255))
+				ply:SetRenderMode(RENDERMODE_NORMAL)
+				net.Start("TTT_Zombie_PlayerHighlightOn")
+				net.WriteEntity(ply)
+				net.Send(ply)
+			else
+				ply:SetColor(Color(255, 255, 255, 255))
+				ply:SetRenderMode(RENDERMODE_TRANSALPHA)
+				net.Start("TTT_PlayerHighlightOff")
+				net.WriteEntity(ply)
+				net.Send(ply)
+			end
+		end
+
+		if GetRoundState() >= ROUND_ACTIVE then
+			if ply:HasWeapon("weapon_zom_claws") == false then
+				if not ply:GetZombiePrime() and #ply:GetWeapons() > 0 then
+					ply:StripWeapons()
+				end
+				--print(ply:GetName() .. " is a zombie without the weapon, adding. CanCarry? " .. tostring(ply:CanCarryType(WEPS.TypeForWeapon("weapon_zom_claws"))))
+				-- TODO: This doesn't work!
+				ply:Give("weapon_zom_claws")
+			end
+		end
+	elseif ply:GetRole() == ROLE_VAMPIRE then
+		if ply.GetActiveWeapon and IsValid(ply:GetActiveWeapon()) then
+			if ply:GetActiveWeapon():GetClass() == "weapon_vam_fangs" then
+				net.Start("TTT_Vampire_PlayerHighlightOn")
+				net.WriteEntity(ply)
+				net.Send(ply)
+			else
+				net.Start("TTT_PlayerHighlightOff")
+				net.WriteEntity(ply)
+				net.Send(ply)
+			end
+		end
+
+		if GetRoundState() >= ROUND_ACTIVE then
+			if ply:HasWeapon("weapon_vam_fangs") == false then
+				ply:Give("weapon_vam_fangs")
 			end
 		end
 	end
@@ -1529,56 +1581,3 @@ end
 function GM:PlayerShouldTaunt(ply, actid)
 	return true
 end
-
-timer.Create("infectedchangeupdate", 0.1, 0, function()
-	for k, v in pairs(player.GetAll()) do
-		if not IsValid(v) then return end
-
-		if v:GetRole() == ROLE_KILLER then
-			net.Start("TTT_Killer_PlayerHighlightOn")
-			net.WriteEntity(v)
-			net.Send(v)
-		elseif v:GetRole() == ROLE_ZOMBIE then
-			if not v.GetActiveWeapon or not IsValid(v:GetActiveWeapon()) then return end
-			if v:GetActiveWeapon():GetClass() == "weapon_zom_claws" then
-				v:SetColor(Color(70, 100, 25, 255))
-				v:SetRenderMode(RENDERMODE_NORMAL)
-				net.Start("TTT_Zombie_PlayerHighlightOn")
-				net.WriteEntity(v)
-				net.Send(v)
-			else
-				v:SetColor(Color(255, 255, 255, 255))
-				v:SetRenderMode(RENDERMODE_TRANSALPHA)
-				net.Start("TTT_PlayerHighlightOff")
-				net.WriteEntity(v)
-				net.Send(v)
-			end
-
-			if GetRoundState() == ROUND_ACTIVE then
-				if v:HasWeapon("weapon_zom_claws") == false then
-					if not v:GetZombiePrime() then
-						v:RemoveAllItems()
-					end
-					v:Give("weapon_zom_claws")
-				end
-			end
-		elseif v:GetRole() == ROLE_VAMPIRE then
-			if not v.GetActiveWeapon or not IsValid(v:GetActiveWeapon()) then return end
-			if v:GetActiveWeapon():GetClass() == "weapon_vam_fangs" then
-				net.Start("TTT_Vampire_PlayerHighlightOn")
-				net.WriteEntity(v)
-				net.Send(v)
-			else
-				net.Start("TTT_PlayerHighlightOff")
-				net.WriteEntity(v)
-				net.Send(v)
-			end
-
-			if GetRoundState() == ROUND_ACTIVE then
-				if v:HasWeapon("weapon_vam_fangs") == false then
-					v:Give("weapon_vam_fangs")
-				end
-			end
-		end
-	end
-end)
