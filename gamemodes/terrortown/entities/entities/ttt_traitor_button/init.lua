@@ -8,33 +8,33 @@ ENT.Model = Model("models/weapons/w_bugbait.mdl")
 
 function ENT:Initialize()
 	self:SetModel(self.Model)
-	
+
 	self:SetNoDraw(true)
 	self:DrawShadow(false)
 	self:SetSolid(SOLID_NONE)
 	self:SetMoveType(MOVETYPE_NONE)
-	
+
 	self:SetDelay(self.RawDelay or 1)
-	
+
 	if self:GetDelay() < 0 then
 		-- func_button can be made single use by setting delay to be negative, so
 		-- mimic that here
 		self.RemoveOnPress = true
 	end
-	
+
 	if self.RemoveOnPress then
 		self:SetDelay(-1) -- tells client we're single use
 	end
-	
+
 	if self:GetUsableRange() < 1 then
 		self:SetUsableRange(1024)
 	end
-	
+
 	self:SetNextUseTime(0)
 	self:SetLocked(self:HasSpawnFlags(2048))
-	
+
 	self:SetDescription(self.RawDescription or "?")
-	
+
 	self.RawDelay = nil
 	self.RawDescription = nil
 end
@@ -46,7 +46,7 @@ function ENT:KeyValue(key, value)
 		self.RawDelay = tonumber(value)
 	elseif key == "description" then
 		self.RawDescription = tostring(value)
-		
+
 		if self.RawDescription and string.len(self.RawDescription) < 1 then
 			self.RawDescription = nil
 		end
@@ -78,22 +78,22 @@ function GAMEMODE:TTTCanUseTraitorButton(ent, ply)
 end
 
 function ENT:TraitorUse(ply)
-	if not (IsValid(ply) and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveVampire() or ply:IsActiveAssassin() or ply:IsActiveZombie())) then return false end
+	if not (IsValid(ply) and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin())) then return false end
 	if not self:IsUsable() then return false end
-	
+
 	if self:GetPos():Distance(ply:GetPos()) > self:GetUsableRange() then return false end
-	
+
 	local use, message = hook.Run("TTTCanUseTraitorButton", self, ply)
 	if not use then
 		if message then TraitorMsg(ply, message) end
 		return false
 	end
-	
+
 	net.Start("TTT_ConfirmUseTButton") net.Send(ply)
-	
+
 	-- send output to all entities linked to us
 	self:TriggerOutput("OnPressed", ply)
-	
+
 	if self.RemoveOnPress then
 		self:SetLocked(true)
 		self:Remove()
@@ -101,7 +101,7 @@ function ENT:TraitorUse(ply)
 		-- lock ourselves until we should be usable again
 		self:SetNextUseTime(CurTime() + self:GetDelay())
 	end
-	
+
 	hook.Run("TTTTraitorButtonActivated", self, ply)
 	return true
 end
@@ -113,8 +113,8 @@ end
 
 local function TraitorUseCmd(ply, cmd, args)
 	if #args ~= 1 then return end
-	
-	if IsValid(ply) and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveVampire() or ply:IsActiveAssassin() or ply:IsActiveZombie()) then
+
+	if IsValid(ply) and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) then
 		local idx = tonumber(args[1])
 		if idx then
 			local ent = Entity(idx)

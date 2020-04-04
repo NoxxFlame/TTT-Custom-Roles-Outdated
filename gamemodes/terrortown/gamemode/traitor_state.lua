@@ -1,7 +1,7 @@
 function GetTraitors()
 	local trs = {}
 	for k, v in ipairs(player.GetAll()) do
-		if v:GetTraitor() or v:GetHypnotist() then table.insert(trs, v) end
+		if v:GetTraitor() or v:GetHypnotist() or v:GetAssassin() then table.insert(trs, v) end
 	end
 
 	return trs

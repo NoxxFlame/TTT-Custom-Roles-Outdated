@@ -17,26 +17,26 @@ end
 function ENT:CountTraitors()
 	local mins = self:LocalToWorld(self:OBBMins())
 	local maxs = self:LocalToWorld(self:OBBMaxs())
-	
+
 	local trs = 0
 	for _, ply in pairs(player.GetAll()) do
-		if IsValid(ply) and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveVampire() or ply:IsActiveAssassin() or ply:IsActiveZombie()) and ply:Alive() then
+		if IsValid(ply) and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) and ply:Alive() then
 			local pos = ply:GetPos()
 			if VectorInside(pos, mins, maxs) then
 				trs = trs + 1
 			end
 		end
 	end
-	
+
 	return trs
 end
 
 function ENT:AcceptInput(name, activator, caller)
 	if name == "CheckForTraitor" then
 		local traitors = self:CountTraitors()
-		
+
 		self:TriggerOutput("TraitorsFound", activator, traitors)
-		
+
 		return true
 	end
 end
