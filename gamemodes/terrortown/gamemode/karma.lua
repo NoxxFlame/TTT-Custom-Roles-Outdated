@@ -36,7 +36,7 @@ local config = KARMA.cv
 local function IsDebug() return config.debug:GetBool() end
 
 local function isTraitorTeam(ply)
-	return ply:GetTraitor() or ply:GetHypnotist() or ply:GetVampire() or ply:GetAssassin() or ply:GetZombie()
+	return ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()
 end
 
 local function isJesterTeam(ply)
@@ -45,6 +45,10 @@ end
 
 local function isInnocent(ply)
 	return not isTraitorTeam(ply) and not ply:GetKiller()
+end
+
+local function isMonsterTeam(ply)
+	return ply:GetVampire() or ply:GetZombie()
 end
 
 local function isKiller(ply)
@@ -101,7 +105,7 @@ end
 
 function KARMA.ApplyKarma(ply)
 	local df = 1
-	
+
 	-- any karma at 1000 or over guarantees a df of 1, only when it's lower do we
 	-- need the penalty curve
 	if ply:GetBaseKarma() < 1000 then
@@ -117,9 +121,9 @@ function KARMA.ApplyKarma(ply)
 			end
 		end
 	end
-	
+
 	ply:SetDamageFactor(math.Clamp(df, 0.1, 1.0))
-	
+
 	if IsDebug() then
 		print(Format("%s has karma %f and gets df %f", ply:Nick(), ply:GetBaseKarma(), df))
 	end
@@ -131,7 +135,7 @@ local function WasAvoidable(attacker, victim, dmginfo)
 	if attacker:IsTraitor() and victim:IsTraitor() and IsValid(infl) and infl.Avoidable then
 		return true
 	end
-	
+
 	return false
 end
 
@@ -146,32 +150,32 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 	if isInnocent(attacker) and isKiller(victim) then
 		local reward = KARMA.GetHurtReward(hurt_amount)
 		reward = KARMA.GiveReward(attacker, reward)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
 		end
 	return end
-	
+
 	-- Ignore excess damage
 	local hurt_amount = math.min(victim:Health(), dmginfo:GetDamage())
-	
+
 	if isTraitorTeam(attacker) == isTraitorTeam(victim) and not isJesterTeam(victim) then
 		if WasAvoidable(attacker, victim, dmginfo) then return end
-		
+
 		local penalty = KARMA.GetHurtPenalty(victim:GetLiveKarma(), hurt_amount)
-		
+
 		KARMA.GivePenalty(attacker, penalty, victim)
-		
+
 		attacker:SetCleanRound(false)
 		attacker:SetCleanRounds(0)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) attacked %s (%f) for %d and got penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, penalty))
 		end
 	elseif (not isTraitorTeam(attacker)) and isTraitorTeam(victim) then
 		local reward = KARMA.GetHurtReward(hurt_amount)
 		reward = KARMA.GiveReward(attacker, reward)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
 		end
@@ -180,7 +184,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 		KARMA.GivePenalty(attacker, penalty, victim)
 		attacker:SetCleanRound(false)
 		attacker:SetCleanRounds(0)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) attacked the jester %s (%f) for %d and got penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, penalty))
 		end
@@ -196,30 +200,30 @@ function KARMA.Killed(attacker, victim, dmginfo)
 	if isInnocent(attacker) and isKiller(victim) then
 		local reward = KARMA.GetKillReward()
 		reward = KARMA.GiveReward(attacker, reward)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) killed %s (%f) and gets REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), reward))
 		end
 	return end
-	
+
 	if isTraitorTeam(attacker) == isTraitorTeam(victim) and not isJesterTeam(victim) then
 		-- don't penalise attacker for stupid victims
 		if WasAvoidable(attacker, victim, dmginfo) then return end
-		
+
 		local penalty = KARMA.GetKillPenalty(victim:GetLiveKarma())
-		
+
 		KARMA.GivePenalty(attacker, penalty, victim)
-		
+
 		attacker:SetCleanRound(false)
 		attacker:SetCleanRounds(0)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) killed %s (%f) and gets penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), penalty))
 		end
 	elseif (not isTraitorTeam(attacker)) and isTraitorTeam(victim) then
 		local reward = KARMA.GetKillReward()
 		reward = KARMA.GiveReward(attacker, reward)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) killed %s (%f) and gets REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), reward))
 		end
@@ -228,7 +232,7 @@ function KARMA.Killed(attacker, victim, dmginfo)
 		KARMA.GivePenalty(attacker, penalty, victim)
 		attacker:SetCleanRound(false)
 		attacker:SetCleanRounds(0)
-		
+
 		if IsDebug() then
 			print(Format("%s (%f) killed the jester %s (%f) and gets penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), penalty))
 		end
@@ -240,7 +244,7 @@ function KARMA.DecayedMultiplier(ply)
 	local max = config.max:GetFloat()
 	local start = config.starting:GetFloat()
 	local k = ply:GetLiveKarma()
-	
+
 	if config.falloff:GetFloat() <= 0 or k < start then
 		return 1
 	elseif k < max then
@@ -249,12 +253,12 @@ function KARMA.DecayedMultiplier(ply)
 		local basediff = max - start
 		local plydiff = k - start
 		local half = math.Clamp(config.falloff:GetFloat(), 0.01, 0.99)
-		
+
 		-- exponentially decay the bonus such that when the player's excess karma
 		-- is at (basediff * half) the bonus is half of the original value
 		return expdecay(basediff * half, plydiff)
 	end
-	
+
 	return 1
 end
 
@@ -262,7 +266,7 @@ end
 function KARMA.RoundIncrement()
 	local healbonus = config.roundheal:GetFloat()
 	local cleanbonus = config.clean:GetFloat()
-	
+
 	for _, ply in pairs(player.GetAll()) do
 		if ply:IsDeadTerror() and ply.death_type ~= KILL_SUICIDE or not ply:IsSpec() then
 			local bonus = 0
@@ -272,13 +276,13 @@ function KARMA.RoundIncrement()
 				bonus = healbonus + (ply:GetCleanRound() and cleanbonus or 0)
 			end
 			KARMA.GiveReward(ply, bonus)
-			
+
 			if IsDebug() then
 				print(ply, "gets roundincr", incr)
 			end
 		end
 	end
-	
+
 	-- player's CleanRound state will be reset by the ply class
 end
 
@@ -288,7 +292,7 @@ function KARMA.Rebase()
 		if IsDebug() then
 			print(ply, "rebased from", ply:GetBaseKarma(), "to", ply:GetLiveKarma())
 		end
-		
+
 		ply:SetBaseKarma(ply:GetLiveKarma())
 	end
 end
@@ -308,7 +312,7 @@ function KARMA.NotifyPlayer(ply)
 			LANG.Msg(ply, "karma_dmg_full", { amount = k })
 			ply:PrintMessage(HUD_PRINTTALK, "Your Karma is " .. k .. ", so you deal full damage this round!")
 		else
-			
+
 			LANG.Msg(ply, "karma_dmg_other",
 				{
 					amount = k,
@@ -324,13 +328,13 @@ end
 function KARMA.RoundEnd()
 	if KARMA.IsEnabled() then
 		KARMA.RoundIncrement()
-		
+
 		-- if karma trend needs to be shown in round report, may want to delay
 		-- rebase until start of next round
 		KARMA.Rebase()
-		
+
 		KARMA.RememberAll()
-		
+
 		if config.autokick:GetBool() then
 			for _, ply in pairs(player.GetAll()) do
 				KARMA.CheckAutoKick(ply)
@@ -341,11 +345,11 @@ end
 
 function KARMA.RoundBegin()
 	KARMA.InitState()
-	
+
 	if KARMA.IsEnabled() then
 		for _, ply in pairs(player.GetAll()) do
 			KARMA.ApplyKarma(ply)
-			
+
 			KARMA.NotifyPlayer(ply)
 		end
 	end
@@ -353,27 +357,27 @@ end
 
 function KARMA.InitPlayer(ply)
 	local k = KARMA.Recall(ply) or config.starting:GetFloat()
-	
+
 	k = math.Clamp(k, 0, config.max:GetFloat())
-	
+
 	ply:SetBaseKarma(k)
 	ply:SetLiveKarma(k)
 	ply:SetCleanRound(true)
 	ply:SetCleanRounds(ply:GetCleanRounds() + 1)
 	ply:SetDamageFactor(1.0)
-	
+
 	-- compute the damagefactor based on actual (possibly loaded) karma
 	KARMA.ApplyKarma(ply)
 end
 
 function KARMA.Remember(ply)
 	if ply.karma_kicked or (not ply:IsFullyAuthenticated()) then return end
-	
+
 	-- use sql if persistence is on
 	if config.persist:GetBool() then
 		ply:SetPData("karma_stored", ply:GetLiveKarma())
 	end
-	
+
 	-- if persist is on, this is purely a backup method
 	KARMA.RememberedPlayers[ply:SteamID()] = ply:GetLiveKarma()
 end
@@ -381,7 +385,7 @@ end
 function KARMA.Recall(ply)
 	if config.persist:GetBool() then
 		ply.delay_karma_recall = not ply:IsFullyAuthenticated()
-		
+
 		if ply:IsFullyAuthenticated() then
 			local k = tonumber(ply:GetPData("karma_stored", nil))
 			if k then
@@ -389,7 +393,7 @@ function KARMA.Recall(ply)
 			end
 		end
 	end
-	
+
 	return KARMA.RememberedPlayers[ply:SteamID()]
 end
 
@@ -414,17 +418,17 @@ function KARMA.CheckAutoKick(ply)
 			return
 		end
 		ServerLog(ply:Nick() .. " autokicked/banned for low karma.\n")
-		
+
 		-- flag player as autokicked so we don't perform the normal player
 		-- disconnect logic
 		ply.karma_kicked = true
-		
+
 		if config.persist:GetBool() then
 			local k = math.Clamp(config.starting:GetFloat() * 0.8, config.kicklevel:GetFloat() * 1.1, config.max:GetFloat())
 			ply:SetPData("karma_stored", k)
 			KARMA.RememberedPlayers[ply:SteamID()] = k
 		end
-		
+
 		if config.autoban:GetBool() then
 			ply:KickBan(config.bantime:GetInt(), reason)
 		else
