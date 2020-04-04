@@ -1152,34 +1152,15 @@ function SelectRoles()
 	local det_count = GetDetectiveCount(choice_count)
 
 	local zombie_chance = GetConVar("ttt_zombie_chance"):GetFloat()
-	local real_zombie_chance = zombie_chance
-
-	local hypnotist_chance = GetConVar("ttt_hypnotist_chance"):GetFloat()
-	local real_hypnotist_chance = hypnotist_chance / (1 - real_zombie_chance)
-
 	local vampire_chance = GetConVar("ttt_vampire_chance"):GetFloat()
-	local real_vampire_chance = vampire_chance / ((1 - real_zombie_chance) * (1 - real_hypnotist_chance))
-
+	local hypnotist_chance = GetConVar("ttt_hypnotist_chance"):GetFloat()
 	local assassin_chance = GetConVar("ttt_assassin_chance"):GetFloat()
-	local real_assassin_chance = assassin_chance / ((1 - real_zombie_chance) * (1 - real_hypnotist_chance) * (1 - real_vampire_chance))
-
 	local jester_chance = GetConVar("ttt_jester_chance"):GetFloat()
-	local real_jester_chance = jester_chance
-
 	local swapper_chance = GetConVar("ttt_swapper_chance"):GetFloat()
-	local real_swapper_chance = swapper_chance / (1 - jester_chance)
-
 	local killer_chance = GetConVar("ttt_killer_chance"):GetFloat()
-	local real_killer_chance = killer_chance / ((1 - jester_chance) * (1 - swapper_chance))
-
 	local glitch_chance = GetConVar("ttt_glitch_chance"):GetFloat()
-	local real_glitch_chance = glitch_chance / (1 - hypnotist_chance - vampire_chance - assassin_chance)
-
 	local phantom_chance = GetConVar("ttt_phantom_chance"):GetFloat()
-	local real_phantom_chance = phantom_chance
-
 	local mercenary_chance = GetConVar("ttt_mercenary_chance"):GetFloat()
-	local real_mercenary_chance = mercenary_chance
 
 	if choice_count == 0 then return end
 
@@ -1279,11 +1260,11 @@ function SelectRoles()
 		-- make this guy traitor if he was not a traitor last time, or if he makes
 		-- a roll
 		if IsValid(pply) and ((not (table.HasValue(prev_roles[ROLE_TRAITOR], pply) or table.HasValue(prev_roles[ROLE_ZOMBIE], pply) or table.HasValue(prev_roles[ROLE_HYPNOTIST], pply) or table.HasValue(prev_roles[ROLE_VAMPIRE], pply) or table.HasValue(prev_roles[ROLE_ASSASSIN], pply))) or (math.random(1, 3) == 2)) and pply:SteamID() ~= "STEAM_0:1:22691201" then
-			if ts >= GetConVar("ttt_hypnotist_required_traitors"):GetInt() and GetConVar("ttt_hypnotist_enabled"):GetInt() == 1 and math.random() <= real_hypnotist_chance and not hasSpecial then
+			if ts >= GetConVar("ttt_hypnotist_required_traitors"):GetInt() and GetConVar("ttt_hypnotist_enabled"):GetInt() == 1 and math.random() <= hypnotist_chance and not hasSpecial then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Hypnotist")
 				pply:SetRole(ROLE_HYPNOTIST)
 				hasSpecial = true
-			elseif ts >= GetConVar("ttt_assassin_required_traitors"):GetInt() and GetConVar("ttt_assassin_enabled"):GetInt() == 1 and math.random() <= real_assassin_chance and not hasSpecial then
+			elseif ts >= GetConVar("ttt_assassin_required_traitors"):GetInt() and GetConVar("ttt_assassin_enabled"):GetInt() == 1 and math.random() <= assassin_chance and not hasSpecial then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Assassin")
 				pply:SetRole(ROLE_ASSASSIN)
 				hasSpecial = true
@@ -1306,13 +1287,13 @@ function SelectRoles()
 		-- make this guy traitor if he was not a traitor last time, or if he makes
 		-- a roll
 		if IsValid(pply) and (not (table.HasValue(prev_roles[ROLE_TRAITOR], pply) or table.HasValue(prev_roles[ROLE_ZOMBIE], pply) or table.HasValue(prev_roles[ROLE_HYPNOTIST], pply) or table.HasValue(prev_roles[ROLE_VAMPIRE], pply) or table.HasValue(prev_roles[ROLE_ASSASSIN], pply)) or (math.random(1, 3) == 2)) and pply:SteamID() ~= "STEAM_0:1:22691201" then
-			if ts >= GetConVar("ttt_zombie_required_traitors"):GetInt() and GetConVar("ttt_zombie_enabled"):GetInt() == 1 and math.random() <= real_zombie_chance and not hasMonster then
+			if ts >= GetConVar("ttt_zombie_required_traitors"):GetInt() and GetConVar("ttt_zombie_enabled"):GetInt() == 1 and math.random() <= zombie_chance and not hasMonster then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Zombie")
 				pply:SetRole(ROLE_ZOMBIE)
 				pply:SetZombiePrime(true)
 				table.remove(choices, pick)
 				hasMonster = true
-			elseif ts >= GetConVar("ttt_vampire_required_traitors"):GetInt() and GetConVar("ttt_vampire_enabled"):GetInt() == 1 and math.random() <= real_vampire_chance and not hasMonster then
+			elseif ts >= GetConVar("ttt_vampire_required_traitors"):GetInt() and GetConVar("ttt_vampire_enabled"):GetInt() == 1 and math.random() <= vampire_chance and not hasMonster then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Vampire")
 				pply:SetRole(ROLE_VAMPIRE)
 				table.remove(choices, pick)
@@ -1365,7 +1346,7 @@ function SelectRoles()
 		end
 	end
 
-	if GetConVar("ttt_jester_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= real_jester_chance and not hasJester then
+	if GetConVar("ttt_jester_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= jester_chance and not hasJester then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1374,7 +1355,7 @@ function SelectRoles()
 			table.remove(choices, pick)
 			hasJester = true
 		end
-	elseif GetConVar("ttt_swapper_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= real_swapper_chance and not hasJester then
+	elseif GetConVar("ttt_swapper_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= swapper_chance and not hasJester then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1383,7 +1364,7 @@ function SelectRoles()
 			table.remove(choices, pick)
 			hasJester = true
 		end
-	elseif GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= real_killer_chance and not hasKiller then
+	elseif GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1394,7 +1375,7 @@ function SelectRoles()
 		end
 	end
 
-	if GetConVar("ttt_mercenary_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_mercenary_required_innos"):GetInt() and math.random() <= real_mercenary_chance and not hasMercenary then
+	if GetConVar("ttt_mercenary_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_mercenary_required_innos"):GetInt() and math.random() <= mercenary_chance and not hasMercenary then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1404,7 +1385,7 @@ function SelectRoles()
 			hasMercenary = true
 		end
 	end
-	if GetConVar("ttt_phantom_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_phantom_required_innos"):GetInt() and math.random() <= real_phantom_chance and not hasPhantom then
+	if GetConVar("ttt_phantom_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_phantom_required_innos"):GetInt() and math.random() <= phantom_chance and not hasPhantom then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1414,7 +1395,7 @@ function SelectRoles()
 			hasPhantom = true
 		end
 	end
-	if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= real_glitch_chance and not hasGlitch and (ts > 1 or hasMonster) then
+	if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and (ts > 1 or hasMonster) then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
