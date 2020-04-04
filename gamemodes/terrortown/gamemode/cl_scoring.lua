@@ -72,7 +72,7 @@ local function InsertPlayerToTable(playerTable, name)
 end
 
 local function InsertRevivedPlayer(name)
-	InsertPlayerToTable(revived, name)
+	table.insert(revived, name)
 end
 
 net.Receive("TTT_JesterKiller", function(len)
