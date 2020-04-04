@@ -37,7 +37,7 @@ SWEP.Tertiary = {}
 SWEP.Tertiary.Damage 		= 25
 SWEP.Tertiary.NumShots		= SWEP.Primary.NumShots
 SWEP.Tertiary.Recoil		= 5
-SWEP.Tertiary.Cone			= SWEP.Primary.Cone
+SWEP.Tertiary.Cone			= 0.02
 
 SWEP.Kind = WEAPON_ROLEZOM
 SWEP.InLoadoutFor = { ROLE_ZOMBIE }
@@ -182,7 +182,7 @@ function SWEP:CSShootBullet(dmg, recoil, numbul, cone)
 	bullet.Num 			= 1
 	bullet.Src 			= self.Owner:GetShootPos()			-- Source
 	bullet.Dir 			= self.Owner:GetAimVector()			-- Dir of bullet
-	bullet.Spread 		= Vector(0, 0, 0)					-- Aim Cone
+	bullet.Spread 		= Vector(cone, 0, 0)					-- Aim Cone
 	bullet.Tracer		= 1
 	bullet.TracerName 	= "acidtracer"
 	bullet.Force		= 55

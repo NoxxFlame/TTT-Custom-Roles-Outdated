@@ -3,7 +3,7 @@ function GetTraitors()
 	for k, v in ipairs(player.GetAll()) do
 		if v:GetTraitor() or v:GetHypnotist() then table.insert(trs, v) end
 	end
-	
+
 	return trs
 end
 
@@ -23,14 +23,14 @@ end
 local function SendRoleListMessage(role, role_ids, ply_or_rf)
 	net.Start("TTT_RoleList")
 	net.WriteUInt(role, 4)
-	
+
 	-- list contents
 	local num_ids = #role_ids
 	net.WriteUInt(num_ids, 8)
 	for i = 1, num_ids do
 		net.WriteUInt(role_ids[i] - 1, 7)
 	end
-	
+
 	if ply_or_rf then net.Send(ply_or_rf)
 	else net.Broadcast()
 	end
@@ -45,7 +45,7 @@ local function SendRoleList(role, ply_or_rf, pred)
 			end
 		end
 	end
-	
+
 	SendRoleListMessage(role, role_ids, ply_or_rf)
 end
 
@@ -101,15 +101,15 @@ end
 
 function SendRoleReset(ply_or_rf)
 	local plys = player.GetAll()
-	
+
 	net.Start("TTT_RoleList")
 	net.WriteUInt(ROLE_INNOCENT, 4)
-	
+
 	net.WriteUInt(#plys, 8)
 	for k, v in pairs(plys) do
 		net.WriteUInt(v:EntIndex() - 1, 7)
 	end
-	
+
 	if ply_or_rf then net.Send(ply_or_rf)
 	else net.Broadcast()
 	end
@@ -120,7 +120,7 @@ local function request_rolelist(ply)
 	-- Client requested a state update. Note that the client can only use this
 	-- information after entities have been initialised (e.g. in InitPostEntity).
 	if GetRoundState() ~= ROUND_WAIT then
-		
+
 		SendRoleReset(ply)
 		SendDetectiveList(ply)
 		SendMercenaryList(ply)
@@ -133,7 +133,7 @@ local function request_rolelist(ply)
 		SendSwapperList(ply)
 		SendAssassinList(ply)
 		SendKillerList(ply)
-		
+
 		if ply:IsTraitor() then
 			SendTraitorList(ply)
 		else
@@ -148,12 +148,12 @@ local function force_terror(ply)
 	ply:SetRole(ROLE_INNOCENT)
 	ply:UnSpectate()
 	ply:SetTeam(TEAM_TERROR)
-	
+
 	ply:StripAll()
-	
+
 	ply:Spawn()
 	ply:PrintMessage(HUD_PRINTTALK, "You are now on the terrorist team.")
-	
+
 	SendFullStateUpdate()
 end
 
@@ -169,7 +169,10 @@ local function force_innocent(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -185,7 +188,10 @@ local function force_traitor(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -201,7 +207,10 @@ local function force_detective(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -217,7 +226,10 @@ local function force_mercenary(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -233,8 +245,11 @@ local function force_hypnotist(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
 	ply:Give("weapon_hyp_brainwash")
-	
+
 	SendFullStateUpdate()
 end
 
@@ -250,7 +265,10 @@ local function force_glitch(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -266,7 +284,10 @@ local function force_jester(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -282,7 +303,10 @@ local function force_phantom(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -298,7 +322,11 @@ local function force_zombie(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+	ply:Give("weapon_zom_claws")
+
 	SendFullStateUpdate()
 end
 
@@ -314,7 +342,11 @@ local function force_vampire(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+	ply:Give("weapon_vam_fangs")
+
 	SendFullStateUpdate()
 end
 
@@ -330,8 +362,10 @@ local function force_swapper(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	ply:Give("weapon_vam_fangs")
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -347,7 +381,10 @@ local function force_assassin(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -363,7 +400,10 @@ local function force_killer(ply)
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
-	
+	if ply:HasWeapon("weapon_zom_claws") then
+		ply:StripWeapon("weapon_zom_claws")
+	end
+
 	SendFullStateUpdate()
 end
 
@@ -377,12 +417,12 @@ local function force_spectate(ply, cmd, arg)
 			if not ply:IsSpec() then
 				ply:Kill()
 			end
-			
+
 			GAMEMODE:PlayerSpawnAsSpectator(ply)
 			ply:SetTeam(TEAM_SPEC)
 			ply:SetForceSpec(true)
 			ply:Spawn()
-			
+
 			ply:SetRagdollSpec(false) -- dying will enable this, we don't want it here
 		end
 	end
