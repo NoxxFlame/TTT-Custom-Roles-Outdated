@@ -43,12 +43,12 @@ local function isJesterTeam(ply)
 	return ply:GetJester() or ply:GetSwapper()
 end
 
-local function isInnocent(ply)
-	return not isTraitorTeam(ply) and not ply:GetKiller()
-end
-
 local function isMonsterTeam(ply)
 	return ply:GetVampire() or ply:GetZombie()
+end
+
+local function isInnocent(ply)
+	return not isTraitorTeam(ply) and not isMonsterTeam(ply) and not ply:GetKiller()
 end
 
 local function isKiller(ply)
@@ -139,6 +139,13 @@ local function WasAvoidable(attacker, victim, dmginfo)
 	return false
 end
 
+local function ShouldReduceKarma(attacker, victim)
+	local issameteam = (isTraitorTeam(attacker) and isTraitorTeam(victim)) or
+					(isMonsterTeam(attacker) and isMonsterTeam(victim)) or
+					(isInnocent(attacker) and isInnocent(victim))
+	return issameteam
+end
+
 -- Handle karma change due to one player damaging another. Damage must not have
 -- been applied to the victim yet, but must have been scaled according to the
 -- damage factor of the attacker.
@@ -159,25 +166,16 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 	-- Ignore excess damage
 	local hurt_amount = math.min(victim:Health(), dmginfo:GetDamage())
 
-	if isTraitorTeam(attacker) == isTraitorTeam(victim) and not isJesterTeam(victim) then
+	if ShouldReduceKarma(attacker, victim) then
 		if WasAvoidable(attacker, victim, dmginfo) then return end
 
 		local penalty = KARMA.GetHurtPenalty(victim:GetLiveKarma(), hurt_amount)
-
 		KARMA.GivePenalty(attacker, penalty, victim)
-
 		attacker:SetCleanRound(false)
 		attacker:SetCleanRounds(0)
 
 		if IsDebug() then
 			print(Format("%s (%f) attacked %s (%f) for %d and got penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, penalty))
-		end
-	elseif (not isTraitorTeam(attacker)) and isTraitorTeam(victim) then
-		local reward = KARMA.GetHurtReward(hurt_amount)
-		reward = KARMA.GiveReward(attacker, reward)
-
-		if IsDebug() then
-			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
 		end
 	elseif isJesterTeam(victim) then
 		local penalty = hurt_amount * config.jratio:GetFloat()
@@ -187,6 +185,13 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 
 		if IsDebug() then
 			print(Format("%s (%f) attacked the jester %s (%f) for %d and got penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, penalty))
+		end
+	else
+		local reward = KARMA.GetHurtReward(hurt_amount)
+		reward = KARMA.GiveReward(attacker, reward)
+
+		if IsDebug() then
+			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
 		end
 	end
 end
@@ -206,26 +211,17 @@ function KARMA.Killed(attacker, victim, dmginfo)
 		end
 	return end
 
-	if isTraitorTeam(attacker) == isTraitorTeam(victim) and not isJesterTeam(victim) then
+	if ShouldReduceKarma(attacker, victim) then
 		-- don't penalise attacker for stupid victims
 		if WasAvoidable(attacker, victim, dmginfo) then return end
 
 		local penalty = KARMA.GetKillPenalty(victim:GetLiveKarma())
-
 		KARMA.GivePenalty(attacker, penalty, victim)
-
 		attacker:SetCleanRound(false)
 		attacker:SetCleanRounds(0)
 
 		if IsDebug() then
 			print(Format("%s (%f) killed %s (%f) and gets penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), penalty))
-		end
-	elseif (not isTraitorTeam(attacker)) and isTraitorTeam(victim) then
-		local reward = KARMA.GetKillReward()
-		reward = KARMA.GiveReward(attacker, reward)
-
-		if IsDebug() then
-			print(Format("%s (%f) killed %s (%f) and gets REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), reward))
 		end
 	elseif isJesterTeam(victim) then
 		local penalty = config.jpenalty:GetFloat()
@@ -235,6 +231,13 @@ function KARMA.Killed(attacker, victim, dmginfo)
 
 		if IsDebug() then
 			print(Format("%s (%f) killed the jester %s (%f) and gets penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), penalty))
+		end
+	else
+		local reward = KARMA.GetKillReward()
+		reward = KARMA.GiveReward(attacker, reward)
+
+		if IsDebug() then
+			print(Format("%s (%f) killed %s (%f) and gets REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), reward))
 		end
 	end
 end
