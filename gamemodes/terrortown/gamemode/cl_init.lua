@@ -551,9 +551,9 @@ function OnPlayerHightlightEnabled(role, alliedRole, isGlitchAllied)
 			end
 
 			if showHighlights then
-				halo.Add(enemies, Color(255, 0, 0), 0, 0, 2, true, true)
-				halo.Add(friends, Color(0, 255, 0), 0, 0, 2, true, true)
-				halo.Add(jesters, Color(255, 85, 100), 0, 0, 2, true, true)
+				halo.Add(enemies, Color(255, 0, 0), 1, 1, 1, true, true)
+				halo.Add(friends, Color(0, 255, 0), 1, 1, 1, true, true)
+				halo.Add(jesters, Color(255, 85, 100), 1, 1, 1, true, true)
 			end
 		end
 	end

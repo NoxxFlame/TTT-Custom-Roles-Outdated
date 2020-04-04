@@ -45,7 +45,7 @@ SWEP.Tertiary.NumShots		= SWEP.Primary.NumShots
 SWEP.Tertiary.Recoil		= 5
 SWEP.Tertiary.Cone			= 0.02
 
-SWEP.Kind = WEAPON_ROLEZOM
+SWEP.Kind = WEAPON_ROLE
 
 SWEP.AllowDrop = false
 SWEP.IsSilent = false
