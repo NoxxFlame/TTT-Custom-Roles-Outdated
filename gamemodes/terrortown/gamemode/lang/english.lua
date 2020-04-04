@@ -714,24 +714,24 @@ Press {menukey} to receive your special equipment!]]
 L.info_popup_glitch = [[You are a Glitch! The traitors think you are one of them.
 Try to blend in and don't give yourself away.]]
 
-L.info_popup_jester = [[You are a Jester! You Hate your life, you want to die
+L.info_popup_jester = [[You are a Jester! You hate your life, you want to die
 but you deal no damage so you must be killed by some one else.]]
 
-L.info_popup_phantom = [[You are a Phantom!  Try to survive and help your innocent friends!
+L.info_popup_phantom = [[You are a Phantom! Try to survive and help your innocent friends!
 You will haunt the player who kills you causing black smoke to appear.
 The haunting will then spread if other players kill your attacker.]]
 
-L.info_popup_zombie = [[You are a Zombie! Work with fellow zombies to kill all others.
+L.info_popup_zombie = [[You are a Zombie! Work with fellow monsters to kill all others.
 
 These are your comrades:
-{zombielist}
+{monsterlist}
 
 All damage you deal with guns is reduced by one half.
 Killing someone with your claws will turn them into a zombie.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_zombie_alone = [[You are a Zombie! You have no fellow zombies this round.
+L.info_popup_zombie_alone = [[You are a Zombie! You have no fellow monsters this round.
 
 Kill all others to win!
 
@@ -740,16 +740,16 @@ Killing someone with your claws will turn them into a zombie.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_vampire = [[You are a Vampire! Work with fellow traitors to kill all others.
+L.info_popup_vampire = [[You are a Vampire! Work with fellow monsters to kill all others.
 
 These are your comrades:
-{traitorlist}
+{monsterlist}
 
 You can use your fangs to eat corpses and refill your health.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_vampire_alone = [[You are a Vampire! You have no fellow traitors this round.
+L.info_popup_vampire_alone = [[You are a Vampire! You have no fellow monsters this round.
 
 Kill all others to win!
 
@@ -757,7 +757,7 @@ You can use your fangs to eat corpses and refill your health.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_swapper = [[You are a Swapper! You deal no damage however,
+L.info_popup_swapper = [[You are a Swapper! You deal no damage, however
 if anyone kills you they will die instead and
 you take their role and can join the fight.]]
 
@@ -772,7 +772,7 @@ player will result in you losing your double damage bonus.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_assassin_alone = [[You are a Assassin! You have no fellow traitors this round.
+L.info_popup_assassin_alone = [[You are an Assassin! You have no fellow traitors this round.
 
 Kill all others to win!
 
@@ -807,16 +807,6 @@ These are your comrades:
 {traitorlist}
 The following comrade is a hypnotist:
 {hypnotistlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_vampire = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-But take care, or your treason may be discovered...
-
-These are your comrades:
-{traitorlist}
-The following comrade is a vampire:
-{vampirelist}
 
 Press {menukey} to receive your special equipment!]]
 
