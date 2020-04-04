@@ -585,7 +585,7 @@ local function CheckCreditAward(victim, attacker)
 			-- If size is 0, awards are off
 			if amt > 0 then
 				-- If the victim was killed by a vampire, only award the vampire(s)
-				if attacker:IsActiveVampire() then
+				if attacker.IsActiveVampire and attacker:IsActiveVampire() then
 					LANG.Msg(GetVampireFilter(true), "credit_tr_all", { num = amt })
 				else
 					LANG.Msg(GetTraitorFilter(true), "credit_tr_all", { num = amt })
@@ -595,7 +595,7 @@ local function CheckCreditAward(victim, attacker)
 
 				for _, ply in pairs(player.GetAll()) do
 					-- If the victim was killed by a vampire, only award the vampire(s)
-					if attacker:IsActiveVampire() then
+					if attacker.IsActiveVampire and attacker:IsActiveVampire() then
 						if ply:IsActiveVampire() then
 							ply:AddCredits(amt)
 						end
