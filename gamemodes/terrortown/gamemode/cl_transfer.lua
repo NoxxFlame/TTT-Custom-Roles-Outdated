@@ -32,7 +32,15 @@ function CreateTransferMenu(parent)
 	-- fill combobox
 	local r = LocalPlayer():GetRole()
 	for _, p in pairs(player.GetAll()) do
-		if IsValid(p) and p ~= LocalPlayer() and (((r == ROLE_TRAITOR or r == ROLE_ZOMBIE) and (p:IsActiveRole(ROLE_TRAITOR) or p:IsActiveRole(ROLE_GLITCH))) or p:IsActiveRole(r)) then
+		if IsValid(p) and p ~= LocalPlayer() and
+			((
+				-- Local player is a traitor team member
+				(r == ROLE_TRAITOR or r == ROLE_HYPNOTIST or r == ROLE_ASSASSIN) and
+				-- and target is a traitor team member (or a glitch)
+				(p:IsActiveRole(ROLE_TRAITOR) or p:IsActiveRole(ROLE_HYPNOTIST) or p:IsActiveRole(ROLE_ASSASSIN) or p:IsActiveRole(ROLE_GLITCH))
+			) or
+			-- Local player is a zombie and target is a zombie
+			(r == ROLE_ZOMBIE and p:IsActiveRole(ROLE_ZOMBIE))) then
 			dpick:AddChoice(p:Nick(), p:SteamID())
 		end
 	end
