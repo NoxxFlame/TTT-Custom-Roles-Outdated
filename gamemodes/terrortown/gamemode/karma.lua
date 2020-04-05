@@ -154,6 +154,9 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 	if attacker == victim then return end
 	if not attacker:IsPlayer() or not victim:IsPlayer() then return end
 	if isKiller(attacker) then return end
+
+	-- Ignore excess damage
+	local hurt_amount = math.min(victim:Health(), dmginfo:GetDamage())
 	if isInnocent(attacker) and isKiller(victim) then
 		local reward = KARMA.GetHurtReward(hurt_amount)
 		reward = KARMA.GiveReward(attacker, reward)
@@ -162,9 +165,6 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 			print(Format("%s (%f) attacked %s (%f) for %d and got REWARDED %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, reward))
 		end
 	return end
-
-	-- Ignore excess damage
-	local hurt_amount = math.min(victim:Health(), dmginfo:GetDamage())
 
 	if ShouldReduceKarma(attacker, victim) then
 		if WasAvoidable(attacker, victim, dmginfo) then return end
