@@ -355,10 +355,8 @@ local wintitle = {
 }
 
 function CLSCORE:ShowPanel()
-	local margin = 15
-
 	local dpanel = vgui.Create("DFrame")
-	local w, h = 700, 502
+	local w, h = 700, 542
 	dpanel:SetSize(w, h)
 	dpanel:Center()
 	dpanel:SetTitle("Round Report")
@@ -406,6 +404,7 @@ function CLSCORE:ShowPanel()
 		draw.RoundedBox(0, 8, ywin - 19 + winlbl:GetTall() + 8, 336, 329, Color(164, 164, 164, 255))
 		draw.RoundedBox(0, 352, ywin - 19 + winlbl:GetTall() + 8, 336, 329, Color(164, 164, 164, 255))
 		draw.RoundedBox(0, 8, ywin - 19 + winlbl:GetTall() + 345, 680, 32, Color(164, 164, 164, 255))
+		draw.RoundedBox(0, 8, ywin - 19 + winlbl:GetTall() + 385, 680, 32, Color(164, 164, 164, 255))
 		for i = ywin - 19 + winlbl:GetTall() + 40, ywin - 19 + winlbl:GetTall() + 304, 33 do
 			draw.RoundedBox(0, 8, i, 336, 1, Color(97, 100, 102, 255))
 			draw.RoundedBox(0, 352, i, 336, 1, Color(97, 100, 102, 255))
@@ -454,7 +453,7 @@ function CLSCORE:ShowPanel()
 
 			local foundPlayer = false
 
-			for k, v in pairs(spawnedplayers) do
+			for _, v in pairs(spawnedplayers) do
 				if v == nicks[id] then
 					foundPlayer = true
 					break
@@ -462,16 +461,16 @@ function CLSCORE:ShowPanel()
 			end
 
 			if foundPlayer then
-				local dead = s.deaths
+				local dead = s.deaths or 0
 				local hasDisconnected = false
 
-				for k, v in pairs(revived) do
+				for _, v in pairs(revived) do
 					if v == nicks[id] then
 						dead = dead - 1
 					end
 				end
 
-				for k, v in pairs(disconnected) do
+				for _, v in pairs(disconnected) do
 					if v == nicks[id] then
 						hasDisconnected = true
 						break
@@ -491,21 +490,30 @@ function CLSCORE:ShowPanel()
 					symorlet = "sym"
 				end
 
-				for k, v in pairs(hypnotised) do
+				local washyped = false
+				for _, v in pairs(hypnotised) do
 					if v == nicks[id] then
-						role = role .. "_hyped"
+						washyped = true
 					end
 				end
 
-				for k, v in pairs(zombified) do
+				local waszomed = false
+				for _, v in pairs(zombified) do
 					if v == nicks[id] then
-						role = role .. "_zomed"
+						waszomed = true
 					end
+				end
+
+				local roleIconName = "score_" .. symorlet .. "_" .. role
+				if (washyped) then
+					roleIconName = roleIconName .. "_hyped"
+				elseif (waszomed) then
+					roleIconName = roleIconName .. "_zomed"
 				end
 
 				local roleIcon = vgui.Create("DImage", dpanel)
 				roleIcon:SetSize(32, 32)
-				roleIcon:SetImage("vgui/ttt/score_" .. symorlet .. "_" .. role .. ".png")
+				roleIcon:SetImage("vgui/ttt/" .. roleIconName .. ".png")
 
 				local nicklbl = vgui.Create("DLabel", dpanel)
 				nicklbl:SetFont("ScoreNicks")
@@ -514,38 +522,12 @@ function CLSCORE:ShowPanel()
 				nicklbl:SizeToContents()
 
 				if role == "inn" or role == "det" or role == "mer" or role == "pha" or role == "gli" then
-					roleIcon:SetPos(10, 123 + 33 * countI)
-					nicklbl:SetPos(48, 121 + 33 * countI)
-					if hasDisconnected then
-						disconIcon = vgui.Create("DImage", dpanel)
-						disconIcon:SetSize(32, 32)
-						disconIcon:SetPos(314, 123 + 33 * countI)
-						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
-					elseif dead > 0 then
-						skullIcon = vgui.Create("DImage", dpanel)
-						skullIcon:SetSize(32, 32)
-						skullIcon:SetPos(314, 123 + 33 * countI)
-						skullIcon:SetImage("vgui/ttt/score_skullicon.png")
-					end
+					self:AddPlayerRow(dpanel, 314, 10, 123 + 33 * countI, roleIcon, nicklbl, hasDisconnected, dead)
 					countI = countI + 1
-				elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" or string.sub(role, 5) == "hyped" or string.sub(role, 5) == "zomed" then
-					roleIcon:SetPos(354, 123 + 33 * countT)
-					nicklbl:SetPos(392, 121 + 33 * countT)
-					if hasDisconnected then
-						disconIcon = vgui.Create("DImage", dpanel)
-						disconIcon:SetSize(32, 32)
-						disconIcon:SetPos(658, 123 + 33 * countT)
-						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
-					elseif dead > 0 then
-						skullIcon = vgui.Create("DImage", dpanel)
-						skullIcon:SetSize(32, 32)
-						skullIcon:SetPos(658, 123 + 33 * countT)
-						skullIcon:SetImage("vgui/ttt/score_skullicon.png")
-					end
+				elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" then
+					self:AddPlayerRow(dpanel, 658, 354, 123 + 33 * countT, roleIcon, nicklbl, hasDisconnected, dead)
 					countT = countT + 1
-				elseif role == "jes" or role == "swa" or role == "kil" then
-					roleIcon:SetPos(10, 460)
-					nicklbl:SetPos(48, 458)
+				elseif role == "jes" or role == "swa" then
 					if jesterkiller ~= "" then
 						if role == "jes" then
 							nicklbl:SetText(nicks[id] .. " (Killed by " .. jesterkiller .. ")")
@@ -555,17 +537,9 @@ function CLSCORE:ShowPanel()
 							nicklbl:SizeToContents()
 						end
 					end
-					if hasDisconnected then
-						disconIcon = vgui.Create("DImage", dpanel)
-						disconIcon:SetSize(32, 32)
-						disconIcon:SetPos(658, 460)
-						disconIcon:SetImage("vgui/ttt/score_disconicon.png")
-					elseif dead > 0 then
-						skullIcon = vgui.Create("DImage", dpanel)
-						skullIcon:SetSize(32, 32)
-						skullIcon:SetPos(658, 460)
-						skullIcon:SetImage("vgui/ttt/score_skullicon.png")
-					end
+					self:AddPlayerRow(dpanel, 658, 10, 460, roleIcon, nicklbl, hasDisconnected, dead)
+				elseif role == "kil" then
+					self:AddPlayerRow(dpanel, 658, 10, 500, roleIcon, nicklbl, hasDisconnected, dead)
 				end
 			end
 		end
@@ -575,6 +549,22 @@ function CLSCORE:ShowPanel()
 
 	-- makepopup grabs keyboard, whereas we only need mouse
 	dpanel:SetKeyboardInputEnabled(false)
+end
+
+function CLSCORE:AddPlayerRow(dpanel, statusX, roleX, y, roleIcon, nicklbl, hasDisconnected, dead)
+	roleIcon:SetPos(roleX, y)
+	nicklbl:SetPos(roleX + 38, y - 2)
+	if hasDisconnected then
+		local disconIcon = vgui.Create("DImage", dpanel)
+		disconIcon:SetSize(32, 32)
+		disconIcon:SetPos(statusX, y)
+		disconIcon:SetImage("vgui/ttt/score_disconicon.png")
+	elseif dead > 0 then
+		local skullIcon = vgui.Create("DImage", dpanel)
+		skullIcon:SetSize(32, 32)
+		skullIcon:SetPos(statusX, y)
+		skullIcon:SetImage("vgui/ttt/score_skullicon.png")
+	end
 end
 
 function CLSCORE:ClearPanel()
@@ -684,7 +674,7 @@ function CLSCORE:Init(events)
 	-- Get scores and players
 	local scores = {}
 	local nicks = {}
-	for k, e in pairs(events) do
+	for _, e in pairs(events) do
 		if e.id == EVENT_SPAWN then
 			scores[e.sid] = ScoreInit()
 			nicks[e.sid] = e.ni

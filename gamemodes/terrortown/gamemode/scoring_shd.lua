@@ -15,12 +15,12 @@ function ScoreEvent(e, scores)
 	if e.id == EVENT_KILL then
 		local aid = e.att.sid
 		local vid = e.vic.sid
-		
+
 		-- make sure a score table exists for this person
 		-- he might have disconnected by now
 		if scores[vid] == nil then
 			scores[vid] = ScoreInit()
-			
+
 			-- normally we have the ply:GetTraitor stuff to base this on, but that
 			-- won't do for disconnected players
 			scores[vid].was_traitor = e.vic.tr
@@ -29,9 +29,9 @@ function ScoreEvent(e, scores)
 			scores[aid] = ScoreInit()
 			scores[aid].was_traitor = e.att.tr
 		end
-		
+
 		scores[vid].deaths = scores[vid].deaths + 1
-		
+
 		if aid == vid then
 			scores[vid].suicides = scores[vid].suicides + 1
 		elseif aid ~= -1 then
@@ -44,7 +44,7 @@ function ScoreEvent(e, scores)
 	elseif e.id == EVENT_BODYFOUND then
 		local sid = e.sid
 		if scores[sid] == nil or scores[sid].was_traitor then return end
-		
+
 		local find_bonus = scores[sid].was_detective and 3 or 1
 		scores[sid].bonus = scores[sid].bonus + find_bonus
 	end
@@ -54,9 +54,9 @@ end
 -- scores should be table with SteamIDs as keys
 -- The method of finding these IDs differs between server and client
 function ScoreEventLog(events, scores, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers)
-	for k, s in pairs(scores) do
+	for k, _ in pairs(scores) do
 		scores[k] = ScoreInit()
-		
+
 		scores[k].was_traitor = table.HasValue(traitors, k)
 		scores[k].was_detective = table.HasValue(detectives, k)
 		scores[k].was_hypnotist = table.HasValue(hypnotists, k)
@@ -70,20 +70,19 @@ function ScoreEventLog(events, scores, traitors, detectives, hypnotists, mercena
 		scores[k].was_assassin = table.HasValue(assassins, k)
 		scores[k].was_killer = table.HasValue(killers, k)
 	end
-	
-	local tmp = nil
-	for k, e in pairs(events) do
+
+	for _, e in pairs(events) do
 		ScoreEvent(e, scores)
 	end
-	
+
 	return scores
 end
 
 function ScoreTeamBonus(scores, wintype)
 	local alive = { traitors = 0, innos = 0 }
 	local dead = { traitors = 0, innos = 0 }
-	
-	for k, sc in pairs(scores) do
+
+	for _, sc in pairs(scores) do
 		local state = (sc.deaths == 0) and alive or dead
 		if sc.was_traitor then
 			state.traitors = state.traitors + 1
@@ -91,16 +90,16 @@ function ScoreTeamBonus(scores, wintype)
 			state.innos = state.innos + 1
 		end
 	end
-	
+
 	local bonus = {}
 	bonus.traitors = (alive.traitors * 1) + math.ceil(dead.innos * 0.5)
 	bonus.innos = alive.innos * 1
-	
+
 	-- running down the clock must never be beneficial for traitors
 	if wintype == WIN_TIMELIMIT then
 		bonus.traitors = math.floor(alive.innos * -0.5) + math.ceil(dead.innos * 0.5)
 	end
-	
+
 	return bonus
 end
 
@@ -160,17 +159,17 @@ function GetWeaponClassNames()
 				tbl[v.WeaponID] = WEPS.GetClass(v)
 			end
 		end
-		
+
 		for k, v in pairs(scripted_ents.GetList()) do
 			local id = v and (v.WeaponID or (v.t and v.t.WeaponID))
 			if id then
 				tbl[id] = WEPS.GetClass(v)
 			end
 		end
-		
+
 		WeaponNames = tbl
 	end
-	
+
 	return WeaponNames
 end
 
@@ -200,6 +199,6 @@ end
 -- something cheap to send over the network
 function WepToEnum(wep)
 	if not IsValid(wep) then return end
-	
+
 	return wep.WeaponID
 end
