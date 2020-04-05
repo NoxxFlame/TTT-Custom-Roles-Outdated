@@ -98,7 +98,7 @@ function GetEquipmentForRole(role)
 		-- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
 		local roletable = BuyableWeapons[role]
 		if roletable then
-			for k, v in pairs(roletable) do
+			for _, v in pairs(roletable) do
 				local weap = weapons.GetStored(v)
 				if weap and not table.HasValue(weap.CanBuy, role) then
 					table.insert(weap.CanBuy, role)
