@@ -1479,16 +1479,11 @@ end
 function ReadRoleEquipment()
 	local rolenames = { "Detective", "Mercenary", "Vampire", "Zombie", "Traitor", "Assassin", "Hypnotist", "Killer" }
 	for _, role in pairs(rolenames) do
-		local rolefiles, _ = file.Find("roleweapons/" .. role .. "/*.txt", "DATA")
+		local rolefiles, _ = file.Find("roleweapons/" .. role:lower() .. "/*.txt", "DATA")
 		local roleweapons = { }
 		for _, v in pairs(rolefiles) do
 			local lastdotpos = v:find("%.")
-			local weaponname
-			if lastdotpos == nil then
-				weaponname = v
-			else
-				weaponname = v:sub(0, lastdotpos - 1)
-			end
+			local weaponname = v:sub(0, lastdotpos - 1)
 			table.insert(roleweapons, weaponname)
 		end
 

@@ -368,7 +368,7 @@ local BuyableWeapons = {
 }
 -- If this logic or the list of roles who can buy is changed, it must also be updated in init.lua and cl_equip.lua
 local function ReadRoleEquipment(role, rolename)
-	local rolefiles, _ = file.Find("roleweapons/" .. rolename .. "/*.txt", "DATA")
+	local rolefiles, _ = file.Find("roleweapons/" .. rolename:lower() .. "/*.txt", "DATA")
 	for _, v in pairs(rolefiles) do
 		local lastdotpos = v:find("%.")
 		local weaponname
