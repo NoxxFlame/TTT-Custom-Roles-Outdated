@@ -1369,7 +1369,9 @@ function SelectRoles()
 			table.remove(choices, pick)
 			hasJester = true
 		end
-	elseif GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
+	end
+
+	if GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1379,7 +1381,6 @@ function SelectRoles()
 			hasKiller = true
 		end
 	end
-
 	if GetConVar("ttt_mercenary_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_mercenary_required_innos"):GetInt() and math.random() <= mercenary_chance and not hasMercenary then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
@@ -1400,7 +1401,8 @@ function SelectRoles()
 			hasPhantom = true
 		end
 	end
-	if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and (ts > 1 or hasMonster) then
+	-- Only spawn a glitch if we have a traitor since otherwise the role doesn't do anything
+	if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and ts > 1 then
 		local pick = math.random(1, #choices)
 		local pply = choices[pick]
 		if IsValid(pply) then
@@ -1410,6 +1412,8 @@ function SelectRoles()
 			hasGlitch = true
 		end
 	end
+
+	-- Anyone left is innocent
 	for k, v in pairs(choices) do
 		if v:GetRole() ~= ROLE_DETECTIVE then
 			print(v:Nick() .. " (" .. v:SteamID() .. ") - Innocent")
