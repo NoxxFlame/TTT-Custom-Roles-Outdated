@@ -743,6 +743,10 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 		end
 	end
 
+	if ply:GetNWBool("KillerSmoke") == true then
+		ply:SetNwBool("KillerSmoke", false)
+	end
+
 	if ply:GetNWBool("HauntedSmoke") == true then
 		local phantomBody = deadPhantom.server_ragdoll or deadPhantom:GetRagdollEntity()
 		if phantomBody:IsValid() and deadPhantom:GetRole() == ROLE_PHANTOM then
@@ -1003,6 +1007,11 @@ function GM:PlayerDeath(victim, infl, attacker)
 			end
 		end
 		deadPhantom = victim
+	end
+
+	if attacker:IsPlayer() and attacker:GetRole() == ROLE_KILLER then
+		attacker:SetNWBool("KillerSmoke", false)
+		ResetKillerKillCheckTimer()
 	end
 
 	if victim:GetRole() == ROLE_SWAPPER and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
@@ -1641,3 +1650,56 @@ end
 function GM:PlayerShouldTaunt(ply, actid)
 	return true
 end
+
+local function HasKiller()
+	for _, v in pairs(player.GetAll()) do
+		if v:Team() == TEAM_TERROR and v:IsTerror() and v:GetKiller() then
+			return true
+		end
+	end
+	return false
+end
+
+local killerSmokeTime = 0
+function ResetKillerKillCheckTimer()
+	killerSmokeTime = 0
+	timer.Start("KillerKillCheckTimer")
+end
+
+local function HandleKillerSmokeTick()
+	timer.Stop("KillerKillCheckTimer")
+	if GetRoundState() ~= ROUND_ACTIVE then
+		ResetKillerKillCheckTimer()
+	end
+
+	timer.Create("KillerTick", 0.1, 0, function()
+		if GetRoundState() == ROUND_ACTIVE then
+			if killerSmokeTime >= GetConVar("ttt_killer_smoke_timer"):GetInt() then
+				for _, v in pairs(player.GetAll()) do
+					if not IsValid(v) then return end
+					if v:GetRole() == ROLE_KILLER and v:Alive() then
+						v:SetNWBool("KillerSmoke", true)
+						v:PrintMessage(HUD_PRINTCENTER, "Your Evil is showing")
+					elseif (v:GetRole() == ROLE_KILLER and not v:Alive()) or not HasKiller() then
+						timer.Remove("KillerKillCheckTimer")
+					end
+				end
+			end
+		else
+			killerSmokeTime = 0
+		end
+	end)
+end
+
+timer.Create("KillerKillCheckTimer", 1, 0, function()
+	if GetRoundState() == ROUND_ACTIVE then
+		killerSmokeTime = killerSmokeTime + 1
+		if killerSmokeTime >= GetConVar("ttt_killer_smoke_timer"):GetInt() then
+			HandleKillerSmokeTick()
+		else
+			timer.Remove("KillerTick")
+		end
+	else
+		killerSmokeTime = 0
+	end
+end)

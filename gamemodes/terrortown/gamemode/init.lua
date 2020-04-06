@@ -114,6 +114,7 @@ CreateConVar("ttt_assassin_required_traitors", "2")
 CreateConVar("ttt_killer_required_innos", "3")
 
 CreateConVar("ttt_monster_pct", "0.33")
+CreateConVar("ttt_killer_smoke_timer", "60", FCVAR_ARCHIVE)
 
 -- Traitor credits
 CreateConVar("ttt_credits_starting", "2")
@@ -546,6 +547,7 @@ end
 function PrepareRound()
 	for k, v in pairs(player.GetAll()) do
 		v:SetNWBool("HauntedSmoke", false)
+		v:SetNWBool("KillerSmoke", false)
 		v:SetNWBool('RoleRevealed', false)
 	end
 
