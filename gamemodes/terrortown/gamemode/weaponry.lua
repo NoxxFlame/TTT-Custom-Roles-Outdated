@@ -18,6 +18,8 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		return false
 	elseif not ply:GetZombie() and wep:GetClass() == "weapon_zom_claws" then
 		return false
+	elseif not ply:GetKiller() and (wep:GetClass() == "weapon_kil_knife" or wep:GetClass() == "weapon_kil_crowbar") then
+		return false
 	elseif not ply:CanCarryWeapon(wep) then
 		return false
 	elseif IsEquipment(wep) and wep.IsDropped and (not ply:KeyDown(IN_USE)) then
