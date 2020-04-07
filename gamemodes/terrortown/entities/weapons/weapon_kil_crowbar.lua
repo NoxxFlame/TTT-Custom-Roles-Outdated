@@ -118,11 +118,6 @@ function SWEP:PrimaryAttack()
       self:GetOwner():SetAnimation( PLAYER_ATTACK1 )
 
       if hitEnt and hitEnt:IsValid() then
-         if self:OpenEnt(hitEnt) == OPEN_NO and tr_all.Entity and tr_all.Entity:IsValid() then
-            -- See if there's a nodraw thing we should open
-            self:OpenEnt(tr_all.Entity)
-         end
-
          local dmg = DamageInfo()
          dmg:SetDamage(self.Primary.Damage)
          dmg:SetAttacker(self:GetOwner())
@@ -132,11 +127,6 @@ function SWEP:PrimaryAttack()
          dmg:SetDamageType(DMG_CLUB)
 
          hitEnt:DispatchTraceAttack(dmg, spos + (self:GetOwner():GetAimVector() * 3), sdest)
-      else
-         -- See if our nodraw trace got the goods
-         if tr_all.Entity and tr_all.Entity:IsValid() then
-            self:OpenEnt(tr_all.Entity)
-         end
       end
    end
 

@@ -403,6 +403,7 @@ local function force_killer(ply)
 	if ply:HasWeapon("weapon_zom_claws") then
 		ply:StripWeapon("weapon_zom_claws")
 	end
+	ply:Give("weapon_kil_knife")
 
 	SendFullStateUpdate()
 end
