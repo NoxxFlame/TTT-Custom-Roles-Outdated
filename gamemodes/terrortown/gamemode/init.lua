@@ -1195,15 +1195,6 @@ function SelectRoles()
 	local hasDetective = false
 	local hasKiller = false
 
-	if #choices == 3 then
-		hasDetective = true
-		hasJester = true
-	end
-
-	if #choices == 5 then
-		hasJester = true
-	end
-
 	print("-----CHECKING EXTERNALLY CHOSEN ROLES-----")
 	for k, v in pairs(player.GetAll()) do
 		if IsValid(v) and (not v:IsSpec()) then
