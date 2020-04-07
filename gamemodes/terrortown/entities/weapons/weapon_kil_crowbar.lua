@@ -44,7 +44,6 @@ SWEP.AllowDelete             = true -- never removed for weapon reduction
 SWEP.AllowDrop = true
 
 local sound_single = Sound("Weapon_Crowbar.Single")
-local sound_open = Sound("DoorHandles.Unlocked3")
 
 if SERVER then
    CreateConVar("ttt_crowbar_unlocks", "1", FCVAR_ARCHIVE)

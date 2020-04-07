@@ -138,7 +138,7 @@ function SWEP:StabKill(tr, spos, sdest)
    local retr = util.TraceLine({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
 
    -- if that fails, just trace to worldcenter so we have SOMETHING
-   if retr.Entity != target then
+   if retr.Entity ~= target then
       local center = target:LocalToWorld(target:OBBCenter())
       retr = util.TraceLine({start=spos, endpos=center, filter=self:GetOwner(), mask=MASK_SHOT_HULL})
    end
