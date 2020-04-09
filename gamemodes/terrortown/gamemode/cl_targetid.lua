@@ -405,9 +405,9 @@ function GM:HUDDrawTargetID()
 		end
 		if (client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ASSASSIN) and GetRoundState() == ROUND_ACTIVE then
 			if client:GetRole() == ROLE_TRAITOR then
-                target_traitor = ent:IsRole(ROLE_TRAITOR)
+				target_fellow_traitor = ent:IsRole(ROLE_TRAITOR)
             else
-                target_fellow_traitor = ent:IsRole(ROLE_TRAITOR)
+                target_traitor = ent:IsRole(ROLE_TRAITOR)
             end
 			target_hypnotist = ent:IsRole(ROLE_HYPNOTIST)
 			target_glitch = ent:IsRole(ROLE_GLITCH)
