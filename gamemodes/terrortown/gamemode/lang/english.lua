@@ -716,7 +716,7 @@ L.info_popup_glitch = [[You are a Glitch! The traitors and monsters think you ar
 Try to blend in and don't give yourself away.]]
 
 L.info_popup_jester = [[You are a Jester! You hate your life and want to die
-but you deal no damage so you must be killed by some one else.]]
+but you deal no damage so you must be killed by someone else.]]
 
 L.info_popup_phantom = [[You are a Phantom! Try to survive and help your innocent friends!
 You will haunt the player who kills you causing black smoke to appear.
