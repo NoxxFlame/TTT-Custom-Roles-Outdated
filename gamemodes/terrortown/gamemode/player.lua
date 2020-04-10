@@ -965,7 +965,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 		local reward = 0
 		if (attacker:IsActiveTraitor() or attacker:IsActiveHypnotist() or attacker:IsActiveVampire() or attacker:IsActiveAssassin()) and ply:GetDetective() then
 			reward = math.ceil(GetConVarNumber("ttt_credits_detectivekill"))
-		elseif attacker:IsActiveDetective() and ply:GetTraitor() then
+		elseif attacker:IsActiveDetective() and (ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()) then
 			reward = math.ceil(GetConVarNumber("ttt_det_credits_traitorkill"))
 		end
 
@@ -1157,7 +1157,8 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
 	end
 
 	if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
-		if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:IsDamageType(DMG_GENERIC) then
+		-- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
+		if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
 			dmginfo:ScaleDamage(0)
 		end
 	end
@@ -1313,8 +1314,10 @@ function GM:EntityTakeDamage(ent, dmginfo)
 			end
 		end
 		if (ent:IsPlayer() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE) then
-			if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:IsDamageType(DMG_GENERIC) then
+			-- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
+			if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
 				dmginfo:ScaleDamage(0) -- no damages
+				dmginfo:SetDamage(0)
 			end
 		elseif dmginfo:GetAttacker() ~= ent then
 			dmginfo:ScaleDamage(assassinbonus)
