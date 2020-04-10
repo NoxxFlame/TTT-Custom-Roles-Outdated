@@ -31,7 +31,7 @@ SWEP.Primary.ClipSize		= 1
 SWEP.Primary.DefaultClip	= 1
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "none"
-SWEP.Primary.Delay			= 1.1
+SWEP.Primary.Delay			= 0.8
 
 SWEP.Secondary.ClipSize		= 5
 SWEP.Secondary.DefaultClip	= 5
@@ -78,7 +78,7 @@ function SWEP:PrimaryAttack()
 	end
 
 	local spos = self:GetOwner():GetShootPos()
-	local sdest = spos + (self:GetOwner():GetAimVector() * 120)
+	local sdest = spos + (self:GetOwner():GetAimVector() * 150)
 
 	local tr_main = util.TraceLine({ start = spos, endpos = sdest, filter = self:GetOwner(), mask = MASK_SHOT_HULL })
 	local hitEnt = tr_main.Entity
