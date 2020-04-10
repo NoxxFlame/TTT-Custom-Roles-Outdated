@@ -1096,31 +1096,24 @@ function GM:TTTCheckForWin()
 end
 
 local function GetTraitorCount(ply_count)
-	-- get number of traitors: pct of players rounded down
+	-- get number of traitors: pct of players rounded up
 	local traitor_count = math.ceil(ply_count * GetConVar("ttt_traitor_pct"):GetFloat())
-	-- make sure there is at least 1 traitor
-	traitor_count = math.Clamp(traitor_count, 1, GetConVar("ttt_traitor_max"):GetInt())
-
-	return traitor_count
+	-- make sure the traitor count is within the range [1, max]
+	return math.Clamp(traitor_count, 1, GetConVar("ttt_traitor_max"):GetInt())
 end
 
 local function GetMonsterCount(ply_count)
-	-- get number of monsters: pct of players rounded down
-	local monster_count = math.ceil(ply_count * GetConVar("ttt_monster_pct"):GetFloat())
-	-- make sure there is at least 1 monster
-	monster_count = math.max(monster_count, 1)
-
-	return monster_count
+	-- get number of monsters: pct of players rounded up
+	return math.ceil(ply_count * GetConVar("ttt_monster_pct"):GetFloat())
 end
 
 local function GetDetectiveCount(ply_count)
 	if ply_count < GetConVar("ttt_detective_min_players"):GetInt() then return 0 end
 
+	-- get number of detectives: pct of players rounded up
 	local det_count = math.ceil(ply_count * GetConVar("ttt_detective_pct"):GetFloat())
-	-- limit to a max
-	det_count = math.Clamp(det_count, 1, GetConVar("ttt_detective_max"):GetInt())
-
-	return det_count
+	-- make sure the detective count is within the range [1, max]
+	return math.Clamp(det_count, 1, GetConVar("ttt_detective_max"):GetInt())
 end
 
 local function WasRole(prev_roles, ply, ...)
