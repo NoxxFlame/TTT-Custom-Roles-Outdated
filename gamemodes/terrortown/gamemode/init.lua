@@ -1117,7 +1117,8 @@ local function GetDetectiveCount(ply_count)
 end
 
 local function WasRole(prev_roles, ply, ...)
-	for _, v in pairs(arg) do
+	for i = 1, select("#",...) do
+		local v = select(i, ...)
 		if table.HasValue(prev_roles[v], ply) then
 			return true
 		end
