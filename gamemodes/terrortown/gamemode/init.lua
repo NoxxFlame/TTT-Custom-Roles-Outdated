@@ -1123,6 +1123,24 @@ local function GetDetectiveCount(ply_count)
 	return det_count
 end
 
+local function WasRole(prev_roles, ply, ...)
+	for _, v in pairs(arg) do
+		if table.HasValue(prev_roles[v], ply) then
+			return true
+		end
+	end
+
+	return false
+end
+
+local function GetRandomPlayer(choices)
+	if #choices == 0 then
+		return nil, nil
+	end
+	local pick = math.random(1, #choices)
+	return choices[pick], pick
+end
+
 function SelectRoles()
 	local choices = {}
 	local prev_roles = {
@@ -1143,15 +1161,13 @@ function SelectRoles()
 
 	if not GAMEMODE.LastRole then GAMEMODE.LastRole = {} end
 
-	for k, v in pairs(player.GetAll()) do
+	for _, v in pairs(player.GetAll()) do
 		-- everyone on the spec team is in specmode
 		if IsValid(v) and (not v:IsSpec()) then
 			-- save previous role and sign up as possible traitor/detective
-
 			local r = GAMEMODE.LastRole[v:SteamID()] or v:GetRole() or ROLE_INNOCENT
 
 			table.insert(prev_roles[r], v)
-
 			table.insert(choices, v)
 		end
 
@@ -1192,11 +1208,10 @@ function SelectRoles()
 	local hasMercenary = false
 	local hasPhantom = false
 	local hasGlitch = false
-	local hasDetective = false
 	local hasKiller = false
 
 	print("-----CHECKING EXTERNALLY CHOSEN ROLES-----")
-	for k, v in pairs(player.GetAll()) do
+	for _, v in pairs(player.GetAll()) do
 		if IsValid(v) and (not v:IsSpec()) then
 			local index = 0
 			for i, j in pairs(choices) do
@@ -1256,14 +1271,11 @@ function SelectRoles()
 	print("-----RANDOMLY PICKING REMAINING ROLES-----")
 	while ts < traitor_count and #choices > 0 do
 		-- select random index in choices table
-		local pick = math.random(1, #choices)
+		local pply, pick = GetRandomPlayer(choices)
 
-		-- the player we consider
-		local pply = choices[pick]
-
-		-- make this guy traitor if he was not a traitor last time, or if he makes
+		-- make this guy traitor if he was not one last time, or if he makes
 		-- a roll
-		if IsValid(pply) and ((not (table.HasValue(prev_roles[ROLE_TRAITOR], pply) or table.HasValue(prev_roles[ROLE_ZOMBIE], pply) or table.HasValue(prev_roles[ROLE_HYPNOTIST], pply) or table.HasValue(prev_roles[ROLE_VAMPIRE], pply) or table.HasValue(prev_roles[ROLE_ASSASSIN], pply))) or (math.random(1, 3) == 2)) and pply:SteamID() ~= "STEAM_0:1:22691201" then
+		if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST) or math.random(1, 3) == 2) then
 			if ts >= GetConVar("ttt_hypnotist_required_traitors"):GetInt() and GetConVar("ttt_hypnotist_enabled"):GetInt() == 1 and math.random() <= hypnotist_chance and not hasSpecial then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Hypnotist")
 				pply:SetRole(ROLE_HYPNOTIST)
@@ -1283,14 +1295,11 @@ function SelectRoles()
 
 	while ms < monster_count and #choices > 0 do
 		-- select random index in choices table
-		local pick = math.random(1, #choices)
+		local pply, pick = GetRandomPlayer(choices)
 
-		-- the player we consider
-		local pply = choices[pick]
-
-		-- make this guy traitor if he was not a traitor last time, or if he makes
+		-- make this guy monster if he was not one last time, or if he makes
 		-- a roll
-		if IsValid(pply) and (not (table.HasValue(prev_roles[ROLE_TRAITOR], pply) or table.HasValue(prev_roles[ROLE_ZOMBIE], pply) or table.HasValue(prev_roles[ROLE_HYPNOTIST], pply) or table.HasValue(prev_roles[ROLE_VAMPIRE], pply) or table.HasValue(prev_roles[ROLE_ASSASSIN], pply)) or (math.random(1, 3) == 2)) and pply:SteamID() ~= "STEAM_0:1:22691201" then
+		if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_ZOMBIE, ROLE_VAMPIRE) or math.random(1, 3) == 2) then
 			if ts >= GetConVar("ttt_zombie_required_traitors"):GetInt() and GetConVar("ttt_zombie_enabled"):GetInt() == 1 and math.random() <= zombie_chance and not hasMonster then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Zombie")
 				pply:SetRole(ROLE_ZOMBIE)
@@ -1312,8 +1321,7 @@ function SelectRoles()
 	-- traitor, so becoming detective does not mean you lost a chance to be
 	-- traitor
 	local min_karma = GetConVarNumber("ttt_detective_karma_min") or 0
-	while (ds < det_count) and (#choices >= 1) and not hasDetective do
-
+	while ds < det_count and #choices > 0 do
 		-- sometimes we need all remaining choices to be detective to fill the
 		-- roles up, this happens more often with a lot of detective-deniers
 		if #choices <= (det_count - ds) then
@@ -1329,15 +1337,11 @@ function SelectRoles()
 			break -- out of while
 		end
 
-		local pick = math.random(1, #choices)
-		local pply = choices[pick]
+		-- select random index in choices table
+		local pply, pick = GetRandomPlayer(choices)
 
 		-- we are less likely to be a detective unless we were innocent last round
-		if (IsValid(pply) and
-				((pply:GetBaseKarma() > min_karma and
-						table.HasValue(prev_roles[ROLE_INNOCENT], pply)) or
-						math.random(1, 3) == 2)) then
-
+		if (IsValid(pply) and pply:GetBaseKarma() > min_karma and (WasRole(prev_roles, pply, ROLE_INNOCENT, ROLE_GLITCH, ROLE_PHANTOM, ROLE_MERCENARY) or math.random(1, 3) == 2)) then
 			-- if a player has specified he does not want to be detective, we skip
 			-- him here (he might still get it if we don't have enough
 			-- alternatives)
@@ -1350,70 +1354,86 @@ function SelectRoles()
 		end
 	end
 
-	if GetConVar("ttt_jester_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= jester_chance and not hasJester then
-		local pick = math.random(1, #choices)
-		local pply = choices[pick]
-		if IsValid(pply) then
-			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Jester")
-			pply:SetRole(ROLE_JESTER)
-			table.remove(choices, pick)
-			hasJester = true
-		end
-	elseif GetConVar("ttt_swapper_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= swapper_chance and not hasJester then
-		local pick = math.random(1, #choices)
-		local pply = choices[pick]
-		if IsValid(pply) then
-			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Swapper")
-			pply:SetRole(ROLE_SWAPPER)
-			table.remove(choices, pick)
-			hasJester = true
+	-- select random index in choices table
+	local pply, pick = GetRandomPlayer(choices)
+
+	-- make this guy jester if he was not one last time, or if he makes
+	-- a roll
+	if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_JESTER, ROLE_SWAPPER) or math.random(1, 3) == 2) then
+		if GetConVar("ttt_jester_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= jester_chance and not hasJester then
+			if IsValid(pply) then
+				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Jester")
+				pply:SetRole(ROLE_JESTER)
+				table.remove(choices, pick)
+				hasJester = true
+			end
+		elseif GetConVar("ttt_swapper_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= swapper_chance and not hasJester then
+			if IsValid(pply) then
+				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Swapper")
+				pply:SetRole(ROLE_SWAPPER)
+				table.remove(choices, pick)
+				hasJester = true
+			end
 		end
 	end
 
-	if GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
-		local pick = math.random(1, #choices)
-		local pply = choices[pick]
-		if IsValid(pply) then
-			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Killer")
-			pply:SetRole(ROLE_KILLER)
-			table.remove(choices, pick)
-			hasKiller = true
+	-- select random index in choices table
+	pply, pick = GetRandomPlayer(choices)
+	-- make this guy killer if he was not one last time, or if he makes
+	-- a roll
+	if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_KILLER) or math.random(1, 3) == 2) then
+		if GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
+			if IsValid(pply) then
+				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Killer")
+				pply:SetRole(ROLE_KILLER)
+				table.remove(choices, pick)
+				hasKiller = true
+			end
 		end
 	end
-	if GetConVar("ttt_mercenary_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_mercenary_required_innos"):GetInt() and math.random() <= mercenary_chance and not hasMercenary then
-		local pick = math.random(1, #choices)
-		local pply = choices[pick]
-		if IsValid(pply) then
-			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Mercenary")
-			pply:SetRole(ROLE_MERCENARY)
-			table.remove(choices, pick)
-			hasMercenary = true
+
+	-- select random index in choices table
+	pply, pick = GetRandomPlayer(choices)
+	if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_MERCENARY) or math.random(1, 3) == 2) then
+		if GetConVar("ttt_mercenary_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_mercenary_required_innos"):GetInt() and math.random() <= mercenary_chance and not hasMercenary then
+			if IsValid(pply) then
+				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Mercenary")
+				pply:SetRole(ROLE_MERCENARY)
+				table.remove(choices, pick)
+				hasMercenary = true
+			end
 		end
 	end
-	if GetConVar("ttt_phantom_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_phantom_required_innos"):GetInt() and math.random() <= phantom_chance and not hasPhantom then
-		local pick = math.random(1, #choices)
-		local pply = choices[pick]
-		if IsValid(pply) then
-			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Phantom")
-			pply:SetRole(ROLE_PHANTOM)
-			table.remove(choices, pick)
-			hasPhantom = true
+
+	-- select random index in choices table
+	pply, pick = GetRandomPlayer(choices)
+	if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_PHANTOM) or math.random(1, 3) == 2) then
+		if GetConVar("ttt_phantom_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_phantom_required_innos"):GetInt() and math.random() <= phantom_chance and not hasPhantom then
+			if IsValid(pply) then
+				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Phantom")
+				pply:SetRole(ROLE_PHANTOM)
+				table.remove(choices, pick)
+				hasPhantom = true
+			end
 		end
 	end
-	-- Only spawn a glitch if we have a traitor since otherwise the role doesn't do anything
-	if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and ts > 1 then
-		local pick = math.random(1, #choices)
-		local pply = choices[pick]
-		if IsValid(pply) then
-			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Glitch")
-			pply:SetRole(ROLE_GLITCH)
-			table.remove(choices, pick)
-			hasGlitch = true
+
+	-- select random index in choices table
+	pply, pick = GetRandomPlayer(choices)
+	if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_GLITCH) or math.random(1, 3) == 2) then
+		-- Only spawn a glitch if we have multiple traitors since otherwise the role doesn't do anything
+		if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and ts > 1 then
+			if IsValid(pply) then
+				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Glitch")
+				pply:SetRole(ROLE_GLITCH)
+				table.remove(choices, pick)
+				hasGlitch = true
+			end
 		end
 	end
 
 	-- Anyone left is innocent
-	for k, v in pairs(choices) do
+	for _, v in pairs(choices) do
 		if v:GetRole() ~= ROLE_DETECTIVE then
 			print(v:Nick() .. " (" .. v:SteamID() .. ") - Innocent")
 		end
