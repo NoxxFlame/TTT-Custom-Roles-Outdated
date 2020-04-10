@@ -27,6 +27,23 @@ ROLE_ASSASSIN = 11
 ROLE_KILLER = 12
 ROLE_NONE = ROLE_INNOCENT
 
+-- Role colors
+ROLE_COLORS = {
+	[ROLE_INNOCENT] = Color(55, 170, 50, 255),
+	[ROLE_TRAITOR] = Color(180, 50, 40, 255),
+	[ROLE_DETECTIVE] = Color(50, 60, 180, 255),
+	[ROLE_MERCENARY] = Color(245, 200, 0, 255),
+	[ROLE_JESTER] = Color(180, 23, 253, 255),
+	[ROLE_PHANTOM] = Color(82, 226, 255, 255),
+	[ROLE_HYPNOTIST] = Color(255, 80, 235, 255),
+	[ROLE_GLITCH] = Color(245, 106, 0, 255),
+	[ROLE_ZOMBIE] = Color(69, 97, 0, 255),
+	[ROLE_VAMPIRE] = Color(45, 45, 45, 255),
+	[ROLE_SWAPPER] = Color(111, 0, 255, 255),
+	[ROLE_ASSASSIN] = Color(112, 50, 0, 255),
+	[ROLE_KILLER] = Color(50, 0, 70, 255)
+}
+
 -- Game event log defs
 EVENT_KILL = 1
 EVENT_SPAWN = 2
