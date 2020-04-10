@@ -1117,7 +1117,7 @@ local function GetDetectiveCount(ply_count)
 end
 
 local function WasRole(prev_roles, ply, ...)
-	for i = 1, select("#",...) do
+	for i = 1, select("#", ...) do
 		local v = select(i, ...)
 		if table.HasValue(prev_roles[v], ply) then
 			return true
@@ -1127,12 +1127,12 @@ local function WasRole(prev_roles, ply, ...)
 	return false
 end
 
-local function GetRandomPlayer(choices)
-	if #choices == 0 then
+local function GetRandomPlayer(choicelist)
+	if #choicelist == 0 then
 		return nil, nil
 	end
-	local pick = math.random(1, #choices)
-	return choices[pick], pick
+	local pick = math.random(1, #choicelist)
+	return choicelist[pick], pick
 end
 
 function SelectRoles()
