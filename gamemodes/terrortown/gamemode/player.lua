@@ -1157,15 +1157,9 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
 	end
 
 	if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
-		if dmginfo:IsBulletDamage() or dmginfo:IsFallDamage() or dmginfo:IsDamageType(1) or dmginfo:IsDamageType(128) then
-
-		else
+		if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:IsDamageType(DMG_GENERIC) then
 			dmginfo:ScaleDamage(0)
 		end
-	end
-
-	if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE and dmginfo:IsExplosionDamage() then
-		dmginfo:ScaleDamage(0)
 	end
 
 	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and (dmginfo:GetAttacker():GetRole() == ROLE_JESTER or dmginfo:GetAttacker():GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
@@ -1319,11 +1313,9 @@ function GM:EntityTakeDamage(ent, dmginfo)
 			end
 		end
 		if (ent:IsPlayer() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE) then
-
-			if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsDamageType(DMG_FALL) or dmginfo:IsDamageType(DMG_DROWN) then -- check its burn or explosion.
+			if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:IsDamageType(DMG_GENERIC) then
 				dmginfo:ScaleDamage(0) -- no damages
 			end
-
 		elseif dmginfo:GetAttacker() ~= ent then
 			dmginfo:ScaleDamage(assassinbonus)
 		end
