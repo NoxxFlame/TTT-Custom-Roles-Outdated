@@ -404,13 +404,13 @@ function GM:HUDDrawTargetID()
 			target_killer = ent:IsRole(ROLE_KILLER)
 		end
 		if (client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ASSASSIN) and GetRoundState() == ROUND_ACTIVE then
+			target_glitch = ent:IsRole(ROLE_GLITCH)
 			if client:GetRole() == ROLE_TRAITOR then
-				target_fellow_traitor = ent:IsRole(ROLE_TRAITOR)
+				target_fellow_traitor = ent:IsRole(ROLE_TRAITOR) or target_glitch
             else
-                target_traitor = ent:IsRole(ROLE_TRAITOR)
+                target_traitor = ent:IsRole(ROLE_TRAITOR) or target_glitch
             end
 			target_hypnotist = ent:IsRole(ROLE_HYPNOTIST)
-			target_glitch = ent:IsRole(ROLE_GLITCH)
 			target_jester = ent:IsRole(ROLE_JESTER) or ent:IsRole(ROLE_SWAPPER)
 			target_assassin = ent:IsRole(ROLE_ASSASSIN)
 		end
@@ -463,7 +463,7 @@ function GM:HUDDrawTargetID()
 			surface.SetDrawColor(245, 200, 0, 200)
 		elseif target_phantom then
 			surface.SetDrawColor(82, 226, 255, 200)
-		elseif target_traitor or target_fellow_traitor or (target_glitch and client:GetRole() == ROLE_TRAITOR) then
+		elseif target_traitor or target_fellow_traitor then
 			surface.SetDrawColor(255, 0, 0, 200)
 		elseif target_assassin then
 			surface.SetDrawColor(112, 50, 0, 200)
@@ -611,7 +611,7 @@ function GM:HUDDrawTargetID()
 	elseif ent.sb_tag and ent.sb_tag.txt ~= nil then
 		text = L[ent.sb_tag.txt]
 		clr = ent.sb_tag.color
-	elseif target_fellow_traitor or (target_glitch and client:GetRole() == ROLE_TRAITOR) then
+	elseif target_fellow_traitor then
 		text = L.target_fellow_traitor
 		clr = Color(255, 0, 0, 200)
 	elseif target_fellow_zombie then
