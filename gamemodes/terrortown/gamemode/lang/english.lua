@@ -1004,7 +1004,7 @@ L.hilite_win_traitors = "THE TRAITORS WIN"
 L.hilite_win_jester = "THE JESTER WINS"
 L.hilite_win_innocent = "THE INNOCENTS WIN"
 L.hilite_win_killer = "THE KILLER WINS"
-L.hilite_win_killer = "THE MONSTERS WIN"
+L.hilite_win_monster = "THE MONSTERS WIN"
 
 L.hilite_players1 = "{numplayers} players took part, {numtraitors} were traitors"
 L.hilite_players2 = "{numplayers} players took part, one of them the traitor"

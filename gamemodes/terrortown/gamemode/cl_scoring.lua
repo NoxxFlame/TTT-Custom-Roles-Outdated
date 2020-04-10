@@ -351,7 +351,7 @@ local wintitle = {
 	[WIN_JESTER] = { txt = "hilite_win_jester", c = Color(160, 5, 230, 255) },
 	[WIN_INNOCENT] = { txt = "hilite_win_innocent", c = Color(5, 190, 5, 255) },
 	[WIN_KILLER] = { txt = "hilite_win_killer", c = Color(50, 0, 70, 255) },
-	[WIN_MONSTER] = { txt = "hilite_win_killer", c = Color(0, 0, 0, 255) }
+	[WIN_MONSTER] = { txt = "hilite_win_monster", c = Color(0, 0, 0, 255) }
 }
 
 function CLSCORE:ShowPanel()
