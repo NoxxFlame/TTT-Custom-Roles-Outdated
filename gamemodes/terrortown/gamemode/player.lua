@@ -1151,10 +1151,20 @@ function GM:OnDamagedByExplosion(ply, dmginfo)
 end
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
+    -- Body armor nets you a damage reduction unless it's a head shot
 	if dmginfo:IsBulletDamage() and ply:HasEquipmentItem(EQUIP_ARMOR) and hitgroup ~= HITGROUP_HEAD then
-		-- Body armor nets you a damage reduction.
 		dmginfo:ScaleDamage(0.7)
-	end
+    end
+
+    -- Killers take less damage
+    if dmginfo:IsBulletDamage() and ply:GetRole() == ROLE_KILLER then
+        dmginfo:ScaleDamage(0.55)
+    end
+
+     -- Monsters take less damage
+    if dmginfo:IsBulletDamage() and (ply:GetRole() == ROLE_ZOMBIE or ply:GetRole() == ROLE_VAMPIRE) then
+        dmginfo:ScaleDamage(0.80)
+    end
 
 	if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
 		-- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
@@ -1163,15 +1173,22 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
 		end
 	end
 
+    -- Jesters and Swappers do no damage
 	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and (dmginfo:GetAttacker():GetRole() == ROLE_JESTER or dmginfo:GetAttacker():GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
 		dmginfo:ScaleDamage(0)
 	end
 
-	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:IsBulletDamage() then
-		dmginfo:ScaleDamage(0.5)
+    -- Killers do less damage to encourage using the knife
+	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetRole() == ROLE_KILLER and GetRoundState() >= ROUND_ACTIVE then
+        dmginfo:ScaleDamage(0.25)
+    end
+
+    -- Zombies do less damage when using non-claw weapons
+	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:GetAttacker():GetActiveWeapon():GetClass() ~= "weapon_inf_claw" and GetRoundState() >= ROUND_ACTIVE then
+		dmginfo:ScaleDamage(0.2)
 	end
 
-	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and not GetRoundState == 3 then
+	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and GetRoundState() ~= ROUND_ACTIVE then
 		dmginfo:ScaleDamage(0)
 	end
 
