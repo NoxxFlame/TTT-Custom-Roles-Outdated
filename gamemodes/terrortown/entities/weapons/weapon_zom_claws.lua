@@ -26,18 +26,18 @@ SWEP.WorldModel = ""
 
 SWEP.HitDistance = 250
 
-SWEP.Primary.Damage			= 75
+SWEP.Primary.Damage			= 65
 SWEP.Primary.ClipSize		= 1
 SWEP.Primary.DefaultClip	= 1
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "none"
-SWEP.Primary.Delay			= 0.8
+SWEP.Primary.Delay			= 1.4
 
 SWEP.Secondary.ClipSize		= 5
 SWEP.Secondary.DefaultClip	= 5
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
-SWEP.Secondary.Delay		= 1.3
+SWEP.Secondary.Delay		= 2
 
 SWEP.Tertiary = {}
 SWEP.Tertiary.Damage 		= 25
@@ -68,24 +68,39 @@ end
 Claw Attack
 ]]
 
+function SWEP:PlayPunchAnimation()
+    local anim = "fists_right"
+    local vm = self.Owner:GetViewModel()
+    vm:SendViewModelMatchingSequence(vm:LookupSequence(anim))
+    self:GetOwner():ViewPunch(Angle( 4, 4, 0 ))
+    self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+end
+
 function SWEP:PrimaryAttack()
 	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
 	if not IsValid(self:GetOwner()) then return end
+
+    self:PlayPunchAnimation()
 
 	if self:GetOwner().LagCompensation then -- for some reason not always true
 		self:GetOwner():LagCompensation(true)
 	end
 
 	local spos = self:GetOwner():GetShootPos()
-	local sdest = spos + (self:GetOwner():GetAimVector() * 150)
+    local sdest = spos + (self:GetOwner():GetAimVector() * 70)
+    local kmins = Vector(1,1,1) * -10
+    local kmaxs = Vector(1,1,1) * 10
 
-	local tr_main = util.TraceLine({ start = spos, endpos = sdest, filter = self:GetOwner(), mask = MASK_SHOT_HULL })
+	local tr_main = util.TraceHull({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
 	local hitEnt = tr_main.Entity
 
 	self.Weapon:EmitSound(sound_single)
 
-	if IsValid(hitEnt) or tr_main.HitWorld then
+    if IsValid(hitEnt) or tr_main.HitWorld then
+        self:PlayPunchAnimation()
+        self.Weapon:SendWeaponAnim(ACT_VM_HITCENTER)
+
 		if not (CLIENT and (not IsFirstTimePredicted())) then
 			local edata = EffectData()
 			edata:SetStart(spos)
@@ -103,11 +118,12 @@ function SWEP:PrimaryAttack()
 				util.Effect("Impact", edata)
 			end
 		end
-	end
-	self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
+	else
+        self.Weapon:SendWeaponAnim(ACT_VM_MISSCENTER)
+    end
 
 	if not CLIENT then
-		self:GetOwner():SetAnimation(PLAYER_ATTACK1)
+        self:GetOwner():SetAnimation(PLAYER_ATTACK1)
 
 		if hitEnt and hitEnt:IsValid() then
 			if hitEnt:IsPlayer() and not hitEnt:IsZombie() and not hitEnt:IsVampire() then
@@ -170,10 +186,10 @@ function SWEP:SecondaryAttack()
 	if (SERVER) then
 		if (not self:CanSecondaryAttack()) or self.Owner:IsOnGround() == false then return end
 
-		local JumpSounds = { "npc/fast_zombie/leap1.wav", "npc/zombie/zo_attack2.wav", "npc/fast_zombie/fz_alert_close1.wav", "npc/zombie/zombie_alert1.wav" }
+		local jumpsounds = { "npc/fast_zombie/leap1.wav", "npc/zombie/zo_attack2.wav", "npc/fast_zombie/fz_alert_close1.wav", "npc/zombie/zombie_alert1.wav" }
 		self.SecondaryDelay = CurTime()+10
 		self.Owner:SetVelocity(self.Owner:GetForward() * 200 + Vector(0,0,400))
-		self.Owner:EmitSound(JumpSounds[math.random(4)], 100, 100)
+		self.Owner:EmitSound(jumpsounds[math.random(#jumpsounds)], 100, 100)
 		self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
 	end
 end
