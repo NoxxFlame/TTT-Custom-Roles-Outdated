@@ -1184,7 +1184,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
     end
 
     -- Zombies do less damage when using non-claw weapons
-	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:GetAttacker():GetActiveWeapon():GetClass() ~= "weapon_inf_claw" and GetRoundState() >= ROUND_ACTIVE then
+	if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:GetAttacker():GetActiveWeapon():GetClass() ~= "weapon_zom_claws" and GetRoundState() >= ROUND_ACTIVE then
 		dmginfo:ScaleDamage(0.2)
 	end
 
