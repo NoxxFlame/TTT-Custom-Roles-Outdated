@@ -392,8 +392,8 @@ concommand.Add("ttt_force_assassin", force_assassin, nil, nil, FCVAR_CHEAT)
 
 local function force_killer(ply)
 	ply:SetRole(ROLE_KILLER)
-	ply:SetMaxHealth(150)
-	ply:SetHealth(150)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
@@ -402,7 +402,10 @@ local function force_killer(ply)
 	end
 	if ply:HasWeapon("weapon_zom_claws") then
 		ply:StripWeapon("weapon_zom_claws")
-	end
+    end
+    if ply:HasWeapon("weapon_zm_improvised") then
+        ply:StripWeapon("weapon_zm_improvised")
+    end
 	ply:Give("weapon_kil_knife")
 
 	SendFullStateUpdate()
