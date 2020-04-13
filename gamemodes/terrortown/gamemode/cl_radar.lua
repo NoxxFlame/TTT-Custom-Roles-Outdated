@@ -198,20 +198,6 @@ function RADAR:Draw(client)
                     surface.SetDrawColor(0, 255, 0, alpha)
                     surface.SetTextColor(0, 255, 0, alpha)
                 end
-            elseif client:GetZombie() or client:GetVampire() then
-                if role == ROLE_ZOMBIE or role == ROLE_VAMPIRE then
-                    surface.SetDrawColor(70, 100, 25, alpha)
-                    surface.SetTextColor(70, 100, 25, alpha)
-                elseif role == ROLE_SWAPPER or role == ROLE_JESTER then
-                    surface.SetDrawColor(180, 23, 253, alpha)
-                    surface.SetTextColor(180, 23, 253, alpha)
-                elseif role == -1 then
-                    surface.SetDrawColor(150, 150, 150, alpha)
-                    surface.SetTextColor(150, 150, 150, alpha)
-                else
-                    surface.SetDrawColor(0, 255, 0, alpha)
-                    surface.SetTextColor(0, 255, 0, alpha)
-                end
             else
                 if role == ROLE_DETECTIVE then
                     surface.SetDrawColor(0, 0, 255, alpha)

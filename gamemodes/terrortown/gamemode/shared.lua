@@ -125,7 +125,7 @@ TEAM_SPEC = TEAM_SPECTATOR
 function GM:CreateTeams()
 	team.SetUp(TEAM_TERROR, "Terrorists", Color(0, 200, 0, 255), false)
 	team.SetUp(TEAM_SPEC, "Spectators", Color(200, 200, 0, 255), true)
-	
+
 	-- Not that we use this, but feels good
 	team.SetSpawnPoint(TEAM_TERROR, "info_player_deathmatch")
 	team.SetSpawnPoint(TEAM_SPEC, "info_player_deathmatch")
@@ -229,7 +229,6 @@ DefaultEquipment = {
 		EQUIP_RADAR,
 		EQUIP_DISGUISE
 	},
-	
 	-- detective-buyable by default
 	[ROLE_DETECTIVE] = {
 		"weapon_ttt_binoculars",
@@ -265,7 +264,6 @@ DefaultEquipment = {
 	},
 	[ROLE_VAMPIRE] = {
 		EQUIP_ARMOR,
-		EQUIP_RADAR,
 		"weapon_ttt_health_station"
 	},
 	[ROLE_ASSASSIN] = {
@@ -275,7 +273,6 @@ DefaultEquipment = {
 	},
 	[ROLE_ZOMBIE] = {
 		EQUIP_ARMOR,
-		EQUIP_RADAR,
 		EQUIP_SPEED,
 		EQUIP_REGEN
 	},
@@ -296,7 +293,6 @@ DefaultEquipment = {
 		EQUIP_ARMOR,
 		EQUIP_RADAR
 	},
-	
 	-- non-buyable
 	[ROLE_NONE] = {
 		"weapon_ttt_confgrenade",
