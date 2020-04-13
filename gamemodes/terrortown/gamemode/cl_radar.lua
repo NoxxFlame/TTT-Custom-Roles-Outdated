@@ -185,15 +185,9 @@ function RADAR:Draw(client)
 
             role = tgt.role
             if client:GetTraitor() or client:GetHypnotist() or client:GetAssassin() then
-                if role == ROLE_TRAITOR or role == ROLE_GLITCH then
+                if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN or role == ROLE_GLITCH then
                     surface.SetDrawColor(255, 0, 0, alpha)
                     surface.SetTextColor(255, 0, 0, alpha)
-                elseif role == ROLE_HYPNOTIST then
-                    surface.SetDrawColor(255, 80, 235, alpha)
-                    surface.SetTextColor(255, 80, 235, alpha)
-                elseif role == ROLE_ASSASSIN then
-                    surface.SetDrawColor(112, 50, 0, alpha)
-                    surface.SetTextColor(112, 50, 0, alpha)
                 elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
                     surface.SetDrawColor(180, 23, 253, alpha)
                     surface.SetTextColor(180, 23, 253, alpha)
@@ -237,7 +231,7 @@ function RADAR:Draw(client)
     surface.SetTextColor(255, 0, 0, 230)
 
     local text = GetPTranslation("radar_hud", { time = FormatTime(remaining, "%02i:%02i") })
-    local w, h = surface.GetTextSize(text)
+    local _, h = surface.GetTextSize(text)
 
     surface.SetTextPos(36, ScrH() - 140 - h)
     surface.DrawText(text)
