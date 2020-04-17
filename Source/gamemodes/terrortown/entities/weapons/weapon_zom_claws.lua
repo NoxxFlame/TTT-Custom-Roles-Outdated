@@ -151,12 +151,6 @@ function SWEP:PrimaryAttack()
 						hitEnt:Give("weapon_zom_claws")
 						hitEnt:SetPData("IsZombifying", 0)
 						body:Remove()
-						for k, v in pairs(player.GetAll()) do
-							if v:IsActiveGlitch() then
-								hitEnt:PrintMessage(HUD_PRINTTALK, "There is a Glitch.")
-								hitEnt:PrintMessage(HUD_PRINTCENTER, "There is a Glitch.")
-							end
-						end
 						SendFullStateUpdate()
 					end)
 				end
