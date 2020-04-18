@@ -2,7 +2,7 @@
 
 AS SEEN ON THE YOGSCAST AND ACHIEVEMENT HUNTER'S LET'S PLAY
 
-Thanks to Jenssons for the 'Town of Terror' mod which was the foundation of this mod.
+Thanks to [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the 'Town of Terror' mod which was the foundation of this mod.
 
 **Steam workshop:** https://steamcommunity.com/sharedfiles/filedetails/?id=1215502383
 
@@ -12,41 +12,30 @@ Thanks to Jenssons for the 'Town of Terror' mod which was the foundation of this
 Goal: Kill all members of the traitor team
 
 **Innocent**
-
 - A standard player. Has no special abilities
 
 **Detective**
-
 - All other players are notified of the Detectives at the start of the round
-
 - Can search bodies of dead players
      - Reveals the role, what killed them, who they last saw and other useful information to all players
      - If other players try to search a body it will instead alert Detectives of the body’s location (Optional)
-     
 - Has access to a shop
      - Spawns with two credits
      - Gains a credit whenever a member of the traitor team is killed
 
 **Glitch**
-
 - Has a chance to spawn instead of an Innocent
-
 - Appears as a Traitor (or Zombie) to members of the traitor team
-
 - Prevents members of the traitor team from using team text and voice chat
 
 **Mercenary**
-
 - Has a chance to spawn instead of an Innocent
-
 - Has access to a shop
      - Spawns with one credit
      - Can buy any naturally occuring weapon or items available to both Detectives and Traitors
 
 **Phantom**
-
 - Has a chance to spawn instead of an Innocent
-
 - Haunts attackers on death
      - Haunted players leave a smoke trail behind them
      - Killing the haunted player will revive the Phantom on 50 health
@@ -56,70 +45,51 @@ Goal: Kill all members of the traitor team
 Goal: Kill all members of the innocent team
 
 **Traitor**
-
 - Notified of team members and Jesters at the start of the round
-
 - Has access to a shop
      - Spawns with one credit
      - Gains a credit whenever enough innocent team members are killed
 
 **Assassin**
-
 - Has a chance to spawn instead of a Traitor
-
 - Notified of team members and Jesters at the start of the round
-
 - Given a random target at the start of the round
      - Deals double damage to the target and half damage to all other players
      - When the target dies a new target is selected
      - Detectives will always be the final targets
      - Killing the wrong player will fail the contract and the Assassin will deal half damage to all players
-     
 - Has access to a basic shop
      - Spawns with no credits
      - Gains a credit whenever enough innocent team members are killed
 
 **Hypnotist**
-
 - Has a chance to spawn instead of a Traitor
-
 - Notified of team members and Jesters at the start of the round
-
 - Spawns with a brain washing device
      - When used on a dead body it will revive them at full health
      - Changes the role of the revived player to Traitor
      - Cannot be used on Jesters and Swappers
-     
 - Has access to a basic shop
      - Spawns with no credits
      - Gains a credit whenever enough innocent team members are killed
 
 **Vampire**
-
 - Has a chance to spawn instead of a Traitor
-
 - Notified of team members and Jesters at the start of the round
-
 - Spawns with fangs
      - When used on a dead body it will destroy the body and heal 50 health up to a maximum of 125 health
      - Right click will grant short term speed and invisibility on a cooldown
-     
 - Has access to a basic shop
      - Spawns with no credits
      - Gains a credit whenever enough innocent team members are killed
 
 **Zombie**
-
 - Has a chance to spawn instead of all Traitors
-
 - Notified of team members and Jesters at the start of the round
-
 - Spawns with claws
      - Deals 50 damage to members of the innocent team
      - If used to kill a player they will repsawn as a zombie
-     
 - Deals half damage will all standard weapons
-
 - Has access to a perk shop
      - Spawns with no credits
      - Gains a credit upon infecting another player with the claws
@@ -127,27 +97,18 @@ Goal: Kill all members of the innocent team
 ## Independent Players:
 
 **Jester (Goal: Get killed by another player)**
-
 - Has a chance to spawn instead of an Innocent
-
 - Deals no damage to other players or props
-
 - Takes no environmental damage (e.g. fire, fall, explosion...)
-
 - Can message members of the traitor team using team text and voice chat but will not recieve replies
 
 **Swapper (Goal: Get killed by another player and then fulfill their old goal)**
 
 - Has a chance to spawn instead of an Innocent
-
 - Appears as a Jester to members of the traitor team
-
 - Deals no damage to other players or props
-
 - Takes no environmental damage (e.g. fire, fall, explosion...)
-
 - Can message members of the traitor team using team text and voice chat but will not recieve replies
-
 - When killed by another player the Swapper swaps roles with their attacker
      ◦ The attacker will die instead and the Swapper will respawn with the newly swapped role
      ◦ If a Detective searches the body of the attacker they will look like a Swapper
@@ -155,11 +116,8 @@ Goal: Kill all members of the innocent team
 **Killer (Goal: Be the last player standing)**
 
 - Has a chance to spawn instead of an Innocent
-
 - Spawns with 150 health and maximum health
-
 - Traitors are notified if there is a Killer
-
 - Has access to a shop
      - Spawns with one credit
      - Can buy any naturally occuring weapon or items available to both Detectives and Traitors
@@ -167,15 +125,10 @@ Goal: Kill all members of the innocent team
 ## Special Thanks:
 
 - Jenssons for the 'Town of Terror' mod which was the foundation of this mod
-
 - Bodysnatch Thunderpants for the 'Better Equipment Menu' mod
-
 - Milky for the code used to create the pile of bones after the Vampire eats a body taken from the 'TTT Traitor Weapon Evolve' mod
-
 - Wizard Cat for the code used for the Hypnotist's brain washing device taken from the 'Defibrillator for TTT' mod
-
 - Fresh Garry for the 'TTT Sprint' mod which was used as the base for this mods sprinting mechanics
-
 - Kommandos, Lix3, FunCheetah, B1andy413, Cooliew, The_Samarox, Arack12 and Aspirin for helping me test
 
 # Server config options
