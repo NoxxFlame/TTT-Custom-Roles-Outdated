@@ -1,10 +1,26 @@
 # TTT-Custom-Roles
 
-AS SEEN ON THE YOGSCAST AND ACHIEVEMENT HUNTER'S LET'S PLAY
+Adds a bunch of new roles to the Garry's Mod TTT gamemode, as seen on the yogscast and achievement hunter's let's play.
 
-Thanks to [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the 'Town of Terror' mod which was the foundation of this mod.
+**Steam workshop page:** https://steamcommunity.com/sharedfiles/filedetails/?id=1215502383
 
-**Steam workshop:** https://steamcommunity.com/sharedfiles/filedetails/?id=1215502383
+### Special Thanks:
+
+- [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the 'Town of Terror' mod which was the inspiration for this mod.
+- [Bodysnatch Thunderpants](https://steamcommunity.com/id/gamerh) for the 'Better Equipment Menu' mod.
+- [Milky](https://steamcommunity.com/profiles/76561198094798859) for the code used to create the pile of bones after the Vampire eats a body taken from the 'TTT Traitor Weapon Evolve' mod.
+- [Wizard Cat](https://steamcommunity.com/id/Vadiminator) for the code used for the Hypnotist's brain washing device taken from the 'Defibrillator for TTT' mod.
+- [Fresh Garry](https://steamcommunity.com/id/Fresh_Garry) for the 'TTT Sprint' mod which was used as the base for this mods sprinting mechanics.
+- Kommandos, Lix3, FunCheetah, B1andy413, Cooliew, The_Samarox, Arack12 and Aspirin for helping me test.
+
+### Compatibility issues
+
+Some weapon mods cause the team shops to bug out and only display one item (The one that is causing the issue). Here are some mods with known compatibility issues:
+
+- TTT Gravity Changer
+- Time Manipulator
+- [TTT] Blue Fireworks
+- TTT Scarface Jihad Bomb
 
 # Gameplay instructions
 
@@ -121,15 +137,6 @@ Goal: Kill all members of the innocent team
 - Has access to a shop
      - Spawns with one credit
      - Can buy any naturally occuring weapon or items available to both Detectives and Traitors
-
-## Special Thanks:
-
-- Jenssons for the 'Town of Terror' mod which was the foundation of this mod
-- Bodysnatch Thunderpants for the 'Better Equipment Menu' mod
-- Milky for the code used to create the pile of bones after the Vampire eats a body taken from the 'TTT Traitor Weapon Evolve' mod
-- Wizard Cat for the code used for the Hypnotist's brain washing device taken from the 'Defibrillator for TTT' mod
-- Fresh Garry for the 'TTT Sprint' mod which was used as the base for this mods sprinting mechanics
-- Kommandos, Lix3, FunCheetah, B1andy413, Cooliew, The_Samarox, Arack12 and Aspirin for helping me test
 
 # Server config options
 
