@@ -1,6 +1,6 @@
 # TTT-Custom-Roles
 
-Adds a bunch of new roles to the Garry's Mod TTT gamemode, as seen on the yogscast and achievement hunter's let's play.
+Adds a bunch of new roles to the Garry's Mod TTT gamemode, as seen on the Yogscast and Achievement Hunter's let's play.
 
 **Steam workshop page:** https://steamcommunity.com/sharedfiles/filedetails/?id=1215502383
 
