@@ -17,10 +17,10 @@ Adds a bunch of new roles to the Garry's Mod TTT gamemode, as seen on the yogsca
 
 Some weapon mods cause the team shops to bug out and only display one item (The one that is causing the issue). Here are some mods with known compatibility issues:
 
-- TTT Gravity Changer
-- Time Manipulator
-- [TTT] Blue Fireworks
-- TTT Scarface Jihad Bomb
+- [TTT Gravity Changer](https://steamcommunity.com/sharedfiles/filedetails/?id=1618719637)
+- [Time Manipulator](https://steamcommunity.com/sharedfiles/filedetails/?id=1318271171)
+- [TTT Blue Firework](https://steamcommunity.com/sharedfiles/filedetails/?id=1421303070)
+- [TTT Scarface Jihad Bomb](https://steamcommunity.com/sharedfiles/filedetails/?id=917717470)
 
 # Gameplay instructions
 
