@@ -214,7 +214,7 @@ function GM:PlayerSay(ply, text, team_only)
 			for k, v in pairs(player.GetAll()) do
 				if v:IsGlitch() then hasGlitch = true end
 			end
-			if (ply:IsTraitor() or ply:IsZombie() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin()) and hasGlitch then
+			if (ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin()) and hasGlitch then
 				ply:SendLua("chat.AddText(\"The glitch is scrambling your communications\")")
 				return ""
 			else
