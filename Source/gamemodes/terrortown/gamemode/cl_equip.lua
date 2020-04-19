@@ -425,6 +425,16 @@ local function TraitorMenuPopup()
                 slot:SetIconText(item.slot)
                 ic.slot = item.slot
 
+                -- Credit to @Angela on the Lonely Yogs Discord for the fix!
+                -- Clamp the item slot within the correct limits
+                if ic.slot ~= nil then
+                    if ic.slot > #paneltable then
+                        ic.slot = #paneltable
+                    elseif ic.slot < 1 then
+                        ic.slot = 1
+                    end
+                end
+
                 slot:SetIconProperties(COLOR_WHITE,
                     "DefaultBold",
                     { opacity = 220, offset = 1 },
