@@ -43,30 +43,32 @@ hook.Add("SetupMove", "Multi Jump", function(ply, mv)
 	end
 
 	local vel = GetMoveVector(mv)
-
 	vel.z = ply:GetJumpPower() * ply:GetExtraJumpPower()
-
 	mv:SetVelocity(vel)
 
 	ply:DoCustomAnimEvent(PLAYERANIMEVENT_JUMP , -1)
 
     if CLIENT then
         local pos = ply:GetPos() + Vector(0, 0, 10)
-
         local emitter = ParticleEmitter(pos) -- Particle emitter in this position
-
-        for _ = 0, 20 do
-            local part = emitter:Add("effects/smoke", pos) -- Create a new particle at pos
+        for _ = 0, math.random(30, 40) do
+            local partpos = ply:GetPos() + Vector(math.random(-3, 3), math.random(-3, 3), 10)
+            local part = emitter:Add("effects/smoke", partpos)
             if (part) then
-                part:SetDieTime(1)
-                part:SetStartAlpha(255)
+                part:SetDieTime(math.random(0.4, 0.7))
+                part:SetStartAlpha(math.random(200, 240))
                 part:SetEndAlpha(0)
+                part:SetColor(math.random(200, 220), math.random(200, 220), math.random(200, 220))
 
-                part:SetStartSize(5)
+                part:SetStartSize(math.random(5, 6))
                 part:SetEndSize(0)
 
-                part:SetGravity(Vector(0, 0, -25)) -- Gravity of the particle
-                part:SetVelocity(VectorRand() * 20) -- Initial velocity of the particle
+                part:SetRoll(0)
+                part:SetRollDelta(0)
+
+                local velocity = VectorRand() * math.random(10, 15);
+                velocity.z = 5;
+                part:SetVelocity(velocity)
             end
         end
 
