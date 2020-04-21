@@ -1,3 +1,7 @@
+if SERVER then
+    util.AddNetworkString("TTT_MultiJump")
+end
+
 local function GetMoveVector(mv)
 	local ang = mv:GetAngles()
 
@@ -48,9 +52,21 @@ hook.Add("SetupMove", "Multi Jump", function(ply, mv)
 
 	ply:DoCustomAnimEvent(PLAYERANIMEVENT_JUMP , -1)
 
-    if CLIENT then
+    if SERVER then
+        net.Start("TTT_MultiJump")
+        net.WriteEntity(ply)
+        net.Broadcast()
+    end
+end)
+
+if CLIENT then
+    net.Receive("TTT_MultiJump", function()
+        local ply = net.ReadEntity()
         local pos = ply:GetPos() + Vector(0, 0, 10)
-        local emitter = ParticleEmitter(pos) -- Particle emitter in this position
+        local client = LocalPlayer()
+        if client:GetPos():Distance(pos) > 1000 then return end
+
+        local emitter = ParticleEmitter(pos)
         for _ = 0, math.random(30, 40) do
             local partpos = ply:GetPos() + Vector(math.random(-3, 3), math.random(-3, 3), 10)
             local part = emitter:Add("effects/smoke", partpos)
@@ -73,5 +89,5 @@ hook.Add("SetupMove", "Multi Jump", function(ply, mv)
         end
 
         emitter:Finish()
-    end
-end)
+    end)
+end
