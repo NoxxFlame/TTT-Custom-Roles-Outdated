@@ -489,7 +489,7 @@ local function CleanUp()
 	end
 
 	-- a different kind of cleanup
-	util.SafeRemoveHook("PlayerSay", "ULXMeCheck")
+	hook.Remove("PlayerSay", "ULXMeCheck")
 end
 
 local function SpawnEntities()
@@ -654,13 +654,13 @@ function TellTraitorsAboutTraitors()
 	-- traitors themselves in the messages to them
 	for k, v in pairs(player.GetAll()) do
 		if v:IsTraitor() or v:IsHypnotist() or v:IsAssassin() then
-			if table.Count(glitchnick) > 0 then
+			if not table.IsEmpty(glitchnick) then
 				v:PrintMessage(HUD_PRINTTALK, "There is a Glitch.")
 				v:PrintMessage(HUD_PRINTCENTER, "There is a Glitch.")
 			end
-			if table.Count(killernick) > 0 then
+			if not table.IsEmpty(killernick) then
 				v:PrintMessage(HUD_PRINTTALK, "There is a Killer.")
-				if table.Count(glitchnick) > 0 then
+				if not table.IsEmpty(glitchnick) then
 					timer.Simple(2, function()
 						v:PrintMessage(HUD_PRINTCENTER, "There is a Killer.")
 					end)

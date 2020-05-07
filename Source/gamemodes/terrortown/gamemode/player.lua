@@ -79,6 +79,9 @@ function GM:NetworkIDValidated(name, steamid)
 end
 
 function GM:PlayerSpawn(ply)
+    -- stop bleeding
+    util.StopBleeding(ply)
+
     -- Some spawns may be tilted
     ply:ResetViewRoll()
 
@@ -209,7 +212,7 @@ local function PointsAroundSpawn(spwn)
 end
 
 function GM:PlayerSelectSpawn(ply)
-    if (not self.SpawnPoints) or (table.Count(self.SpawnPoints) == 0) or (not IsTableOfEntitiesValid(self.SpawnPoints)) then
+    if (not self.SpawnPoints) or (table.IsEmpty(self.SpawnPoints)) or (not IsTableOfEntitiesValid(self.SpawnPoints)) then
 
         self.SpawnPoints = GetSpawnEnts(true, false)
 
@@ -220,8 +223,7 @@ function GM:PlayerSelectSpawn(ply)
         -- ones anyway.
     end
 
-    local num = table.Count(self.SpawnPoints)
-    if num == 0 then
+    if table.IsEmpty(self.SpawnPoints) then
         Error("No spawn entity found!\n")
         return
     end
@@ -1056,6 +1058,10 @@ function GM:PlayerDeath(victim, infl, attacker)
             SendFullStateUpdate()
         end)
     end
+
+    -- stop bleeding
+    util.StopBleeding(victim)
+
     -- tell no one
     self:PlayerSilentDeath(victim)
 

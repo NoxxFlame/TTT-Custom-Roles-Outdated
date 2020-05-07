@@ -28,7 +28,7 @@ function util.WeaponFromDamage(dmg)
 			end
 		end
 	end
-	
+
 	return wep
 end
 
@@ -37,7 +37,7 @@ end
 -- as read-only.
 function util.WeaponForClass(cls)
 	local wep = weapons.GetStored(cls)
-	
+
 	if not wep then
 		wep = scripted_ents.GetStored(cls)
 		if wep then
@@ -47,7 +47,7 @@ function util.WeaponForClass(cls)
 			wep = wep.t or scripted_ents.Get(cls)
 		end
 	end
-	
+
 	return wep
 end
 
@@ -58,32 +58,32 @@ function util.GetAlivePlayers()
 			table.insert(alive, p)
 		end
 	end
-	
+
 	return alive
 end
 
 function util.GetNextAlivePlayer(ply)
 	local alive = util.GetAlivePlayers()
-	
+
 	if #alive < 1 then return nil end
-	
+
 	local prev = nil
 	local choice = nil
-	
+
 	if IsValid(ply) then
 		for k, p in pairs(alive) do
 			if prev == ply then
 				choice = p
 			end
-			
+
 			prev = p
 		end
 	end
-	
+
 	if not IsValid(choice) then
 		choice = alive[1]
 	end
-	
+
 	return choice
 end
 
@@ -111,7 +111,7 @@ end
 
 function util.PaintDown(start, effname, ignore)
 	local btr = util.TraceLine({ start = start, endpos = (start + Vector(0, 0, -256)), filter = ignore, mask = MASK_SOLID })
-	
+
 	util.Decal(effname, btr.HitPos + btr.HitNormal, btr.HitPos - btr.HitNormal)
 end
 
@@ -119,10 +119,10 @@ local function DoBleed(ent)
 	if not IsValid(ent) or (ent:IsPlayer() and (not ent:Alive() or not ent:IsTerror())) then
 		return
 	end
-	
+
 	local jitter = VectorRand() * 30
 	jitter.z = 20
-	
+
 	util.PaintDown(ent:GetPos() + jitter, "Blood", ent)
 end
 
@@ -131,22 +131,26 @@ function util.StartBleeding(ent, dmg, t)
 	if dmg < 5 or not IsValid(ent) then
 		return
 	end
-	
+
 	if ent:IsPlayer() and (not ent:Alive() or not ent:IsTerror()) then
 		return
 	end
-	
+
 	local times = math.Clamp(math.Round(dmg / 15), 1, 20)
-	
+
 	local delay = math.Clamp(t / times, 0.1, 2)
-	
+
 	if ent:IsPlayer() then
 		times = times * 2
 		delay = delay / 2
 	end
-	
+
 	timer.Create("bleed" .. ent:EntIndex(), delay, times,
 		function() DoBleed(ent) end)
+end
+
+function util.StopBleeding(ent)
+    timer.Remove("bleed" .. ent:EntIndex())
 end
 
 local zapsound = Sound("npc/assassin/ball_zap1.wav")
@@ -167,13 +171,6 @@ function util.BasicKeyHandler(pnl, kc)
 	end
 end
 
-function util.SafeRemoveHook(event, name)
-	local h = hook.GetTable()
-	if h and h[event] and h[event][name] then
-		hook.Remove(event, name)
-	end
-end
-
 function util.noop() end
 
 function util.passthrough(x) return x end
@@ -182,7 +179,7 @@ function util.passthrough(x) return x end
 local rand = math.random
 function table.Shuffle(t)
 	local n = #t
-	
+
 	while n > 2 do
 		-- n is now the last pertinent index
 		local k = rand(n) -- 1 <= k <= n
@@ -190,14 +187,14 @@ function table.Shuffle(t)
 		t[n], t[k] = t[k], t[n]
 		n = n - 1
 	end
-	
+
 	return t
 end
 
 -- Override with nil check
 function table.HasValue(tbl, val)
 	if not tbl then return end
-	
+
 	for k, v in pairs(tbl) do
 		if v == val then return true end
 	end
@@ -207,13 +204,13 @@ end
 -- Value equality for tables
 function table.EqualValues(a, b)
 	if a == b then return true end
-	
+
 	for k, v in pairs(a) do
 		if v ~= b[k] then
 			return false
 		end
 	end
-	
+
 	return true
 end
 
@@ -221,7 +218,7 @@ end
 -- tables, so this uses table.EqualValues instead.
 function table.HasTable(tbl, needle)
 	if not tbl then return end
-	
+
 	for k, v in pairs(tbl) do
 		if v == needle then
 			return true
@@ -235,7 +232,7 @@ end
 -- Returns copy of table with only specific keys copied
 function table.CopyKeys(tbl, keys)
 	if not (tbl and keys) then return end
-	
+
 	local out = {}
 	local val = nil
 	for _, k in pairs(keys) do
@@ -262,7 +259,7 @@ end
 function Key(binding, default)
 	local b = input.LookupBinding(binding)
 	if not b then return default end
-	
+
 	return string.upper(b)
 end
 
@@ -278,12 +275,12 @@ function Dev(level, ...)
 	if cvars and cvars.Number("developer", 0) >= level then
 		Msg("[TTT dev]")
 		-- table.concat does not tostring, derp
-		
+
 		local params = { ... }
 		for i = 1, #params do
 			Msg(" " .. tostring(params[i]))
 		end
-		
+
 		Msg("\n")
 	end
 end
@@ -309,10 +306,10 @@ if CLIENT then
 		badwound = Color(255, 140, 0, 255),
 		death = Color(255, 0, 0, 255)
 	};
-	
+
 	function util.HealthToString(health, maxhealth)
 		maxhealth = maxhealth or 100
-		
+
 		if health > maxhealth * 0.9 then
 			return "hp_healthy", healthcolors.healthy
 		elseif health > maxhealth * 0.7 then
@@ -325,7 +322,7 @@ if CLIENT then
 			return "hp_death", healthcolors.death
 		end
 	end
-	
+
 	local karmacolors = {
 		max = Color(255, 255, 255, 255),
 		high = Color(255, 240, 135, 255),
@@ -333,11 +330,11 @@ if CLIENT then
 		low = Color(255, 180, 0, 255),
 		min = Color(255, 130, 0, 255),
 	};
-	
+
 	function util.KarmaToString(karma)
 		local maxkarma = GetGlobalInt("ttt_karma_max", 1000)
 		local maxdif = maxkarma - 1000
-		
+
 		if karma >= 1000 then
 			return "karma_max", karmacolors.max
 		elseif karma >= 900 then
@@ -350,7 +347,7 @@ if CLIENT then
 			return "karma_min", karmacolors.min
 		end
 	end
-	
+
 	function util.IncludeClientFile(file)
 		include(file)
 	end
@@ -364,12 +361,12 @@ end
 -- support
 function util.SimpleTime(seconds, fmt)
 	if not seconds then seconds = 0 end
-	
+
 	local ms = (seconds - math.floor(seconds)) * 100
 	seconds = math.floor(seconds)
 	local s = seconds % 60
 	seconds = (seconds - s) / 60
 	local m = seconds % 60
-	
+
 	return string.format(fmt, m, s, ms)
 end
