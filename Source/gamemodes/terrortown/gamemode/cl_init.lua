@@ -538,15 +538,15 @@ function OnPlayerHightlightEnabled(role, alliedRole)
         local friends = {}
         local jesters = {}
         if GetRoundState() == ROUND_ACTIVE then
-            for k, v in pairs(player.GetAll()) do
-                local isJester = v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER
-                local isFriend = v:GetRole() == role or (alliedRole and v:GetRole() == alliedRole)
-                if v:Alive() and isJester then
-                    table.insert(jesters, v)
-                elseif v:Alive() and isFriend then
-                    table.insert(friends, v)
-                elseif v:Alive() then
-                    table.insert(enemies, v)
+            for _, v in pairs(player.GetAll()) do
+                if IsValid(v) and v:Alive() and not v:IsSpec() then
+                    if v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
+                        table.insert(jesters, v)
+                    elseif v:GetRole() == role or (alliedRole and v:GetRole() == alliedRole) then
+                        table.insert(friends, v)
+                    else
+                        table.insert(enemies, v)
+                    end
                 end
             end
 
