@@ -195,7 +195,7 @@ if SERVER then
         net.Broadcast()
 
         ply:SpawnForRound(true)
-        ply:SetCredits(0)
+        ply:SetCredits(credits)
         ply:SetPos(self.Location or body:GetPos())
         ply:SetEyeAngles(Angle(0, body:GetAngles().y, 0))
         ply:SetRole(ROLE_TRAITOR)
