@@ -1,7 +1,6 @@
 GM.Name = "Trouble in Terrorist Town"
 GM.Author = "Bad King Urgrain"
 GM.Website = "ttt.badking.net"
-GM.Version = "2019-03-03"
 
 GM.Customized = false
 

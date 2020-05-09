@@ -238,7 +238,6 @@ rolemapgotwo = {}
 function GM:Initialize()
 
 	MsgN("Trouble In Terrorist Town gamemode initializing...")
-	ShowVersion()
 
 	-- Force friendly fire to be enabled. If it is off, we do not get lag compensation.
 	RunConsoleCommand("mp_friendlyfire", "1")
@@ -769,7 +768,6 @@ function BeginRound()
 
 	if CheckForAbort() then return end
 
-	AnnounceVersion()
 	ReadRoleEquipment()
 	InitRoundEndTime()
 
@@ -1458,29 +1456,6 @@ local function ForceRoundRestart(ply, command, args)
 end
 
 concommand.Add("ttt_roundrestart", ForceRoundRestart)
-
--- Version announce also used in Initialize
-function ShowVersion(ply)
-	local text = Format("This is TTT version %s\n", GAMEMODE.Version)
-	if IsValid(ply) then
-		ply:PrintMessage(HUD_PRINTNOTIFY, text)
-	else
-		Msg(text)
-	end
-end
-
-concommand.Add("ttt_version", ShowVersion)
-
-function AnnounceVersion()
-	local text = Format("You are playing %s, version %s.\n", GAMEMODE.Name, GAMEMODE.Version)
-
-	-- announce to players
-	for k, ply in pairs(player.GetAll()) do
-		if IsValid(ply) then
-			ply:PrintMessage(HUD_PRINTTALK, text)
-		end
-	end
-end
 
 -- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
 function ReadRoleEquipment()
