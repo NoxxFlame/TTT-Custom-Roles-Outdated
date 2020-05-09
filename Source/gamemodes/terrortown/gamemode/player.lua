@@ -1592,6 +1592,12 @@ function HandlePlayerHighlights(ply)
         net.Start("TTT_Killer_PlayerHighlightOn")
         net.WriteEntity(ply)
         net.Send(ply)
+
+        if GetRoundState() >= ROUND_ACTIVE then
+            if ply:HasWeapon("weapon_kil_knife") == false then
+                ply:Give("weapon_kil_knife")
+            end
+        end
     elseif ply:GetRole() == ROLE_ZOMBIE then
         if ply.GetActiveWeapon and IsValid(ply:GetActiveWeapon()) then
             if ply:GetActiveWeapon():GetClass() == "weapon_zom_claws" then
