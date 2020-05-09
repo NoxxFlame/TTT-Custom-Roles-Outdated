@@ -133,9 +133,9 @@ end
 
 function plymeta:AddBought(id)
 	if not self.bought then self.bought = {} end
-	
+
 	table.insert(self.bought, tostring(id))
-	
+
 	self:SendBought()
 end
 
@@ -144,7 +144,7 @@ function plymeta:StripAll()
 	-- standard stuff
 	self:StripAmmo()
 	self:StripWeapons()
-	
+
 	-- our stuff
 	self:ResetEquipment()
 	self:SetCredits(0)
@@ -155,7 +155,7 @@ function plymeta:ResetStatus()
 	self:SetRole(ROLE_INNOCENT)
 	self:SetRagdollSpec(false)
 	self:SetForceSpec(false)
-	
+
 	self:ResetRoundFlags()
 end
 
@@ -164,37 +164,37 @@ function plymeta:ResetRoundFlags()
 	-- equipment
 	self:ResetEquipment()
 	self:SetCredits(0)
-	
+
 	self:ResetBought()
-	
+
 	-- equipment stuff
 	self.bomb_wire = nil
 	self.radar_charge = 0
 	self.decoy = nil
-	
+
 	-- corpse
 	self:SetNWBool("det_called", false)
 	self:SetNWBool("body_found", false)
 	self:SetNWBool("body_searched", false)
-	
+
 	self.kills = {}
-	
+
 	self.dying_wep = nil
 	self.was_headshot = false
-	
+
 	-- communication
 	self.mute_team = -1
 	self.traitor_gvoice = false
-	
+
 	self:SetNWBool("disguised", false)
-	
+
 	-- karma
 	self:SetCleanRound(true)
-	
+
 	if not self:GetCleanRounds() then
 		self:SetCleanRounds(1)
 	end
-	
+
 	self:Freeze(false)
 end
 
@@ -220,11 +220,11 @@ end
 
 function plymeta:RecordKill(victim)
 	if not IsValid(victim) then return end
-	
+
 	if not self.kills then
 		self.kills = {}
 	end
-	
+
 	table.insert(self.kills, victim:SteamID())
 end
 
@@ -245,7 +245,7 @@ end
 function plymeta:SendLastWords(dmginfo)
 	-- Use a pseudo unique id to prevent people from abusing the concmd
 	self.last_words_id = math.floor(CurTime() + math.random(500))
-	
+
 	-- See if the damage was interesting
 	local dtype = KILL_NORMAL
 	if dmginfo:GetAttacker() == self or dmginfo:GetInflictor() == self then
@@ -255,13 +255,13 @@ function plymeta:SendLastWords(dmginfo)
 	elseif dmginfo:IsFallDamage() then
 		dtype = KILL_FALL
 	end
-	
+
 	self.death_type = dtype
-	
+
 	net.Start("TTT_InterruptChat")
 	net.WriteUInt(self.last_words_id, 32)
 	net.Send(self)
-	
+
 	-- any longer than this and you're out of luck
 	local ply = self
 	timer.Simple(2, function() ply:ResetLastWords() end)
@@ -280,7 +280,7 @@ function plymeta:ShouldSpawn()
 	if (not self:IsSpec()) and (not self:IsTerror()) then return false end
 	-- do not spawn forced specs
 	if self:IsSpec() and self:GetForceSpec() then return false end
-	
+
 	return true
 end
 
@@ -289,7 +289,7 @@ end
 function plymeta:SpawnForRound(dead_only, round_start)
 	hook.Call("PlayerSetModel", GAMEMODE, self)
 	hook.Call("TTTPlayerSetColor", GAMEMODE, self)
-	
+
 	-- wrong alive status and not a willing spec who unforced after prep started
 	-- (and will therefore be "alive")
 	if dead_only and self:Alive() and (not self:IsSpec()) then
@@ -297,39 +297,44 @@ function plymeta:SpawnForRound(dead_only, round_start)
 		self:SetHealth(self:GetMaxHealth())
 		return false
 	end
-	
+
 	if not self:ShouldSpawn() then return false end
-	
+
 	-- reset propspec state that they may have gotten during prep
 	PROPSPEC.Clear(self)
-	
+
 	-- respawn anyone else
 	if self:Team() == TEAM_SPEC then
 		self:UnSpectate()
 	end
-	
+
 	self:StripAll()
 	self:SetTeam(TEAM_TERROR)
 	self:Spawn()
-	
+
 	if round_start then
 		self:Freeze(true)
 		local ply = self
 		timer.Simple(1.5, function()
 			ply:Freeze(false)
-		end)
+        end)
+    -- If a dead player was spawned outside of the round start, broadcast the defib event
+    elseif dead_only then
+        net.Start("TTT_Defibrillated")
+        net.WriteString(self:Nick())
+        net.Broadcast()
 	end
-	
+
 	-- tell caller that we spawned
 	return true
 end
 
 function plymeta:InitialSpawn()
 	self.has_spawned = false
-	
+
 	-- The team the player spawns on depends on the round state
 	self:SetTeam(GetRoundState() == ROUND_PREP and TEAM_TERROR or TEAM_SPEC)
-	
+
 	-- Change some gmod defaults
 	self:SetCanZoom(false)
 	self:SetJumpPower(160)
@@ -337,15 +342,15 @@ function plymeta:InitialSpawn()
 	self:SetRunSpeed(220)
 	self:SetWalkSpeed(220)
 	self:SetMaxSpeed(220)
-	
+
 	-- Always spawn innocent initially, traitor will be selected later
 	self:ResetStatus()
-	
+
 	-- Start off with clean, full karma (unless it can and should be loaded)
 	self:InitKarma()
-	
+
 	self:InitDrinks()
-	
+
 	-- We never have weapons here, but this inits our equipment state
 	self:StripAll()
 end
@@ -358,11 +363,11 @@ end
 local oldSpectate = plymeta.Spectate
 function plymeta:Spectate(type)
 	oldSpectate(self, type)
-	
+
 	-- NPCs should never see spectators. A workaround for the fact that gmod NPCs
 	-- do not ignore them by default.
 	self:SetNoTarget(true)
-	
+
 	if type == OBS_MODE_ROAMING then
 		self:SetMoveType(MOVETYPE_NOCLIP)
 	end
@@ -371,7 +376,7 @@ end
 local oldSpectateEntity = plymeta.SpectateEntity
 function plymeta:SpectateEntity(ent)
 	oldSpectateEntity(self, ent)
-	
+
 	if IsValid(ent) and ent:IsPlayer() then
 		self:SetupHands(ent)
 	end

@@ -10,19 +10,6 @@ local pairs = pairs
 CLSCORE = {}
 CLSCORE.Events = {}
 CLSCORE.Scores = {}
-CLSCORE.TraitorIDs = {}
-CLSCORE.DetectiveIDs = {}
-CLSCORE.MercenaryIDs = {}
-CLSCORE.HypnotistIDs = {}
-CLSCORE.GlitchIDs = {}
-CLSCORE.JesterIDs = {}
-CLSCORE.PhantomIDs = {}
-CLSCORE.ZombieIDs = {}
-CLSCORE.VampireIDs = {}
-CLSCORE.SwapperIDs = {}
-CLSCORE.AssassinIDs = {}
-CLSCORE.KillerIDs = {}
-CLSCORE.Players = {}
 CLSCORE.StartTime = 0
 CLSCORE.Panel = nil
 
@@ -87,7 +74,6 @@ end)
 net.Receive("TTT_Hypnotised", function(len)
     local name = net.ReadString()
     InsertPlayerToTable(hypnotised, name)
-    InsertRevivedPlayer(name)
 
     -- Remove any record of this player being zombified
     local zomIndex = FindTableIndex(zombified, name)
@@ -104,7 +90,6 @@ end)
 net.Receive("TTT_Zombified", function(len)
     local name = net.ReadString()
     InsertPlayerToTable(zombified, name)
-    InsertRevivedPlayer(name)
 
     -- Remove any record of this player being hypnotized
     local hypIndex = FindTableIndex(hypnotised, name)
@@ -613,19 +598,6 @@ end
 
 function CLSCORE:Reset()
     self.Events = {}
-    --self.StoredEvents = nil
-    self.TraitorIDs = {}
-    self.DetectiveIDs = {}
-    self.MercenaryIDs = {}
-    self.HypnotistIDs = {}
-    self.GlitchIDs = {}
-    self.JesterIDs = {}
-    self.PhantomIDs = {}
-    self.ZombieIDs = {}
-    self.VampireIDs = {}
-    self.SwapperIDs = {}
-    self.AssassinIDs = {}
-    self.KillerIDs = {}
     self.Scores = {}
     self.Players = {}
     self.RoundStarted = 0
@@ -685,18 +657,6 @@ function CLSCORE:Init(events)
 
     self.Players = nicks
     self.Scores = scores
-    self.TraitorIDs = traitors
-    self.DetectiveIDs = detectives
-    self.MercenaryIDs = mercenary
-    self.HypnotistIDs = hypnotist
-    self.GlitchIDs = glitch
-    self.JesterIDs = jester
-    self.PhantomIDs = phantom
-    self.ZombieIDs = zombie
-    self.VampireIDs = vampire
-    self.SwapperIDs = swapper
-    self.AssassinIDs = assassin
-    self.KillerIDs = killer
     self.StartTime = starttime
     self.Events = events
 end
