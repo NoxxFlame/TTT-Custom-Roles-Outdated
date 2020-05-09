@@ -62,6 +62,8 @@ end)
 if CLIENT then
     net.Receive("TTT_MultiJump", function()
         local ply = net.ReadEntity()
+        if not IsValid(ply) or ply:IsSpec() or not ply:Alive() then return end
+
         local pos = ply:GetPos() + Vector(0, 0, 10)
         local client = LocalPlayer()
         if client:GetPos():Distance(pos) > 1000 then return end
