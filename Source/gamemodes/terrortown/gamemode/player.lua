@@ -1319,9 +1319,12 @@ local rag_collide = CreateConVar("ttt_ragdoll_collide", "0")
 
 -- No damage during prep, etc
 function GM:EntityTakeDamage(ent, dmginfo)
+    if not IsValid(ent) then return end
+    local att = dmginfo:GetAttacker()
+
     if SERVER then
         local assassintarget = ""
-        for k, v in pairs(player.GetAll()) do
+        for _, v in pairs(player.GetAll()) do
             if v:GetRole() == ROLE_ASSASSIN then
                 assassintarget = v:GetNWString("AssassinTarget", "")
             end
@@ -1338,7 +1341,7 @@ function GM:EntityTakeDamage(ent, dmginfo)
         end
         if (ent:IsPlayer() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE) then
             -- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
-            if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
+            if (att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE)) or dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
                 dmginfo:ScaleDamage(0) -- no damages
                 dmginfo:SetDamage(0)
             end
@@ -1346,9 +1349,6 @@ function GM:EntityTakeDamage(ent, dmginfo)
             dmginfo:ScaleDamage(assassinbonus)
         end
     end
-
-    if not IsValid(ent) then return end
-    local att = dmginfo:GetAttacker()
 
     if att:IsPlayer() and (att:GetRole() == ROLE_JESTER or att:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
         dmginfo:ScaleDamage(0)
