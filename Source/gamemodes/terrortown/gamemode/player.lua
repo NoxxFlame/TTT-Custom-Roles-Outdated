@@ -1595,6 +1595,7 @@ function HandlePlayerHighlights(ply)
 
         if GetRoundState() >= ROUND_ACTIVE then
             if ply:HasWeapon("weapon_kil_knife") == false then
+                ply:StripWeapon("weapon_zm_improvised")
                 ply:Give("weapon_kil_knife")
             end
         end
