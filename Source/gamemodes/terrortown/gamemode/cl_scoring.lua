@@ -326,11 +326,6 @@ function CLSCORE:AddAward(y, pw, award, dpanel)
     return y
 end
 
--- double check that we have no nils
-local function ValidAward(a)
-    return a and a.nick and a.text and a.title and a.priority
-end
-
 local wintitle = {
     [WIN_TRAITOR] = { txt = "hilite_win_traitors", c = Color(190, 5, 5, 255) },
     [WIN_JESTER] = { txt = "hilite_win_jester", c = Color(160, 5, 230, 255) },
@@ -620,7 +615,7 @@ function CLSCORE:Init(events)
     local swapper = nil
     local assassin = nil
     local killer = nil
-    for k, e in pairs(events) do
+    for _, e in pairs(events) do
         if e.id == EVENT_GAME and e.state == ROUND_ACTIVE then
             starttime = e.t
         elseif e.id == EVENT_SELECTED then
@@ -648,8 +643,8 @@ function CLSCORE:Init(events)
     local nicks = {}
     for _, e in pairs(events) do
         if e.id == EVENT_SPAWN then
-            scores[e.sid] = ScoreInit()
-            nicks[e.sid] = e.ni
+            scores[e.uid] = ScoreInit()
+            nicks[e.uid] = e.ni
         end
     end
 
