@@ -1717,7 +1717,7 @@ local function HandleKillerSmokeTick()
 end
 
 timer.Create("KillerKillCheckTimer", 1, 0, function()
-    if GetRoundState() == ROUND_ACTIVE then
+    if GetRoundState() == ROUND_ACTIVE and HasKiller() then
         killerSmokeTime = killerSmokeTime + 1
         if killerSmokeTime >= GetConVar("ttt_killer_smoke_timer"):GetInt() then
             HandleKillerSmokeTick()
