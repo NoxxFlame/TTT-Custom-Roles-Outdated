@@ -41,6 +41,7 @@ local revived = {}
 local zombified = {}
 local disconnected = {}
 local spawnedplayers = {}
+local rolechanges = {}
 
 local function FindTableIndex(playerTable, value)
     for k, name in pairs(playerTable) do
@@ -49,6 +50,19 @@ local function FindTableIndex(playerTable, value)
         end
     end
     return -1
+end
+
+local function HandleRoleChange(roletable, role, targetrole, uid)
+    if role == targetrole then
+        if not table.HasValue(roletable, uid) then
+            table.insert(roletable, uid)
+        end
+    else
+        local roleIndex = FindTableIndex(roletable, uid)
+        if roleIndex >= 0 then
+            table.remove(roletable, roleIndex)
+        end
+    end
 end
 
 local function InsertPlayerToTable(playerTable, name)
@@ -109,11 +123,18 @@ net.Receive("TTT_ClearRoleSwaps", function(len)
     zombified = {}
     disconnected = {}
     spawnedplayers = {}
+    rolechanges = {}
 end)
 
 net.Receive("TTT_SpawnedPlayers", function(len)
     local name = net.ReadString()
     table.insert(spawnedplayers, name)
+end)
+
+net.Receive("TTT_RoleChanged", function(len)
+    local uid = net.ReadInt(8)
+    local role = net.ReadInt(8)
+    rolechanges[uid] = role
 end)
 
 function CLSCORE:GetDisplay(key, event)
@@ -646,6 +667,22 @@ function CLSCORE:Init(events)
             scores[e.uid] = ScoreInit()
             nicks[e.uid] = e.ni
         end
+    end
+
+    -- If a player swapped roles during the round, remove them from the other table
+    for uid, role in pairs(rolechanges) do
+        HandleRoleChange(traitors, role, ROLE_TRAITOR, uid)
+        HandleRoleChange(detectives, role, ROLE_DETECTIVE, uid)
+        HandleRoleChange(mercenary, role, ROLE_MERCENARY, uid)
+        HandleRoleChange(hypnotist, role, ROLE_HYPNOTIST, uid)
+        HandleRoleChange(glitch, role, ROLE_GLITCH, uid)
+        HandleRoleChange(jester, role, ROLE_JESTER, uid)
+        HandleRoleChange(phantom, role, ROLE_PHANTOM, uid)
+        HandleRoleChange(zombie, role, ROLE_ZOMBIE, uid)
+        HandleRoleChange(vampire, role, ROLE_VAMPIRE, uid)
+        HandleRoleChange(swapper, role, ROLE_SWAPPER, uid)
+        HandleRoleChange(assassin, role, ROLE_ASSASSIN, uid)
+        HandleRoleChange(killer, role, ROLE_KILLER, uid)
     end
 
     scores = ScoreEventLog(events, scores, traitors, detectives, hypnotist, mercenary, jester, phantom, glitch, zombie, vampire, swapper, assassin, killer)

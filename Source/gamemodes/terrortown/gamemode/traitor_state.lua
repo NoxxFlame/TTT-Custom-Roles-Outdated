@@ -145,7 +145,7 @@ end
 concommand.Add("_ttt_request_rolelist", request_rolelist)
 
 local function force_terror(ply)
-	ply:SetRole(ROLE_INNOCENT)
+	ply:SetRoleAndBroadcast(ROLE_INNOCENT)
 	ply:UnSpectate()
 	ply:SetTeam(TEAM_TERROR)
 
@@ -160,7 +160,7 @@ end
 concommand.Add("ttt_force_terror", force_terror, nil, nil, FCVAR_CHEAT)
 
 local function force_innocent(ply)
-	ply:SetRole(ROLE_INNOCENT)
+	ply:SetRoleAndBroadcast(ROLE_INNOCENT)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -179,7 +179,7 @@ end
 concommand.Add("ttt_force_innocent", force_innocent, nil, nil, FCVAR_CHEAT)
 
 local function force_traitor(ply)
-	ply:SetRole(ROLE_TRAITOR)
+	ply:SetRoleAndBroadcast(ROLE_TRAITOR)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -198,7 +198,7 @@ end
 concommand.Add("ttt_force_traitor", force_traitor, nil, nil, FCVAR_CHEAT)
 
 local function force_detective(ply)
-	ply:SetRole(ROLE_DETECTIVE)
+	ply:SetRoleAndBroadcast(ROLE_DETECTIVE)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -217,7 +217,7 @@ end
 concommand.Add("ttt_force_detective", force_detective, nil, nil, FCVAR_CHEAT)
 
 local function force_mercenary(ply)
-	ply:SetRole(ROLE_MERCENARY)
+	ply:SetRoleAndBroadcast(ROLE_MERCENARY)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -236,7 +236,7 @@ end
 concommand.Add("ttt_force_mercenary", force_mercenary, nil, nil, FCVAR_CHEAT)
 
 local function force_hypnotist(ply)
-	ply:SetRole(ROLE_HYPNOTIST)
+	ply:SetRoleAndBroadcast(ROLE_HYPNOTIST)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -256,7 +256,7 @@ end
 concommand.Add("ttt_force_hypnotist", force_hypnotist, nil, nil, FCVAR_CHEAT)
 
 local function force_glitch(ply)
-	ply:SetRole(ROLE_GLITCH)
+	ply:SetRoleAndBroadcast(ROLE_GLITCH)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -275,7 +275,7 @@ end
 concommand.Add("ttt_force_glitch", force_glitch, nil, nil, FCVAR_CHEAT)
 
 local function force_jester(ply)
-	ply:SetRole(ROLE_JESTER)
+	ply:SetRoleAndBroadcast(ROLE_JESTER)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -294,7 +294,7 @@ end
 concommand.Add("ttt_force_jester", force_jester, nil, nil, FCVAR_CHEAT)
 
 local function force_phantom(ply)
-	ply:SetRole(ROLE_PHANTOM)
+	ply:SetRoleAndBroadcast(ROLE_PHANTOM)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -313,7 +313,7 @@ end
 concommand.Add("ttt_force_phantom", force_phantom, nil, nil, FCVAR_CHEAT)
 
 local function force_zombie(ply)
-	ply:SetRole(ROLE_ZOMBIE)
+	ply:SetRoleAndBroadcast(ROLE_ZOMBIE)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -333,7 +333,7 @@ end
 concommand.Add("ttt_force_zombie", force_zombie, nil, nil, FCVAR_CHEAT)
 
 local function force_vampire(ply)
-	ply:SetRole(ROLE_VAMPIRE)
+	ply:SetRoleAndBroadcast(ROLE_VAMPIRE)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -353,7 +353,7 @@ end
 concommand.Add("ttt_force_vampire", force_vampire, nil, nil, FCVAR_CHEAT)
 
 local function force_swapper(ply)
-	ply:SetRole(ROLE_SWAPPER)
+	ply:SetRoleAndBroadcast(ROLE_SWAPPER)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -372,7 +372,7 @@ end
 concommand.Add("ttt_force_swapper", force_swapper, nil, nil, FCVAR_CHEAT)
 
 local function force_assassin(ply)
-	ply:SetRole(ROLE_ASSASSIN)
+	ply:SetRoleAndBroadcast(ROLE_ASSASSIN)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
@@ -391,7 +391,7 @@ end
 concommand.Add("ttt_force_assassin", force_assassin, nil, nil, FCVAR_CHEAT)
 
 local function force_killer(ply)
-	ply:SetRole(ROLE_KILLER)
+	ply:SetRoleAndBroadcast(ROLE_KILLER)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then

@@ -54,6 +54,15 @@ plymeta.IsKiller = plymeta.GetKiller
 
 function plymeta:IsSpecial() return self:GetRole() ~= ROLE_INNOCENT end
 
+function plymeta:SetRoleAndBroadcast(role)
+    self:SetRole(role)
+
+    net.Start("TTT_RoleChanged")
+    net.WriteInt(self:UserID(), 8)
+    net.WriteInt(role, 8)
+    net.Broadcast()
+end
+
 -- Player is alive and in an active round
 function plymeta:IsActive()
 	return self:IsTerror() and GetRoundState() == ROUND_ACTIVE
