@@ -729,7 +729,7 @@ function FindRespawnLocation(pos)
 end
 
 function GM:DoPlayerDeath(ply, attacker, dmginfo)
-    if ply:IsSpec() then return end
+    if not IsValid(ply) or ply:IsSpec() then return end
 
     local timestamp = os.time()
     local date = os.date("%d/%m", timestamp)
