@@ -60,20 +60,30 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
 
 	local e = {
 		id = EVENT_KILL,
-		att = { ni = "", sid = -1, uid = -1, tr = false },
-		vic = { ni = victim:Nick(), sid = victim:SteamID(), uid = victim:UserID(), tr = false },
-		dmg = CopyDmg(dmginfo)
+		att = { ni = "", sid = -1, uid = -1, tr = false, inno = false, mon = false, jes = false, kil = false },
+		vic = { ni = victim:Nick(), sid = victim:SteamID(), uid = victim:UserID(), tr = false, inno = false, mon = false, jes = false, kil = false },
+        dmg = CopyDmg(dmginfo),
+        tk = false
 	};
 
 	e.dmg.h = victim.was_headshot
 
-	e.vic.tr = victim:GetTraitor()
+    e.vic.tr = victim:GetRole() == ROLE_TRAITOR or victim:GetRole() == ROLE_HYPNOTIST or victim:GetRole() == ROLE_ASSASSIN
+    e.vic.inno = victim:GetRole() == ROLE_DETECTIVE or victim:GetRole() == ROLE_INNOCENT or victim:GetRole() == ROLE_MERCENARY or victim:GetRole() == ROLE_GLITCH or victim:GetRole() == ROLE_PHANTOM
+    e.vic.mon = victim:GetRole() == ROLE_ZOMBIE or victim:GetRole() == ROLE_VAMPIRE
+    e.vic.jes = victim:GetRole() == ROLE_JESTER or victim:GetRole() == ROLE_SWAPPER
+    e.vic.kil = victim:GetRole() == ROLE_KILLER
 
 	if IsValid(attacker) and attacker:IsPlayer() then
 		e.att.ni = attacker:Nick()
 		e.att.sid = attacker:SteamID()
 		e.att.uid = attacker:UserID()
-		e.att.tr = attacker:GetTraitor()
+        e.att.tr = attacker:GetRole() == ROLE_TRAITOR or attacker:GetRole() == ROLE_HYPNOTIST or attacker:GetRole() == ROLE_ASSASSIN
+        e.att.inno = attacker:GetRole() == ROLE_DETECTIVE or attacker:GetRole() == ROLE_INNOCENT or attacker:GetRole() == ROLE_MERCENARY or attacker:GetRole() == ROLE_GLITCH or attacker:GetRole() == ROLE_PHANTOM
+        e.att.mon = attacker:GetRole() == ROLE_ZOMBIE or attacker:GetRole() == ROLE_VAMPIRE
+        e.att.jes = attacker:GetRole() == ROLE_JESTER or attacker:GetRole() == ROLE_SWAPPER
+        e.att.kil = attacker:GetRole() == ROLE_KILLER
+        e.tk = (e.att.tr and e.vic.tr) or (e.att.inno and e.vic.inno) or (e.att.mon and e.vic.mon) or (e.att.jes and e.vic.jes) or (e.att.kil and e.vic.kil)
 
 		-- If a traitor gets himself killed by another traitor's C4, it's his own
 		-- damn fault for ignoring the indicator.
@@ -227,9 +237,8 @@ function SCORE:ApplyEventLogScores(wintype)
 	local scored_log = ScoreEventLog(self.Events, scores, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers)
 	local ply = nil
     for uid, s in pairs(scored_log) do
-        print("Scoring for player " .. uid)
 		ply = Player(uid)
-		if ply and ply:ShouldScore() then
+		if IsValid(ply) and ply:ShouldScore() then
 			ply:AddFrags(KillsToPoints(s, ply:GetTraitor()))
 		end
 	end
@@ -239,7 +248,7 @@ function SCORE:ApplyEventLogScores(wintype)
 
 	for uid, _ in pairs(scored_log) do
 		ply = Player(uid)
-		if ply and ply:ShouldScore() then
+		if IsValid(ply) and ply:ShouldScore() then
 			ply:AddFrags(ply:GetTraitor() and bonus.traitors or bonus.innos)
 		end
 	end

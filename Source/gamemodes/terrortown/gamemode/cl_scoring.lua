@@ -10,6 +10,19 @@ local pairs = pairs
 CLSCORE = {}
 CLSCORE.Events = {}
 CLSCORE.Scores = {}
+CLSCORE.TraitorIDs = {}
+CLSCORE.DetectiveIDs = {}
+CLSCORE.MercenaryIDs = {}
+CLSCORE.HypnotistIDs = {}
+CLSCORE.GlitchIDs = {}
+CLSCORE.JesterIDs = {}
+CLSCORE.PhantomIDs = {}
+CLSCORE.ZombieIDs = {}
+CLSCORE.VampireIDs = {}
+CLSCORE.SwapperIDs = {}
+CLSCORE.AssassinIDs = {}
+CLSCORE.KillerIDs = {}
+CLSCORE.Players = {}
 CLSCORE.StartTime = 0
 CLSCORE.Panel = nil
 
@@ -42,6 +55,12 @@ local zombified = {}
 local disconnected = {}
 local spawnedplayers = {}
 local rolechanges = {}
+local customEvents = {}
+
+function AddEvent(e)
+	e["t"] = math.Round(CurTime(), 2)
+	table.insert(customEvents, e)
+end
 
 local function FindTableIndex(playerTable, value)
     for k, name in pairs(playerTable) do
@@ -94,11 +113,20 @@ net.Receive("TTT_Hypnotised", function(len)
     if zomIndex > 0 then
         table.remove(zombified, zomIndex)
     end
+
+    AddEvent({
+        id = EVENT_HYPNOTISED,
+        vic = name
+    })
 end)
 
 net.Receive("TTT_Defibrillated", function(len)
     local name = net.ReadString()
     InsertRevivedPlayer(name)
+    AddEvent({
+        id = EVENT_DEFIBRILLATED,
+        vic = name
+    })
 end)
 
 net.Receive("TTT_Zombified", function(len)
@@ -110,11 +138,19 @@ net.Receive("TTT_Zombified", function(len)
     if hypIndex > 0 then
         table.remove(hypnotised, hypIndex)
     end
+    AddEvent({
+        id = EVENT_ZOMBIFIED,
+        vic = name
+    })
 end)
 
 net.Receive("TTT_PlayerDisconnected", function(len)
     local name = net.ReadString()
     table.insert(disconnected, name)
+    AddEvent({
+        id = EVENT_DISCONNECTED,
+        vic = name
+    })
 end)
 
 net.Receive("TTT_ClearRoleSwaps", function(len)
@@ -124,6 +160,7 @@ net.Receive("TTT_ClearRoleSwaps", function(len)
     disconnected = {}
     spawnedplayers = {}
     rolechanges = {}
+	customEvents = {}
 end)
 
 net.Receive("TTT_SpawnedPlayers", function(len)
@@ -185,27 +222,41 @@ function CLSCORE.DeclareEventDisplay(event_id, event_fns)
 end
 
 function CLSCORE:FillDList(dlst)
+	local allEvents = self.Events
+	table.Merge(allEvents, customEvents)
+    table.SortByMember(allEvents, "t", true)
 
-    for k, e in pairs(self.Events) do
+	for _, e in pairs(allEvents) do
+		local etxt = self:TextForEvent(e)
+		local eicon, ttip = self:IconForEvent(e)
+		local etime = self:TimeForEvent(e)
 
-        local etxt = self:TextForEvent(e)
-        local eicon, ttip = self:IconForEvent(e)
-        local etime = self:TimeForEvent(e)
+		if etxt then
+			if eicon then
+				local mat = eicon
+				eicon = vgui.Create("DImage")
+				eicon:SetMaterial(mat)
+				eicon:SetTooltip(ttip)
+				eicon:SetKeepAspect(true)
+				eicon:SizeToContents()
+			end
 
-        if etxt then
-            if eicon then
-                local mat = eicon
-                eicon = vgui.Create("DImage")
-                eicon:SetMaterial(mat)
-                eicon:SetTooltip(ttip)
-                eicon:SetKeepAspect(true)
-                eicon:SizeToContents()
-            end
-
-            dlst:AddLine(etime, eicon, "  " .. etxt)
-        end
-    end
+			dlst:AddLine(etime, eicon, "  " .. etxt)
+		end
+	end
 end
+
+local function ValidAward(a)
+	return a and a.nick and a.text and a.title and a.priority
+end
+
+local wintitle = {
+    [WIN_TRAITOR] = { txt = "hilite_win_traitors", c = Color(190, 5, 5, 255) },
+    [WIN_JESTER] = { txt = "hilite_win_jester", c = Color(160, 5, 230, 255) },
+    [WIN_INNOCENT] = { txt = "hilite_win_innocent", c = Color(5, 190, 5, 255) },
+    [WIN_KILLER] = { txt = "hilite_win_killer", c = Color(50, 0, 70, 255) },
+    [WIN_MONSTER] = { txt = "hilite_win_monster", c = Color(0, 0, 0, 255) }
+}
 
 function CLSCORE:BuildEventLogPanel(dpanel)
     local margin = 10
@@ -347,55 +398,10 @@ function CLSCORE:AddAward(y, pw, award, dpanel)
     return y
 end
 
-local wintitle = {
-    [WIN_TRAITOR] = { txt = "hilite_win_traitors", c = Color(190, 5, 5, 255) },
-    [WIN_JESTER] = { txt = "hilite_win_jester", c = Color(160, 5, 230, 255) },
-    [WIN_INNOCENT] = { txt = "hilite_win_innocent", c = Color(5, 190, 5, 255) },
-    [WIN_KILLER] = { txt = "hilite_win_killer", c = Color(50, 0, 70, 255) },
-    [WIN_MONSTER] = { txt = "hilite_win_monster", c = Color(0, 0, 0, 255) }
-}
+function CLSCORE:BuildSummaryPanel(dpanel)
+    local w, h = dpanel:GetSize()
 
-function CLSCORE:ShowPanel()
-    local dpanel = vgui.Create("DFrame")
-    local w, h = 700, 575
-    local margin = 15
-    dpanel:SetSize(w, h)
-    dpanel:Center()
-    dpanel:SetTitle("Round Report")
-    dpanel:SetVisible(true)
-    dpanel:ShowCloseButton(true)
-    dpanel:SetMouseInputEnabled(true)
-    dpanel:SetKeyboardInputEnabled(true)
-    dpanel.OnKeyCodePressed = util.BasicKeyHandler
-
-    function dpanel:Think()
-        self:MoveToFront()
-    end
-
-    -- keep it around so we can reopen easily
-    dpanel:SetDeleteOnClose(false)
-    self.Panel = dpanel
-
-    local bg = vgui.Create("ColoredBox", dpanel)
-    bg:SetColor(Color(97, 100, 102, 255))
-    bg:SetSize(w - 4, h - 26)
-    bg:SetPos(2, 24)
-
-    local dbut = vgui.Create("DButton", bg)
-    local bw, bh = 100, 25
-    dbut:SetSize(bw, bh)
-    dbut:SetPos(w + 4 - bw - margin, h - 26 - bh - margin/2)
-    dbut:SetText(T("close"))
-    dbut.DoClick = function() dpanel:Close() end
-
-    local dsave = vgui.Create("DButton", bg)
-    dsave:SetSize(bw, bh)
-    dsave:SetPos(margin/2, h - 26 - bh - margin/2)
-    dsave:SetText(T("report_save"))
-    dsave:SetTooltip(T("report_save_tip"))
-    dsave:SetConsoleCommand("ttt_save_events")
-
-    local title = wintitle[WIN_INNOCENT]
+    local title = wintitle[WIN_TRAITOR]
     for i = #self.Events, 1, -1 do
         local e = self.Events[i]
         if e.id == EVENT_FINISH then
@@ -406,24 +412,29 @@ function CLSCORE:ShowPanel()
         end
     end
 
+    local bg = vgui.Create("ColoredBox", dpanel)
+    bg:SetColor(Color(97, 100, 102, 255))
+    bg:SetSize(w, h)
+    bg:SetPos(0, 0)
+
     local winlbl = vgui.Create("DLabel", dpanel)
     winlbl:SetFont("WinHuge")
     winlbl:SetText(T(title.txt))
     winlbl:SetTextColor(COLOR_WHITE)
     winlbl:SizeToContents()
-    local xwin = (w - winlbl:GetWide()) / 2
-    local ywin = 37
+    local xwin = (w - winlbl:GetWide())/2
+    local ywin = 15
     winlbl:SetPos(xwin, ywin)
 
     bg.PaintOver = function()
-        draw.RoundedBox(8, 8, 8, 680, winlbl:GetTall() + 10, title.c)
-        draw.RoundedBox(0, 8, ywin - 19 + winlbl:GetTall() + 8, 336, 329, Color(164, 164, 164, 255))
-        draw.RoundedBox(0, 352, ywin - 19 + winlbl:GetTall() + 8, 336, 329, Color(164, 164, 164, 255))
-        draw.RoundedBox(0, 8, ywin - 19 + winlbl:GetTall() + 345, 680, 32, Color(164, 164, 164, 255))
-        draw.RoundedBox(0, 8, ywin - 19 + winlbl:GetTall() + 385, 680, 32, Color(164, 164, 164, 255))
-        for i = ywin - 19 + winlbl:GetTall() + 40, ywin - 19 + winlbl:GetTall() + 304, 33 do
-            draw.RoundedBox(0, 8, i, 336, 1, Color(97, 100, 102, 255))
-            draw.RoundedBox(0, 352, i, 336, 1, Color(97, 100, 102, 255))
+        draw.RoundedBox(8, 8, ywin - 5, w - 14, winlbl:GetTall() + 10, title.c)
+        draw.RoundedBox(0, 8, ywin + winlbl:GetTall() + 8, 341, 329, Color(164, 164, 164, 255))
+        draw.RoundedBox(0, 357, ywin + winlbl:GetTall() + 8, 341, 329, Color(164, 164, 164, 255))
+        draw.RoundedBox(0, 8, ywin + winlbl:GetTall() + 345, 690, 32, Color(164, 164, 164, 255))
+        draw.RoundedBox(0, 8, ywin + winlbl:GetTall() + 385, 690, 32, Color(164, 164, 164, 255))
+        for i = ywin + winlbl:GetTall() + 40, ywin + winlbl:GetTall() + 304, 33 do
+            draw.RoundedBox(0, 8, i, 341, 1, Color(97, 100, 102, 255))
+            draw.RoundedBox(0, 357, i, 341, 1, Color(97, 100, 102, 255))
         end
     end
 
@@ -538,10 +549,10 @@ function CLSCORE:ShowPanel()
                 nicklbl:SizeToContents()
 
                 if role == "inn" or role == "det" or role == "mer" or role == "pha" or role == "gli" then
-                    self:AddPlayerRow(dpanel, 314, 10, 123 + 33 * countI, roleIcon, nicklbl, hasDisconnected, dead)
+                    self:AddPlayerRow(dpanel, 317, 8, 96 + 33 * countI, roleIcon, nicklbl, hasDisconnected, dead)
                     countI = countI + 1
                 elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" then
-                    self:AddPlayerRow(dpanel, 658, 354, 123 + 33 * countT, roleIcon, nicklbl, hasDisconnected, dead)
+                    self:AddPlayerRow(dpanel, 666, 357, 96 + 33 * countT, roleIcon, nicklbl, hasDisconnected, dead)
                     countT = countT + 1
                 elseif role == "jes" or role == "swa" then
                     if jesterkiller ~= "" then
@@ -553,13 +564,180 @@ function CLSCORE:ShowPanel()
                             nicklbl:SizeToContents()
                         end
                     end
-                    self:AddPlayerRow(dpanel, 658, 10, 460, roleIcon, nicklbl, hasDisconnected, dead)
+                    self:AddPlayerRow(dpanel, 666, 8, 433, roleIcon, nicklbl, hasDisconnected, dead)
                 elseif role == "kil" then
-                    self:AddPlayerRow(dpanel, 658, 10, 500, roleIcon, nicklbl, hasDisconnected, dead)
+                    self:AddPlayerRow(dpanel, 666, 8, 473, roleIcon, nicklbl, hasDisconnected, dead)
                 end
             end
         end
     end
+end
+
+function CLSCORE:BuildHilitePanel(dpanel)
+    local w, h = dpanel:GetSize()
+
+    local endtime = self.StartTime
+    local title = wintitle[WIN_INNOCENT]
+    for i=#self.Events, 1, -1 do
+        local e = self.Events[i]
+        if e.id == EVENT_FINISH then
+           endtime = e.t
+           -- when win is due to timeout, innocents win
+           local wintype = e.win
+           if wintype == WIN_TIMELIMIT then wintype = WIN_INNOCENT end
+           title = wintitle[wintype]
+           break
+        end
+    end
+
+    local roundtime = endtime - self.StartTime
+
+    local numply = table.Count(self.Players)
+    local numtr = table.Count(self.TraitorIDs) + table.Count(self.HypnotistIDs) + table.Count(self.AssassinIDs)
+
+    local bg = vgui.Create("ColoredBox", dpanel)
+    bg:SetColor(Color(50, 50, 50, 255))
+    bg:SetSize(w,h)
+    bg:SetPos(0,0)
+
+    local winlbl = vgui.Create("DLabel", dpanel)
+    winlbl:SetFont("WinHuge")
+    winlbl:SetText(T(title.txt))
+    winlbl:SetTextColor(COLOR_WHITE)
+    winlbl:SizeToContents()
+    local xwin = (w - winlbl:GetWide())/2
+    local ywin = 15
+    winlbl:SetPos(xwin, ywin)
+
+    bg.PaintOver = function()
+        draw.RoundedBox(8, xwin - 15, ywin - 5, winlbl:GetWide() + 30, winlbl:GetTall() + 10, title.c)
+    end
+
+    local ysubwin = ywin + winlbl:GetTall()
+    local partlbl = vgui.Create("DLabel", dpanel)
+
+    local plytxt = PT(numtr == 1 and "hilite_players2" or "hilite_players1",
+                      {numplayers = numply, numtraitors = numtr})
+
+    partlbl:SetText(plytxt)
+    partlbl:SizeToContents()
+    partlbl:SetPos(xwin, ysubwin + 8)
+
+    local timelbl = vgui.Create("DLabel", dpanel)
+    timelbl:SetText(PT("hilite_duration", {time= util.SimpleTime(roundtime, "%02i:%02i")}))
+    timelbl:SizeToContents()
+    timelbl:SetPos(xwin + winlbl:GetWide() - timelbl:GetWide(), ysubwin + 8)
+
+    -- Awards
+    local wa = math.Round(w * 0.9)
+    local ha = h - ysubwin - 40
+    local xa = (w - wa) / 2
+    local ya = h - ha
+
+    local awardp = vgui.Create("DPanel", dpanel)
+    awardp:SetSize(wa, ha)
+    awardp:SetPos(xa, ya)
+    awardp:SetPaintBackground(false)
+
+    -- Before we pick awards, seed the rng in a way that is the same on all
+    -- clients. We can do this using the round start time. To make it a bit more
+    -- random, involve the round's duration too.
+    math.randomseed(self.StartTime + endtime)
+
+    -- Attempt to generate every award, then sort the succeeded ones based on
+    -- priority/interestingness
+    local award_choices = {}
+    for k, afn in pairs(AWARDS) do
+       local a = afn(self.Events, self.Scores, self.Players, self.TraitorIDs, self.DetectiveIDs)
+       if ValidAward(a) then
+          table.insert(award_choices, a)
+       end
+    end
+
+    local max_awards = 5
+
+    -- sort descending by priority
+    table.SortByMember(award_choices, "priority")
+
+    -- put the N most interesting awards in the menu
+    for i=1,max_awards do
+        local a = award_choices[i]
+        if a then
+            self:AddAward((i - 1) * 42, wa, a, awardp)
+        end
+    end
+end
+
+function CLSCORE:ShowPanel()
+    local dpanel = vgui.Create("DFrame")
+    local w, h = 750, 620
+    local margin = 15
+    dpanel:SetSize(w, h)
+    dpanel:Center()
+    dpanel:SetTitle("Round Report")
+    dpanel:SetVisible(true)
+    dpanel:ShowCloseButton(true)
+    dpanel:SetMouseInputEnabled(true)
+    dpanel:SetKeyboardInputEnabled(true)
+    dpanel.OnKeyCodePressed = util.BasicKeyHandler
+
+    function dpanel:Think()
+        self:MoveToFront()
+    end
+
+    -- keep it around so we can reopen easily
+    dpanel:SetDeleteOnClose(false)
+    self.Panel = dpanel
+
+    local dbut = vgui.Create("DButton", dpanel)
+    local bw, bh = 100, 25
+    dbut:SetSize(bw, bh)
+    dbut:SetPos(w - bw - margin, h - bh - margin/2)
+    dbut:SetText(T("close"))
+    dbut.DoClick = function() dpanel:Close() end
+
+    local dsave = vgui.Create("DButton", dpanel)
+    dsave:SetSize(bw, bh)
+    dsave:SetPos(margin, h - bh - margin/2)
+    dsave:SetText(T("report_save"))
+    dsave:SetTooltip(T("report_save_tip"))
+    dsave:SetConsoleCommand("ttt_save_events")
+
+    local dtabsheet = vgui.Create("DPropertySheet", dpanel)
+    dtabsheet:SetPos(margin, margin + 15)
+    dtabsheet:SetSize(w - margin*2, h - margin*3 - bh)
+    local padding = dtabsheet:GetPadding()
+
+    -- Summary tab
+    local dtabsummary = vgui.Create("DPanel", dtabsheet)
+    dtabsummary:SetPaintBackground(false)
+    dtabsummary:StretchToParent(padding, padding, padding, padding)
+    self:BuildSummaryPanel(dtabsummary)
+
+    dtabsheet:AddSheet(T("report_tab_summary"), dtabsummary, "icon16/book_open.png", false, false, T("report_tab_summary_tip"))
+
+    -- Highlight tab
+    local dtabhilite = vgui.Create("DPanel", dtabsheet)
+    dtabhilite:SetPaintBackground(false)
+    dtabhilite:StretchToParent(padding, padding, padding, padding)
+    self:BuildHilitePanel(dtabhilite)
+
+    dtabsheet:AddSheet(T("report_tab_hilite"), dtabhilite, "icon16/star.png", false, false, T("report_tab_hilite_tip"))
+
+    -- Event log tab
+    local dtabevents = vgui.Create("DPanel", dtabsheet)
+    dtabevents:StretchToParent(padding, padding, padding, padding)
+    self:BuildEventLogPanel(dtabevents)
+
+    dtabsheet:AddSheet(T("report_tab_events"), dtabevents, "icon16/application_view_detail.png", false, false, T("report_tab_events_tip"))
+
+    -- Score tab
+    local dtabscores = vgui.Create("DPanel", dtabsheet)
+    dtabscores:SetPaintBackground(false)
+    dtabscores:StretchToParent(padding, padding, padding, padding)
+    self:BuildScorePanel(dtabscores)
+
+    dtabsheet:AddSheet(T("report_tab_scores"), dtabscores, "icon16/user.png", false, false, T("report_tab_scores_tip"))
 
     dpanel:MakePopup()
 
@@ -708,10 +886,22 @@ function CLSCORE:Init(events)
 
     scores = ScoreEventLog(events, scores, traitors, detectives, hypnotist, mercenary, jester, phantom, glitch, zombie, vampire, swapper, assassin, killer)
 
-    self.Players = nicks
-    self.Scores = scores
-    self.StartTime = starttime
-    self.Events = events
+	self.Players = nicks
+	self.Scores = scores
+	self.TraitorIDs = traitors
+	self.DetectiveIDs = detectives
+	self.MercenaryIDs = mercenary
+	self.HypnotistIDs = hypnotist
+	self.GlitchIDs = glitch
+	self.JesterIDs = jester
+	self.PhantomIDs = phantom
+	self.ZombieIDs = zombie
+	self.VampireIDs = vampire
+	self.SwapperIDs = swapper
+	self.AssassinIDs = assassin
+	self.KillerIDs = killer
+	self.StartTime = starttime
+	self.Events = events
 end
 
 function CLSCORE:ReportEvents(events)
