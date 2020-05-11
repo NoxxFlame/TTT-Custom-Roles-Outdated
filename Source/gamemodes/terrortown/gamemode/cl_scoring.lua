@@ -357,7 +357,8 @@ local wintitle = {
 
 function CLSCORE:ShowPanel()
     local dpanel = vgui.Create("DFrame")
-    local w, h = 700, 542
+    local w, h = 700, 575
+    local margin = 15
     dpanel:SetSize(w, h)
     dpanel:Center()
     dpanel:SetTitle("Round Report")
@@ -379,6 +380,20 @@ function CLSCORE:ShowPanel()
     bg:SetColor(Color(97, 100, 102, 255))
     bg:SetSize(w - 4, h - 26)
     bg:SetPos(2, 24)
+
+    local dbut = vgui.Create("DButton", bg)
+    local bw, bh = 100, 25
+    dbut:SetSize(bw, bh)
+    dbut:SetPos(w + 4 - bw - margin, h - 26 - bh - margin/2)
+    dbut:SetText(T("close"))
+    dbut.DoClick = function() dpanel:Close() end
+
+    local dsave = vgui.Create("DButton", bg)
+    dsave:SetSize(bw, bh)
+    dsave:SetPos(margin/2, h - 26 - bh - margin/2)
+    dsave:SetText(T("report_save"))
+    dsave:SetTooltip(T("report_save_tip"))
+    dsave:SetConsoleCommand("ttt_save_events")
 
     local title = wintitle[WIN_INNOCENT]
     for i = #self.Events, 1, -1 do
@@ -551,6 +566,12 @@ function CLSCORE:ShowPanel()
     -- makepopup grabs keyboard, whereas we only need mouse
     dpanel:SetKeyboardInputEnabled(false)
 end
+
+local function ShowPanel(ply, cmd, args)
+    CLSCORE:ShowPanel()
+end
+
+concommand.Add("ttt_show_panel", ShowPanel)
 
 function CLSCORE:AddPlayerRow(dpanel, statusX, roleX, y, roleIcon, nicklbl, hasDisconnected, dead)
     roleIcon:SetPos(roleX, y)
