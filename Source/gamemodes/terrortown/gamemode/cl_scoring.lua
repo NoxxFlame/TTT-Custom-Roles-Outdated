@@ -58,8 +58,8 @@ local rolechanges = {}
 local customEvents = {}
 
 function AddEvent(e)
-	e["t"] = math.Round(CurTime(), 2)
-	table.insert(customEvents, e)
+    e["t"] = math.Round(CurTime(), 2)
+    table.insert(customEvents, e)
 end
 
 local function FindTableIndex(playerTable, value)
@@ -160,7 +160,7 @@ net.Receive("TTT_ClearRoleSwaps", function(len)
     disconnected = {}
     spawnedplayers = {}
     rolechanges = {}
-	customEvents = {}
+    customEvents = {}
 end)
 
 net.Receive("TTT_SpawnedPlayers", function(len)
@@ -222,32 +222,32 @@ function CLSCORE.DeclareEventDisplay(event_id, event_fns)
 end
 
 function CLSCORE:FillDList(dlst)
-	local allEvents = self.Events
-	table.Merge(allEvents, customEvents)
+    local allEvents = self.Events
+    table.Merge(allEvents, customEvents)
     table.SortByMember(allEvents, "t", true)
 
-	for _, e in pairs(allEvents) do
-		local etxt = self:TextForEvent(e)
-		local eicon, ttip = self:IconForEvent(e)
-		local etime = self:TimeForEvent(e)
+    for _, e in pairs(allEvents) do
+        local etxt = self:TextForEvent(e)
+        local eicon, ttip = self:IconForEvent(e)
+        local etime = self:TimeForEvent(e)
 
-		if etxt then
-			if eicon then
-				local mat = eicon
-				eicon = vgui.Create("DImage")
-				eicon:SetMaterial(mat)
-				eicon:SetTooltip(ttip)
-				eicon:SetKeepAspect(true)
-				eicon:SizeToContents()
-			end
+        if etxt then
+            if eicon then
+                local mat = eicon
+                eicon = vgui.Create("DImage")
+                eicon:SetMaterial(mat)
+                eicon:SetTooltip(ttip)
+                eicon:SetKeepAspect(true)
+                eicon:SizeToContents()
+            end
 
-			dlst:AddLine(etime, eicon, "  " .. etxt)
-		end
-	end
+            dlst:AddLine(etime, eicon, "  " .. etxt)
+        end
+    end
 end
 
 local function ValidAward(a)
-	return a and a.nick and a.text and a.title and a.priority
+    return a and a.nick and a.text and a.title and a.priority
 end
 
 local wintitle = {
@@ -401,7 +401,7 @@ end
 function CLSCORE:BuildSummaryPanel(dpanel)
     local w, h = dpanel:GetSize()
 
-    local title = wintitle[WIN_TRAITOR]
+    local title = wintitle[WIN_INNOCENT]
     for i = #self.Events, 1, -1 do
         local e = self.Events[i]
         if e.id == EVENT_FINISH then
@@ -886,22 +886,22 @@ function CLSCORE:Init(events)
 
     scores = ScoreEventLog(events, scores, traitors, detectives, hypnotist, mercenary, jester, phantom, glitch, zombie, vampire, swapper, assassin, killer)
 
-	self.Players = nicks
-	self.Scores = scores
-	self.TraitorIDs = traitors
-	self.DetectiveIDs = detectives
-	self.MercenaryIDs = mercenary
-	self.HypnotistIDs = hypnotist
-	self.GlitchIDs = glitch
-	self.JesterIDs = jester
-	self.PhantomIDs = phantom
-	self.ZombieIDs = zombie
-	self.VampireIDs = vampire
-	self.SwapperIDs = swapper
-	self.AssassinIDs = assassin
-	self.KillerIDs = killer
-	self.StartTime = starttime
-	self.Events = events
+    self.Players = nicks
+    self.Scores = scores
+    self.TraitorIDs = traitors
+    self.DetectiveIDs = detectives
+    self.MercenaryIDs = mercenary
+    self.HypnotistIDs = hypnotist
+    self.GlitchIDs = glitch
+    self.JesterIDs = jester
+    self.PhantomIDs = phantom
+    self.ZombieIDs = zombie
+    self.VampireIDs = vampire
+    self.SwapperIDs = swapper
+    self.AssassinIDs = assassin
+    self.KillerIDs = killer
+    self.StartTime = starttime
+    self.Events = events
 end
 
 function CLSCORE:ReportEvents(events)
