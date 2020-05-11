@@ -745,12 +745,6 @@ function CLSCORE:ShowPanel()
     dpanel:SetKeyboardInputEnabled(false)
 end
 
-local function ShowPanel(ply, cmd, args)
-    CLSCORE:ShowPanel()
-end
-
-concommand.Add("ttt_show_panel", ShowPanel)
-
 function CLSCORE:AddPlayerRow(dpanel, statusX, roleX, y, roleIcon, nicklbl, hasDisconnected, dead)
     roleIcon:SetPos(roleX, y)
     nicklbl:SetPos(roleX + 38, y - 2)
