@@ -746,7 +746,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
     end
 
     if ply:GetNWBool("KillerSmoke") == true then
-        ply:SetNwBool("KillerSmoke", false)
+        ply:SetNWBool("KillerSmoke", false)
     end
 
     if ply:GetNWBool("HauntedSmoke") == true then
@@ -772,17 +772,17 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
     end
 
     local assassintarget = ""
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if v:GetRole() == ROLE_ASSASSIN then
             assassintarget = v:GetNWString("AssassinTarget", "")
         end
     end
     if ply:Nick() == assassintarget then
-        for k, v in pairs(player.GetAll()) do
+        for _, v in pairs(player.GetAll()) do
             if v:GetRole() == ROLE_ASSASSIN then
                 local innocents = {}
                 local detectives = {}
-                for i, p in pairs(player.GetAll()) do
+                for _, p in pairs(player.GetAll()) do
                     if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
                         if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER then
                             table.insert(innocents, p:Nick())
