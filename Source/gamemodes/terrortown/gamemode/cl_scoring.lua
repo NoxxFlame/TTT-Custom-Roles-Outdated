@@ -295,7 +295,7 @@ function CLSCORE:BuildScorePanel(dpanel)
     dlist:SetSortable(true)
     dlist:SetMultiSelect(false)
 
-    local colnames = { "", "col_player", "col_role", "col_kills1", "col_kills2", "col_points", "col_team", "col_total" }
+    local colnames = { "", "col_player", "col_role", "col_kills1", "col_kills2", "col_kills3", "col_kills4", "col_kills5", "col_points", "col_team", "col_total" }
     for k, name in pairs(colnames) do
         if name == "" then
             -- skull icon column
@@ -322,7 +322,9 @@ function CLSCORE:BuildScorePanel(dpanel)
 
     for id, s in pairs(scores) do
         if id ~= -1 then
-            local was_traitor = s.was_traitor
+            local was_traitor = s.was_traitor or s.was_assassin or s.was_hypnotist
+            local was_monster = s.was_zombie or s.was_vampire
+            local was_innocent = s.was_innocent or s.was_detective or s.was_phantom or s.was_mercenary or s.was_glitch
             local role = was_traitor and T("traitor") or (s.was_detective and T("detective") or (s.was_hypnotist and T("hypnotist") or (s.was_mercenary and T("mercenary") or (s.was_jester and T("jester") or (s.was_phantom and T("phantom") or (s.was_glitch and T("glitch") or (s.was_zombie and T("zombie") or (s.was_vampire and T("vampire") or (s.was_swapper and T("swapper") or (s.was_assassin and T("assassin") or (s.was_killer and T("killer") or T("innocent"))))))))))))
 
             local surv = ""
@@ -339,14 +341,23 @@ function CLSCORE:BuildScorePanel(dpanel)
                 skull:SetSize(18, 18)
             end
 
-            local points_own = KillsToPoints(s, was_traitor)
-            local points_team = (was_traitor and bonus.traitors or bonus.innos)
+            local points_own = KillsToPoints(s, was_traitor, was_monster, s.was_killer, was_innocent)
+            local points_team = bonus.innos
+            if was_traitor then
+                points_team = bonus.traitors
+            elseif was_monster then
+                points_team = bonus.monsters
+            elseif s.was_jester or s.was_swapper then
+                points_team = bonus.jesters
+            elseif s.was_killer then
+                points_team = bonus.killers
+            end
             local points_total = points_own + points_team
 
-            local l = dlist:AddLine(surv, nicks[id], role, s.innos, s.traitors, points_own, points_team, points_total)
+            local l = dlist:AddLine(surv, nicks[id], role, s.innos, s.traitors, s.monsters, s.jesters, s.killers, points_own, points_team, points_total)
 
             -- center align
-            for k, col in pairs(l.Columns) do
+            for _, col in pairs(l.Columns) do
                 col:SetContentAlignment(5)
             end
 

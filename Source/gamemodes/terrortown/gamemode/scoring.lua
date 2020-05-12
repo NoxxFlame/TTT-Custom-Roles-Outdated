@@ -68,6 +68,7 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
 
 	e.dmg.h = victim.was_headshot
 
+    e.vic.role = victim:GetRole()
     e.vic.tr = victim:GetRole() == ROLE_TRAITOR or victim:GetRole() == ROLE_HYPNOTIST or victim:GetRole() == ROLE_ASSASSIN
     e.vic.inno = victim:GetRole() == ROLE_DETECTIVE or victim:GetRole() == ROLE_INNOCENT or victim:GetRole() == ROLE_MERCENARY or victim:GetRole() == ROLE_GLITCH or victim:GetRole() == ROLE_PHANTOM
     e.vic.mon = victim:GetRole() == ROLE_ZOMBIE or victim:GetRole() == ROLE_VAMPIRE
@@ -77,7 +78,8 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
 	if IsValid(attacker) and attacker:IsPlayer() then
 		e.att.ni = attacker:Nick()
 		e.att.sid = attacker:SteamID()
-		e.att.uid = attacker:UserID()
+        e.att.uid = attacker:UserID()
+        e.att.role = attacker:GetRole()
         e.att.tr = attacker:GetRole() == ROLE_TRAITOR or attacker:GetRole() == ROLE_HYPNOTIST or attacker:GetRole() == ROLE_ASSASSIN
         e.att.inno = attacker:GetRole() == ROLE_DETECTIVE or attacker:GetRole() == ROLE_INNOCENT or attacker:GetRole() == ROLE_MERCENARY or attacker:GetRole() == ROLE_GLITCH or attacker:GetRole() == ROLE_PHANTOM
         e.att.mon = attacker:GetRole() == ROLE_ZOMBIE or attacker:GetRole() == ROLE_VAMPIRE
@@ -248,8 +250,19 @@ function SCORE:ApplyEventLogScores(wintype)
 
 	for uid, _ in pairs(scored_log) do
 		ply = Player(uid)
-		if IsValid(ply) and ply:ShouldScore() then
-			ply:AddFrags(ply:GetTraitor() and bonus.traitors or bonus.innos)
+        if IsValid(ply) and ply:ShouldScore() then
+            local points_team = bonus.innos
+            if ply:GetTraitor() or ply:GetAssassin() or ply:GetHypnotist() then
+                points_team = bonus.traitors
+            elseif ply:GetVampire() or ply:GetZombie() then
+                points_team = bonus.monsters
+            elseif ply:GetJester() or ply:GetSwapper() then
+                points_team = bonus.jesters
+            elseif ply:GetKiller() then
+                points_team = bonus.killers
+            end
+
+			ply:AddFrags(points_team)
 		end
 	end
 
