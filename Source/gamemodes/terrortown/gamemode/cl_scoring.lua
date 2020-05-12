@@ -10,6 +10,7 @@ local pairs = pairs
 CLSCORE = {}
 CLSCORE.Events = {}
 CLSCORE.Scores = {}
+CLSCORE.InnocentIDs = {}
 CLSCORE.TraitorIDs = {}
 CLSCORE.DetectiveIDs = {}
 CLSCORE.MercenaryIDs = {}
@@ -658,11 +659,11 @@ function CLSCORE:BuildHilitePanel(dpanel)
     -- Attempt to generate every award, then sort the succeeded ones based on
     -- priority/interestingness
     local award_choices = {}
-    for k, afn in pairs(AWARDS) do
-       local a = afn(self.Events, self.Scores, self.Players, self.TraitorIDs, self.DetectiveIDs)
-       if ValidAward(a) then
-          table.insert(award_choices, a)
-       end
+    for _, afn in pairs(AWARDS) do
+        local a = afn(self.Events, self.Scores, self.Players, self.InnocentIDs, self.TraitorIDs, self.DetectiveIDs, self.MercenaryIDs, self.HypnotistIDs, self.GlitchIDs, self.JesterIDs, self.PhantomIDs, self.ZombieIDs, self.VampireIDs, self.SwapperIDs, self.AssassinIDs, self.KillerIDs)
+        if ValidAward(a) then
+            table.insert(award_choices, a)
+        end
     end
 
     local max_awards = 5
@@ -819,6 +820,19 @@ end
 function CLSCORE:Reset()
     self.Events = {}
     self.Scores = {}
+    self.InnocentIDs = {}
+    self.TraitorIDs = {}
+    self.DetectiveIDs = {}
+    self.MercenaryIDs = {}
+    self.HypnotistIDs = {}
+    self.GlitchIDs = {}
+    self.JesterIDs = {}
+    self.PhantomIDs = {}
+    self.ZombieIDs = {}
+    self.VampireIDs = {}
+    self.SwapperIDs = {}
+    self.AssassinIDs = {}
+    self.KillerIDs = {}
     self.Players = {}
     self.RoundStarted = 0
 
@@ -828,6 +842,7 @@ end
 function CLSCORE:Init(events)
     -- Get start time and traitors
     local starttime = nil
+    local innocents = nil
     local traitors = nil
     local detectives = nil
     local mercenary = nil
@@ -844,6 +859,7 @@ function CLSCORE:Init(events)
         if e.id == EVENT_GAME and e.state == ROUND_ACTIVE then
             starttime = e.t
         elseif e.id == EVENT_SELECTED then
+            innocents = e.innocent_ids
             traitors = e.traitor_ids
             detectives = e.detective_ids
             mercenary = e.mercenary_ids
@@ -875,6 +891,7 @@ function CLSCORE:Init(events)
 
     -- If a player swapped roles during the round, remove them from the other table
     for uid, role in pairs(rolechanges) do
+        HandleRoleChange(innocents, role, ROLE_INNOCENT, uid)
         HandleRoleChange(traitors, role, ROLE_TRAITOR, uid)
         HandleRoleChange(detectives, role, ROLE_DETECTIVE, uid)
         HandleRoleChange(mercenary, role, ROLE_MERCENARY, uid)
@@ -889,10 +906,11 @@ function CLSCORE:Init(events)
         HandleRoleChange(killer, role, ROLE_KILLER, uid)
     end
 
-    scores = ScoreEventLog(events, scores, traitors, detectives, hypnotist, mercenary, jester, phantom, glitch, zombie, vampire, swapper, assassin, killer)
+    scores = ScoreEventLog(events, scores, innocents, traitors, detectives, hypnotist, mercenary, jester, phantom, glitch, zombie, vampire, swapper, assassin, killer)
 
     self.Players = nicks
     self.Scores = scores
+    self.InnocentIDs = innocents
     self.TraitorIDs = traitors
     self.DetectiveIDs = detectives
     self.MercenaryIDs = mercenary

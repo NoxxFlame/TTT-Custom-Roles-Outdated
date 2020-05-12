@@ -107,6 +107,7 @@ function SCORE:HandleSpawn(ply)
 end
 
 function SCORE:HandleSelection()
+	local innocents = {}
 	local traitors = {}
 	local detectives = {}
 	local mercenaries = {}
@@ -144,10 +145,12 @@ function SCORE:HandleSelection()
 			table.insert(assassins, ply:UserID())
 		elseif ply:GetKiller() then
 			table.insert(killers, ply:UserID())
+		elseif ply:GetInnocent() then
+			table.insert(innocents, ply:UserID())
 		end
 	end
 
-	self:AddEvent({ id = EVENT_SELECTED, traitor_ids = traitors, detective_ids = detectives, hypnotist_ids = hypnotists, mercenary_ids = mercenaries, jester_ids = jesters, phantom_ids = phantoms, glitch_ids = glitches, zombie_ids = zombies, vampire_ids = vampires, swapper_ids = swappers, assassin_ids = assassins, killer_ids = killers })
+	self:AddEvent({ id = EVENT_SELECTED, innocent_ids = innocents, traitor_ids = traitors, detective_ids = detectives, hypnotist_ids = hypnotists, mercenary_ids = mercenaries, jester_ids = jesters, phantom_ids = phantoms, glitch_ids = glitches, zombie_ids = zombies, vampire_ids = vampires, swapper_ids = swappers, assassin_ids = assassins, killer_ids = killers })
 end
 
 function SCORE:HandleBodyFound(finder, found)
@@ -193,6 +196,7 @@ end
 
 function SCORE:ApplyEventLogScores(wintype)
 	local scores = {}
+	local innocents = {}
 	local traitors = {}
 	local detectives = {}
 	local mercenaries = {}
@@ -232,11 +236,13 @@ function SCORE:ApplyEventLogScores(wintype)
 			table.insert(assassins, ply:UserID())
 		elseif ply:GetKiller() then
 			table.insert(killers, ply:UserID())
+		elseif ply:GetInnocent() then
+			table.insert(innocents, ply:UserID())
 		end
 	end
 
 	-- individual scores, and count those left alive
-	local scored_log = ScoreEventLog(self.Events, scores, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers)
+	local scored_log = ScoreEventLog(self.Events, scores, innocents, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers)
 	local ply = nil
     for uid, s in pairs(scored_log) do
 		ply = Player(uid)

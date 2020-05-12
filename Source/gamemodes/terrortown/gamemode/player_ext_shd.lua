@@ -12,6 +12,8 @@ function plymeta:IsSpec() return self:Team() == TEAM_SPEC end
 AccessorFunc(plymeta, "role", "Role", FORCE_NUMBER)
 
 -- Role access
+function plymeta:GetInnocent() return self:GetRole() == ROLE_INNOCENT end
+
 function plymeta:GetTraitor() return self:GetRole() == ROLE_TRAITOR end
 
 function plymeta:GetDetective() return self:GetRole() == ROLE_DETECTIVE end
@@ -38,6 +40,7 @@ function plymeta:GetAssassin() return self:GetRole() == ROLE_ASSASSIN end
 
 function plymeta:GetKiller() return self:GetRole() == ROLE_KILLER end
 
+plymeta.IsInnocent = plymeta.GetInnocent
 plymeta.IsTraitor = plymeta.GetTraitor
 plymeta.IsDetective = plymeta.GetDetective
 plymeta.IsMercenary = plymeta.GetMercenary
@@ -74,6 +77,8 @@ end
 function plymeta:IsRole(role) return self:GetRole() == role end
 
 function plymeta:IsActiveRole(role) return self:IsRole(role) and self:IsActive() end
+
+function plymeta:IsActiveInnocent() return self:IsActiveRole(ROLE_INNOCENT) end
 
 function plymeta:IsActiveTraitor() return self:IsActiveRole(ROLE_TRAITOR) end
 

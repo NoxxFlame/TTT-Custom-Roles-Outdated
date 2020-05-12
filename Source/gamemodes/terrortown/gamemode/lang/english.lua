@@ -1101,22 +1101,25 @@ L.aw_exp2_title = "Field Research"
 L.aw_exp2_text = "tested their own resistance to explosions. It was not high enough."
 
 L.aw_fst1_title = "First Blood"
-L.aw_fst1_text = "delivered the first innocent death at a traitor's hands."
+L.aw_fst1_text = "delivered the first innocent death at a {role}'s hands."
 
 L.aw_fst2_title = "First Bloody Stupid Kill"
-L.aw_fst2_text = "scored the first kill by shooting a fellow traitor. Good job."
+L.aw_fst2_text = "scored the first kill by shooting a fellow {role}. Good job."
 
 L.aw_fst3_title = "First Blooper"
 L.aw_fst3_text = "was the first to kill. Too bad it was an innocent comrade."
 
 L.aw_fst4_title = "First Blow"
-L.aw_fst4_text = "struck the first blow for the innocent terrorists by making the first death a traitor's."
+L.aw_fst4_text = "struck the first blow for the innocent terrorists by making the first death a(n) {role}'s."
 
 L.aw_all1_title = "Deadliest Among Equals"
-L.aw_all1_text = "was responsible for every kill made by the innocent this round."
+L.aw_all1_text = "was responsible for every traitor killed this round."
 
 L.aw_all2_title = "Lone Wolf"
-L.aw_all2_text = "was responsible for every kill made by a traitor this round."
+L.aw_all2_text = "was responsible for every innocent killed this round."
+
+L.aw_all3_title = "Van Helsing"
+L.aw_all3_text = "was responsible for every monster killed this round."
 
 L.aw_nkt1_title = "I Got One, Boss!"
 L.aw_nkt1_text = "managed to kill a single innocent. Sweet!"
