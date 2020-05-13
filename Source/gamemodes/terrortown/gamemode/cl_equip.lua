@@ -95,7 +95,9 @@ function GetEquipmentForRole(role)
     local mercmode = GetGlobalInt("ttt_shop_merc_mode")
 
     -- Prime traitor and detective lists to make sure the sync works
-    if (mercmode > 0 or GetGlobalBool("ttt_shop_traitors_sync")) and (role == ROLE_MERCENARY or role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) then
+    if (mercmode > 0 and role == ROLE_MERCENARY) or
+        (GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or
+        (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST) then
         if not Equipment[ROLE_TRAITOR] then
             GetEquipmentForRole(ROLE_TRAITOR)
         end
@@ -108,21 +110,20 @@ function GetEquipmentForRole(role)
 
     -- Cache the equipment
     if not Equipment[role] then
-        -- Make sure each of the buyable weapons is in the role's equipment list
-        -- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
-        for _, v in pairs(BuyableWeapons[role] or {}) do
-            local weap = weapons.GetStored(v)
-            if weap and not table.HasValue(weap.CanBuy, role) then
-                table.insert(weap.CanBuy, role)
-            end
-        end
-
         -- start with all the non-weapon goodies
         local tbl = table.Copy(EquipmentItems)
 
         -- find buyable weapons to load info from
         for _, v in pairs(weapons.GetList()) do
             if v and v.CanBuy then
+                local id = WEPS.GetClass(v)
+                local roletable = BuyableWeapons[role] or {}
+                -- Make sure each of the buyable weapons is in the role's equipment list
+                -- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
+                if not table.HasValue(v.CanBuy, role) and table.HasValue(roletable, id) then
+                    table.insert(v.CanBuy, role)
+                end
+
                 -- If the player is a mercenary
                 if mercmode > 0 and role == ROLE_MERCENARY then
                     -- Traitor OR Detective or Detective only modes
@@ -156,16 +157,8 @@ function GetEquipmentForRole(role)
                     end
                 end
 
-                if GetGlobalBool("ttt_shop_merc_tandd") and role == ROLE_MERCENARY and
-                    -- and they can't already buy this weapon
-                    not table.HasValue(v.CanBuy, role) and
-                    -- and traitors or detectives CAN buy this weapon, let the mercenary buy it too
-                    (table.HasValue(v.CanBuy, ROLE_TRAITOR) or table.HasValue(v.CanBuy, ROLE_DETECTIVE)) then
-                    table.insert(v.CanBuy, role)
-                end
-
                 -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
-                if GetGlobalBool("ttt_shop_traitors_sync") and (role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) and
+                if ((GetGlobalBool("ttt_shop_assassin_sync") and role == ROLE_ASSASSIN) or (GetGlobalBool("ttt_shop_hypnotist_sync") and role == ROLE_HYPNOTIST)) and
                     -- and they can't already buy this weapon
                     not table.HasValue(v.CanBuy, role) and
                     -- and vanilla traitors CAN buy this weapon, let this player buy it too
@@ -175,7 +168,7 @@ function GetEquipmentForRole(role)
 
                 local data = v.EquipMenuData or {}
                 local base = {
-                    id = WEPS.GetClass(v),
+                    id = id,
                     name = v.PrintName or "Unnamed",
                     limited = v.LimitedStock,
                     kind = v.Kind or WEAPON_NONE,

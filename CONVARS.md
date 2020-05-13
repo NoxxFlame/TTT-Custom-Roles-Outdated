@@ -51,13 +51,18 @@ ttt_mer_credits_starting    1    // (Default: 1): Number of credits the Mercenar
 ttt_kil_credits_starting    2    // (Default: 2): Number of credits the Killer starts with
 ttt_killer_smoke_timer      60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
 ttt_detective_search_only   1    // (Default: 1): Whether only detectives can search bodies or not
+
+// Weapon Shop
 ttt_shop_merc_mode          0    // (Default: 0): How to handle Mercenary shop weapons. All modes include weapons specifically mapped to the Mercenary role. 0 (Disable) - Do not allow additional weapons. 1 (Union) - Allow weapons available to EITHER the Traitor or the Detective. 2 (Intersect) - Allow weapons available to BOTH the Traitor and the Detective. 3 (Detective) - Allow weapons available to the Detective. 4 (Traitor) - Allow weapons available to the Traitor.
-ttt_shop_traitors_sync      0    // (Default: 0): Whether Assassins and Hypnotists should have all weapons that vanilla Traitors have in their weapon shop
+ttt_shop_assassin_sync      0    // (Default: 0): Whether Assassins should have all weapons that vanilla Traitors have in their weapon shop
+ttt_shop_hypnotist_sync     0    // (Default: 0): Whether Hypnotists should have all weapons that vanilla Traitors have in their weapon shop
 ```
 
 # Role Weapon Shop
 
-In this version of TTT some roles have shops where they are allowed to purchase weapons. Given the prevalence of custom weapons from the workshop, the ability to add more weapons to each role's shop has been added.
+In TTT some roles have shops where they are allowed to purchase weapons. Given the prevalence of custom weapons from the workshop, the ability to add more weapons to each role's shop has been added.
 
 To add weapons to a role (that already has a shop), create a .txt file with the weapon class (e.g. weapon_ttt_somethingcool.txt) in the garrysmod/data/roleweapons/{rolename} folder.\
 **NOTE**: The name of the role must be all lowercase for cross-operating system compatibility. For example: garrysmod/data/roleweapons/detective/weapon_ttt_somethingcool.txt
+
+Also note the ttt_shop_* ConVars that are available above which can help control some of the role weapon shop lists.

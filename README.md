@@ -45,7 +45,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Alex and other members of the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for using my versions of these addons and helping me fix and improve them.
 
 # Changes from the Original Version
-- Mercenary - Added setting to allow Mercenary to buy all Traitor and Detective weapons in their shop. See **Configuration** section below
+- Mercenary - Added setting to allow Mercenary to buy all Traitor and/or Detective weapons in their shop. See **Configuration** section below
 - Killer - Ported knife (with smoke grenade), throwable crowbar, and "Your Evil is Showing" smoke from Town of Terror
 - Killer - Added new section to the scoreboard for the Killer since there can be a Killer and a Jester/Swapper now
 - Zombie, Vampire, and Killer - Ported "Zombie Vision" from Town of Terror
@@ -57,7 +57,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Vampire - Fixed never decloaking when using the fangs right-click
 - Traitors - Made Hypnotist and Assassin more integrated traitor team members by
     - Allowing transferring of credits
-	- Adding setting to allow Assassin and Hypnotist to buy all Traitor weapons in their shop. See **Configuration** section below
+	- Adding setting to allow Assassin and/or Hypnotist to buy all Traitor weapons in their shop. See **Configuration** section below
 - Created new "Monsters" team with Zombie and Vampire to ensure they fight against all players, rather than allied with Traitors
 	- Created new icons to handle previously-unexpected zombification and hypnotization cases
 - Re-added the Sprint configuration menu when pressing F1. Thanks to [exp111](https://github.com/exp111/TTT-Custom-Roles/) on GitHub
