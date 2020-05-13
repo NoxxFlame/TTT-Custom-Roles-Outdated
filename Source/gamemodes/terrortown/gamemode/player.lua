@@ -784,7 +784,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
                 local detectives = {}
                 for _, p in pairs(player.GetAll()) do
                     if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
-                        if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER then
+                        if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER or p:GetRole() == ROLE_ZOMBIE or p:GetRole() == ROLE_VAMPIRE then
                             table.insert(innocents, p:Nick())
                         elseif p:GetRole() == ROLE_DETECTIVE then
                             table.insert(detectives, p:Nick())
