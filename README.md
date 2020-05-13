@@ -70,4 +70,4 @@ Goal: Work on your own to win the round by playing your role carefully\
 This will conflict with the [Better Equipment Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) addon but has its functionality built in\
 
 # Configuration:
-https://github.com/Malivil/TTT-Custom-Roles/CONVARS.md
+https://github.com/Malivil/TTT-Custom-Roles/blob/master/CONVARS.md
