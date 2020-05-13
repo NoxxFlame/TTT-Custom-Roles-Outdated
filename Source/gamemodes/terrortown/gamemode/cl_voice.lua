@@ -462,7 +462,7 @@ local MutedState = nil
 
 -- voice popups, copied from base gamemode and modified
 
-g_VoicePanelList = nil
+local g_VoicePanelList = nil
 
 local function IsTraitorTeam(ply)
     return ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()
@@ -483,7 +483,6 @@ end
 local PlayerVoicePanels = {}
 
 function GM:PlayerStartVoice(ply)
-    if true then return end -- TODO: Actually fix voice chat
     local client = LocalPlayer()
     if not IsValid(g_VoicePanelList) or not IsValid(client) then return end
 

@@ -189,7 +189,6 @@ end
 function SWEP:SecondaryAttack()
     self.Weapon:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
     if not IsFirstTimePredicted() then return end
-    if self.Owner:KeyDown(IN_SPEED) then return end
     self:SetNextPrimaryFire(CurTime() + 1)
 
     if CLIENT then return end
