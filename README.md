@@ -6,30 +6,30 @@ Thanks to [Noxx](https://steamcommunity.com/id/nickpops98) for the original vers
 # Innocent Team:
 Goal: Kill all members of the traitor and monsters teams\
 \
-**Innocent** - A standard player. Has no special abilities
-**Detective** - Inspect dead bodies to help identify the baddies
-**Glitch** - An innocent that appears as a Traitor to members of the Traitor team
-**Mercenary** - An innocent with a weapon shop
+**Innocent** - A standard player. Has no special abilities\
+**Detective** - Inspect dead bodies to help identify the baddies\
+**Glitch** - An innocent that appears as a Traitor to members of the Traitor team\
+**Mercenary** - An innocent with a weapon shop\
 **Phantom** - Will haunt your killer, showing black smoke. When avenged, you have another chance for life
 
 # Traitor Team:
 Goal: Kill all non-team members (except Jester/Swapper)\
 \
-**Traitor** - Use your extensive weapon shop to help your team win
-**Assassin** - Kill all of your targets in order to do massive damage and win for the Traitor team
+**Traitor** - Use your extensive weapon shop to help your team win\
+**Assassin** - Kill all of your targets in order to do massive damage and win for the Traitor team\
 **Hypnotist** - Use your brain washing device on dead players to make more traitors
 
 # Monster Team
 Goal: Kill all non-monsters (except Jester/Swapper)\
 \
-**Vampire** - Kill players and use your fangs to regain health
+**Vampire** - Kill players and use your fangs to regain health\
 **Zombie** - Kill players with your claws to make more zombies
 
 # Independent Players:
 Goal: Work on your own to win the round by playing your role carefully\
 \
-**Jester** - Get killed by another player
-**Swapper** - Get killed by another player and then fulfill their old goal
+**Jester** - Get killed by another player\
+**Swapper** - Get killed by another player and then fulfill their old goal\
 **Killer** - Be the last player standing
 
 # Special Thanks:
