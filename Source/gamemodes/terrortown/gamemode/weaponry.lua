@@ -406,7 +406,7 @@ local function OrderEquipment(ply, cmd, args)
         HandleRoleWeapons(role, BuyableWeapons[role], swep_table, id)
 
         -- If the player is a mercenary and mercenaries should have all weapons that traitors and detectives have
-        if GetConVar("ttt_shop_merc_tandd"):GetBool() and role == ROLE_MERCENARY then
+        if GetGlobalBool("ttt_shop_merc_tandd") and role == ROLE_MERCENARY then
             -- Add the loaded weapons for Traitor and Detective
             HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
             HandleRoleWeapons(role, BuyableWeapons[ROLE_DETECTIVE], swep_table, id)
@@ -417,7 +417,7 @@ local function OrderEquipment(ply, cmd, args)
             end
         end
         -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
-        if GetConVar("ttt_shop_traitors_sync"):GetBool() and (role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) then
+        if GetGlobalBool("ttt_shop_traitors_sync") and (role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) then
             -- Add the loaded weapons for Traitor
             HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
 

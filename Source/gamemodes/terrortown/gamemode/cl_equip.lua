@@ -93,14 +93,14 @@ end)
 local Equipment = { }
 function GetEquipmentForRole(role)
     -- Prime traitor and detective lists to make sure the sync works
-    if GetConVar("ttt_shop_merc_tandd"):GetBool() or GetConVar("ttt_shop_traitors_sync"):GetBool() then
+    if GetGlobalBool("ttt_shop_merc_tandd") or GetGlobalBool("ttt_shop_traitors_sync") then
         if role == ROLE_MERCENARY or role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST then
             if not Equipment[ROLE_TRAITOR] then
                 GetEquipmentForRole(ROLE_TRAITOR)
             end
         end
     end
-    if GetConVar("ttt_shop_merc_tandd"):GetBool() and role == ROLE_MERCENARY then
+    if GetGlobalBool("ttt_shop_merc_tandd") and role == ROLE_MERCENARY then
         if not Equipment[ROLE_DETECTIVE] then
             GetEquipmentForRole(ROLE_DETECTIVE)
         end
@@ -124,7 +124,7 @@ function GetEquipmentForRole(role)
         for _, v in pairs(weapons.GetList()) do
             if v and v.CanBuy then
                 -- If the player is a mercenary and mercenaries should have all weapons that traitors and detectives have
-                if GetConVar("ttt_shop_merc_tandd"):GetBool() and role == ROLE_MERCENARY and
+                if GetGlobalBool("ttt_shop_merc_tandd") and role == ROLE_MERCENARY and
                     -- and they can't already buy this weapon
                     not table.HasValue(v.CanBuy, role) and
                     -- and traitors or detectives CAN buy this weapon, let the mercenary buy it too
@@ -133,7 +133,7 @@ function GetEquipmentForRole(role)
                 end
 
                 -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
-                if GetConVar("ttt_shop_traitors_sync"):GetBool() and (role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) and
+                if GetGlobalBool("ttt_shop_traitors_sync") and (role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) and
                     -- and they can't already buy this weapon
                     not table.HasValue(v.CanBuy, role) and
                     -- and vanilla traitors CAN buy this weapon, let this player buy it too

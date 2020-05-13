@@ -332,7 +332,9 @@ function GM:SyncGlobals()
 	SetGlobalFloat("ttt_voice_drain_admin", GetConVar("ttt_voice_drain_admin"):GetFloat())
 	SetGlobalFloat("ttt_voice_drain_recharge", GetConVar("ttt_voice_drain_recharge"):GetFloat())
 
-	SetGlobalBool("ttt_detective_search_only", GetConVar("ttt_detective_search_only"):GetBool())
+    SetGlobalBool("ttt_detective_search_only", GetConVar("ttt_detective_search_only"):GetBool())
+    SetGlobalBool("ttt_shop_merc_tandd", GetConVar("ttt_shop_merc_tandd"):GetBool())
+    SetGlobalBool("ttt_shop_traitors_sync", GetConVar("ttt_shop_traitors_sync"):GetBool())
 
 	SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 end
