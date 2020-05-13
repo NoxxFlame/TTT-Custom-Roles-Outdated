@@ -1341,10 +1341,15 @@ function GM:EntityTakeDamage(ent, dmginfo)
         end
         if (ent:IsPlayer() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE) then
             -- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
-            if (att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE)) or dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
+            if ((att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE))) or dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
                 dmginfo:ScaleDamage(0) -- no damages
                 dmginfo:SetDamage(0)
             end
+        -- No zombie team killing
+        -- This can be funny, but it can also be used by frustrated players who didn't appreciate being zombified
+        elseif (ent:IsPlayer() and ent:GetRole() == ROLE_ZOMBIE and att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE or att:GetRole() == ROLE_VAMPIRE)) then
+            dmginfo:ScaleDamage(0)
+            dmginfo:SetDamage(0)
         elseif dmginfo:GetAttacker() ~= ent then
             dmginfo:ScaleDamage(assassinbonus)
         end
