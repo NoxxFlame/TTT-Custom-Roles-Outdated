@@ -64,10 +64,10 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Ported ability to load weapons into role weapon shops from Town of Terror. This implementation is slightly different, though as the "weaponshop" command has not been ported. To add weapons to a role (that already has a shop), create a .txt file with the weapon class (e.g. weapon_ttt_somethingcool.txt) in the garrysmod/data/roleweapons/{rolename} folder. Note that the name of the role must be all lowercase for cross-operating system compatibility. For example: garrysmod/data/roleweapons/detective/weapon_ttt_Somethingcool.txt
 - Integrated the [Double Jump!](https://steamcommunity.com/sharedfiles/filedetails/?id=284538302) mod but replaced the particle usage with effects generation to remove the TF2 requirement
 - Fixed conflicts with certain buyable weapons (like the Time Manipulator). Thanks Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord!
-- Fixed various errors\
+- Fixed various errors
 
 # Conflicts
-This will conflict with the [Better Equipment Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) addon but has its functionality built in\
+This will conflict with the [Better Equipment Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) addon but has its functionality built in
 
 # Configuration:
 https://github.com/Malivil/TTT-Custom-Roles/blob/master/CONVARS.md
