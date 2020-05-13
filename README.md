@@ -45,6 +45,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Alex and other members of the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for using my versions of these addons and helping me fix and improve them.
 
 # Changes from the Original Version
+- Mercenary - Added setting to allow Mercenary to buy all Traitor and Detective weapons in their shop. See **Configuration** section below
 - Killer - Ported knife (with smoke grenade), throwable crowbar, and "Your Evil is Showing" smoke from Town of Terror
 - Killer - Added new section to the scoreboard for the Killer since there can be a Killer and a Jester/Swapper now
 - Zombie, Vampire, and Killer - Ported "Zombie Vision" from Town of Terror
@@ -54,14 +55,16 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Zombie - Made Spit not 100% accurate
 - Zombie - Changed spawned zombies (e.g. zombies created by dying to the zombie claws) to disallow picking up weapons
 - Vampire - Fixed never decloaking when using the fangs right-click
+- Traitors - Made Hypnotist and Assassin more integrated traitor team members by
+    - Allowing transferring of credits
+	- Adding setting to allow Assassin and Hypnotist to buy all Traitor weapons in their shop. See **Configuration** section below
 - Created new "Monsters" team with Zombie and Vampire to ensure they fight against all players, rather than allied with Traitors
 	- Created new icons to handle previously-unexpected zombification and hypnotization cases
-- Traitors - Made Hypnotist and Assassin more integrated traitor team members by allowing transferring of credits
 - Re-added the Sprint configuration menu when pressing F1. Thanks to [exp111](https://github.com/exp111/TTT-Custom-Roles/) on GitHub
 - Updated end-of-round summary to merge the old tabs and buttons with the new interface
 - Added new events for the new roles to the end-of-round summary Events tab. Thanks to [exp111](https://github.com/exp111/TTT-Custom-Roles/) on GitHub
 - Changed role spawning to not do hidden math to determine role chance. Uses the CVars values directly instead.
-- Ported ability to load weapons into role weapon shops from Town of Terror. This implementation is slightly different, though as the "weaponshop" command has not been ported. To add weapons to a role (that already has a shop), create a .txt file with the weapon class (e.g. weapon_ttt_somethingcool.txt) in the garrysmod/data/roleweapons/{rolename} folder. Note that the name of the role must be all lowercase for cross-operating system compatibility. For example: garrysmod/data/roleweapons/detective/weapon_ttt_Somethingcool.txt
+- Ported ability to load weapons into role weapon shops from Town of Terror. See **Configuration** section below.
 - Integrated the [Double Jump!](https://steamcommunity.com/sharedfiles/filedetails/?id=284538302) mod but replaced the particle usage with effects generation to remove the TF2 requirement
 - Fixed conflicts with certain buyable weapons (like the Time Manipulator). Thanks Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord!
 - Fixed various errors
