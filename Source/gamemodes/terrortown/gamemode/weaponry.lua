@@ -373,6 +373,12 @@ ReadRoleEquipment(ROLE_ASSASSIN, "Assassin")
 ReadRoleEquipment(ROLE_HYPNOTIST, "Hypnotist")
 ReadRoleEquipment(ROLE_KILLER, "Killer")
 
+local function HandleRoleWeapons(role, roletable, swep_table, id)
+    if roletable and table.HasValue(roletable, id) and not table.HasValue(swep_table.CanBuy, role) then
+        table.insert(swep_table.CanBuy, role)
+    end
+end
+
 -- Equipment buying
 local function OrderEquipment(ply, cmd, args)
 	if not IsValid(ply) or #args ~= 1 then return end
@@ -393,11 +399,33 @@ local function OrderEquipment(ply, cmd, args)
 	local swep_table = (not is_item) and weapons.GetStored(id) or nil
 
 	local role = ply:GetRole()
-	local roletable = BuyableWeapons[role]
 	-- If this role has a table of additional weapons and that table includes this weapon
 	-- and this weapon is not currently buyable by the role then mark this weapon as buyable
-	if swep_table and roletable and table.HasValue(roletable, id) and not table.HasValue(swep_table.CanBuy, role) then
-		table.insert(swep_table.CanBuy, role)
+    if swep_table then
+        -- Add the loaded weapons for this role
+        HandleRoleWeapons(role, BuyableWeapons[role], swep_table, id)
+
+        -- If the player is a mercenary and mercenaries should have all weapons that traitors and detectives have
+        if GetConVar("ttt_shop_merc_tandd"):GetBool() and role == ROLE_MERCENARY then
+            -- Add the loaded weapons for Traitor and Detective
+            HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
+            HandleRoleWeapons(role, BuyableWeapons[ROLE_DETECTIVE], swep_table, id)
+
+            -- If this weapon is still not buyable but is buyable by Traitor or Detective, add this role directly
+            if not table.HasValue(swep_table.CanBuy, role) and (table.HasValue(swep_table.CanBuy, ROLE_TRAITOR) or table.HasValue(swep_table.CanBuy, ROLE_DETECTIVE)) then
+                table.insert(swep_table.CanBuy, role)
+            end
+        end
+        -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
+        if GetConVar("ttt_shop_traitors_sync"):GetBool() and (role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) then
+            -- Add the loaded weapons for Traitor
+            HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
+
+            -- If this weapon is still not buyable but is buyable by Traitor, add this role directly
+            if not table.HasValue(swep_table.CanBuy, role) and table.HasValue(swep_table.CanBuy, ROLE_TRAITOR) then
+                table.insert(swep_table.CanBuy, role)
+            end
+        end
 	end
 
 	-- some weapons can only be bought once per player per round, this used to be

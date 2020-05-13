@@ -114,7 +114,6 @@ CreateConVar("ttt_assassin_required_traitors", "2")
 CreateConVar("ttt_killer_required_innos", "3")
 
 CreateConVar("ttt_monster_pct", "0.33")
-CreateConVar("ttt_killer_smoke_timer", "60", FCVAR_ARCHIVE)
 
 -- Traitor credits
 CreateConVar("ttt_credits_starting", "2")
@@ -136,6 +135,10 @@ CreateConVar("ttt_kil_credits_starting", "2")
 CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
 
 -- Other
+CreateConVar("ttt_shop_merc_tandd", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_shop_traitors_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_killer_smoke_timer", "60", FCVAR_ARCHIVE)
+
 CreateConVar("ttt_use_weapon_spawn_scripts", "1")
 CreateConVar("ttt_weapon_spawn_count", "0")
 

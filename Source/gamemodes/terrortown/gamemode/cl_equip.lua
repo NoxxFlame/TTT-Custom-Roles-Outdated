@@ -92,6 +92,20 @@ end)
 
 local Equipment = { }
 function GetEquipmentForRole(role)
+    -- Prime traitor and detective lists to make sure the sync works
+    if GetConVar("ttt_shop_merc_tandd"):GetBool() or GetConVar("ttt_shop_traitors_sync"):GetBool() then
+        if role == ROLE_MERCENARY or role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST then
+            if not Equipment[ROLE_TRAITOR] then
+                GetEquipmentForRole(ROLE_TRAITOR)
+            end
+        end
+    end
+    if GetConVar("ttt_shop_merc_tandd"):GetBool() and role == ROLE_MERCENARY then
+        if not Equipment[ROLE_DETECTIVE] then
+            GetEquipmentForRole(ROLE_DETECTIVE)
+        end
+    end
+
     -- Cache the equipment
     if not Equipment[role] then
         -- Make sure each of the buyable weapons is in the role's equipment list
@@ -109,6 +123,24 @@ function GetEquipmentForRole(role)
         -- find buyable weapons to load info from
         for _, v in pairs(weapons.GetList()) do
             if v and v.CanBuy then
+                -- If the player is a mercenary and mercenaries should have all weapons that traitors and detectives have
+                if GetConVar("ttt_shop_merc_tandd"):GetBool() and role == ROLE_MERCENARY and
+                    -- and they can't already buy this weapon
+                    not table.HasValue(v.CanBuy, role) and
+                    -- and traitors or detectives CAN buy this weapon, let the mercenary buy it too
+                    (table.HasValue(v.CanBuy, ROLE_TRAITOR) or table.HasValue(v.CanBuy, ROLE_DETECTIVE)) then
+                    table.insert(v.CanBuy, role)
+                end
+
+                -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
+                if GetConVar("ttt_shop_traitors_sync"):GetBool() and (role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) and
+                    -- and they can't already buy this weapon
+                    not table.HasValue(v.CanBuy, role) and
+                    -- and vanilla traitors CAN buy this weapon, let this player buy it too
+                    table.HasValue(v.CanBuy, ROLE_TRAITOR) then
+                    table.insert(v.CanBuy, role)
+                end
+
                 local data = v.EquipMenuData or {}
                 local base = {
                     id = WEPS.GetClass(v),
