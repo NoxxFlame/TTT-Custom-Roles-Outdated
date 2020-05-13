@@ -67,6 +67,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Ported ability to load weapons into role weapon shops from Town of Terror. See **Configuration** section below.
 - Integrated the [Double Jump!](https://steamcommunity.com/sharedfiles/filedetails/?id=284538302) mod but replaced the particle usage with effects generation to remove the TF2 requirement
 - Fixed conflicts with certain buyable weapons (like the Time Manipulator). Thanks Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord!
+- Fixed traitor voice chat so regular vanilla Traitors can do global chat (by using the "Sprint (Walk quickly)" keybind) like the other traitor roles
 - Fixed various errors
 
 # Conflicts
