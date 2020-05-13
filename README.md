@@ -3,7 +3,7 @@ Thanks to [Noxx](https://steamcommunity.com/id/nickpops98) for the original vers
 \
 **Edits the original version to restore some of the Town of Terror functionality**
 
-# Innocent Team:
+# Innocent Team
 Goal: Kill all members of the traitor and monsters teams\
 \
 **Innocent** - A standard player. Has no special abilities\
@@ -12,7 +12,7 @@ Goal: Kill all members of the traitor and monsters teams\
 **Mercenary** - An innocent with a weapon shop\
 **Phantom** - Will haunt your killer, showing black smoke. When avenged, you have another chance for life
 
-# Traitor Team:
+# Traitor Team
 Goal: Kill all non-team members (except Jester/Swapper)\
 \
 **Traitor** - Use your extensive weapon shop to help your team win\
@@ -25,14 +25,14 @@ Goal: Kill all non-monsters (except Jester/Swapper)\
 **Vampire** - Kill players and use your fangs to regain health\
 **Zombie** - Kill players with your claws to make more zombies
 
-# Independent Players:
+# Independent Players
 Goal: Work on your own to win the round by playing your role carefully\
 \
 **Jester** - Get killed by another player\
 **Swapper** - Get killed by another player and then fulfill their old goal\
 **Killer** - Be the last player standing
 
-# Special Thanks:
+# Special Thanks
 - [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the ['Town of Terror'](https://steamcommunity.com/sharedfiles/filedetails/?id=1092556189) mod which was the foundation of this mod.
 - [Noxx](https://steamcommunity.com/id/nickpops98) for the [original version](https://steamcommunity.com/sharedfiles/filedetails/?id=1215502383) of this mod.
 - [Long Long Longson](https://steamcommunity.com/id/gamerhenne) for the ['Better Equipment Menu'](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) mod
