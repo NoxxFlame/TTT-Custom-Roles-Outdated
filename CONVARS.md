@@ -52,3 +52,10 @@ ttt_kil_credits_starting    2    // (Default: 2): Number of credits the Killer s
 ttt_killer_smoke_timer      60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
 ttt_detective_search_only   1    // (Default: 1): Whether only detectives can search bodies or not
 ```
+
+# Role Weapon Shop
+
+In this version of TTT some roles have shops where they are allowed to purchase weapons. Given the prevalence of custom weapons from the workshop, the ability to add more weapons to each role's shop has been added.
+
+To add weapons to a role (that already has a shop), create a .txt file with the weapon class (e.g. weapon_ttt_somethingcool.txt) in the garrysmod/data/roleweapons/{rolename} folder.\
+**NOTE**: The name of the role must be all lowercase for cross-operating system compatibility. For example: garrysmod/data/roleweapons/detective/weapon_ttt_somethingcool.txt
