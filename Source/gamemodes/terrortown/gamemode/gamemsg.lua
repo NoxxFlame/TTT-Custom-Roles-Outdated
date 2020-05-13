@@ -140,7 +140,7 @@ function GetTraitorsFilter(alive_only)
 end
 
 function GetNonInnocentFilter(alive_only)
-    return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin() or p:IsJester() or p:IsSwapper()) and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsHypnotist() or p:IsAssassin() or p:IsJester() or p:IsSwapper()) and (not alive_only or p:IsTerror()) end)
 end
 
 function GetMonstersFilter(alive_only)
