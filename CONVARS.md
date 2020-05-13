@@ -51,7 +51,7 @@ ttt_mer_credits_starting    1    // (Default: 1): Number of credits the Mercenar
 ttt_kil_credits_starting    2    // (Default: 2): Number of credits the Killer starts with
 ttt_killer_smoke_timer      60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
 ttt_detective_search_only   1    // (Default: 1): Whether only detectives can search bodies or not
-ttt_shop_merc_tandd         0    // (Default: 0): Whether Mercenaries should have all weapons that Traitors and Detectives have in their weapon shop
+ttt_shop_merc_mode          0    // (Default: 0): How to handle Mercenary shop weapons. All modes include weapons specifically mapped to the Mercenary role. 0 (Disable) - Do not allow additional weapons. 1 (Union) - Allow weapons available to EITHER the Traitor or the Detective. 2 (Intersect) - Allow weapons available to BOTH the Traitor and the Detective. 3 (Detective) - Allow weapons available to the Detective. 4 (Traitor) - Allow weapons available to the Traitor.
 ttt_shop_traitors_sync      0    // (Default: 0): Whether Assassins and Hypnotists should have all weapons that vanilla Traitors have in their weapon shop
 ```
 

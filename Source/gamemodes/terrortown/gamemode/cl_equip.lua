@@ -92,15 +92,15 @@ end)
 
 local Equipment = { }
 function GetEquipmentForRole(role)
+    local mercmode = GetGlobalInt("ttt_shop_merc_mode")
+
     -- Prime traitor and detective lists to make sure the sync works
-    if GetGlobalBool("ttt_shop_merc_tandd") or GetGlobalBool("ttt_shop_traitors_sync") then
-        if role == ROLE_MERCENARY or role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST then
-            if not Equipment[ROLE_TRAITOR] then
-                GetEquipmentForRole(ROLE_TRAITOR)
-            end
+    if (mercmode > 0 or GetGlobalBool("ttt_shop_traitors_sync")) and (role == ROLE_MERCENARY or role == ROLE_ASSASSIN or role == ROLE_HYPNOTIST) then
+        if not Equipment[ROLE_TRAITOR] then
+            GetEquipmentForRole(ROLE_TRAITOR)
         end
     end
-    if GetGlobalBool("ttt_shop_merc_tandd") and role == ROLE_MERCENARY then
+    if mercmode > 0 and role == ROLE_MERCENARY then
         if not Equipment[ROLE_DETECTIVE] then
             GetEquipmentForRole(ROLE_DETECTIVE)
         end
@@ -123,7 +123,39 @@ function GetEquipmentForRole(role)
         -- find buyable weapons to load info from
         for _, v in pairs(weapons.GetList()) do
             if v and v.CanBuy then
-                -- If the player is a mercenary and mercenaries should have all weapons that traitors and detectives have
+                -- If the player is a mercenary
+                if mercmode > 0 and role == ROLE_MERCENARY then
+                    -- Traitor OR Detective or Detective only modes
+                    if mercmode == 1 or mercmode == 3 then
+                        -- and they can't already buy this weapon
+                        if not table.HasValue(v.CanBuy, role) and
+                            -- and detectives CAN buy this weapon, let the mercenary buy it too
+                            table.HasValue(v.CanBuy, ROLE_DETECTIVE) then
+                            table.insert(v.CanBuy, role)
+                        end
+                    end
+
+                    -- Traitor OR Detective or Traitor only modes
+                    if mercmode == 1 or mercmode == 4 then
+                        -- and they can't already buy this weapon
+                        if not table.HasValue(v.CanBuy, role) and
+                            -- and traitors CAN buy this weapon, let the mercenary buy it too
+                            table.HasValue(v.CanBuy, ROLE_TRAITOR) then
+                            table.insert(v.CanBuy, role)
+                        end
+                    end
+
+                    -- Traitor AND Detective
+                    if mercmode == 2 then
+                        -- and they can't already buy this weapon
+                        if not table.HasValue(v.CanBuy, role) and
+                            -- and detectives AND traitors CAN buy this weapon, let the mercenary buy it too
+                            table.HasValue(v.CanBuy, ROLE_DETECTIVE) and table.HasValue(v.CanBuy, ROLE_TRAITOR) then
+                            table.insert(v.CanBuy, role)
+                        end
+                    end
+                end
+
                 if GetGlobalBool("ttt_shop_merc_tandd") and role == ROLE_MERCENARY and
                     -- and they can't already buy this weapon
                     not table.HasValue(v.CanBuy, role) and

@@ -406,14 +406,39 @@ local function OrderEquipment(ply, cmd, args)
         HandleRoleWeapons(role, BuyableWeapons[role], swep_table, id)
 
         -- If the player is a mercenary and mercenaries should have all weapons that traitors and detectives have
-        if GetGlobalBool("ttt_shop_merc_tandd") and role == ROLE_MERCENARY then
-            -- Add the loaded weapons for Traitor and Detective
-            HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
-            HandleRoleWeapons(role, BuyableWeapons[ROLE_DETECTIVE], swep_table, id)
+        local mercmode = GetGlobalInt("ttt_shop_merc_mode")
+        if mercmode > 0 and role == ROLE_MERCENARY then
+            -- Traitor OR Detective or Detective only modes
+            if mercmode == 1 or mercmode == 3 then
+                -- Add the loaded weapons for Detective
+                HandleRoleWeapons(role, BuyableWeapons[ROLE_DETECTIVE], swep_table, id)
 
-            -- If this weapon is still not buyable but is buyable by Traitor or Detective, add this role directly
-            if not table.HasValue(swep_table.CanBuy, role) and (table.HasValue(swep_table.CanBuy, ROLE_TRAITOR) or table.HasValue(swep_table.CanBuy, ROLE_DETECTIVE)) then
-                table.insert(swep_table.CanBuy, role)
+                -- If this weapon is still not buyable but is buyable by Detective, add this role directly
+                if not table.HasValue(swep_table.CanBuy, role) and table.HasValue(swep_table.CanBuy, ROLE_DETECTIVE) then
+                    table.insert(swep_table.CanBuy, role)
+                end
+            end
+
+            -- Traitor OR Detective or Traitor only modes
+            if mercmode == 1 or mercmode == 4 then
+                -- Add the loaded weapons for Traitor
+                HandleRoleWeapons(role, BuyableWeapons[ROLE_TRAITOR], swep_table, id)
+
+                -- If this weapon is still not buyable but is buyable by Traitor, add this role directly
+                if not table.HasValue(swep_table.CanBuy, role) and table.HasValue(swep_table.CanBuy, ROLE_TRAITOR) then
+                    table.insert(swep_table.CanBuy, role)
+                end
+            end
+
+            -- Traitor AND Detective
+            -- If this weapon is not buyable by this role
+            if mercmode == 2 and not table.HasValue(swep_table.CanBuy, role) then
+                local traitorbuyable = (BuyableWeapons[ROLE_TRAITOR] and table.HasValue(BuyableWeapons[ROLE_TRAITOR], id)) or table.HasValue(swep_table.CanBuy, ROLE_TRAITOR)
+                local detectivebuyable = (BuyableWeapons[ROLE_DETECTIVE] and table.HasValue(BuyableWeapons[ROLE_DETECTIVE], id)) or table.HasValue(swep_table.CanBuy, ROLE_DETECTIVE)
+                -- If the weapon is buyable in either of the two methods by both the Traitor and the Detective, add it for this role too
+                if traitorbuyable and detectivebuyable then
+                    table.insert(swep_table.CanBuy, role)
+                end
             end
         end
         -- If the player is a non-vanilla traitor and they should have all weapons that vanilla traitors have
