@@ -483,7 +483,7 @@ end
 local PlayerVoicePanels = {}
 
 function GM:PlayerStartVoice(ply)
-    if not GetConVar("sv_voiceenable"):GetBool() then
+    if not GetGlobalBool("sv_voiceenable") then
         GAMEMODE:PlayerEndVoice(ply, false)
         return
     end

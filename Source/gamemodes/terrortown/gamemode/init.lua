@@ -338,7 +338,9 @@ function GM:SyncGlobals()
     SetGlobalBool("ttt_shop_assassin_sync", GetConVar("ttt_shop_assassin_sync"):GetBool())
     SetGlobalBool("ttt_shop_hypnotist_sync", GetConVar("ttt_shop_hypnotist_sync"):GetBool())
 
-	SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
+    SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
+
+    SetGlobalBool("sv_voiceenable", GetConVar("sv_voiceenable"):GetBool())
 end
 
 function SendRoundState(state, ply)
