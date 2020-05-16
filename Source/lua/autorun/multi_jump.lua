@@ -71,14 +71,14 @@ if CLIENT then
         local emitter = ParticleEmitter(pos)
         for _ = 0, math.random(30, 40) do
             local partpos = ply:GetPos() + Vector(math.random(-3, 3), math.random(-3, 3), 10)
-            local part = emitter:Add("effects/smoke", partpos)
+            local part = emitter:Add("particle/particle_smokegrenade", partpos)
             if (part) then
                 part:SetDieTime(math.random(0.4, 0.7))
                 part:SetStartAlpha(math.random(200, 240))
                 part:SetEndAlpha(0)
                 part:SetColor(math.random(200, 220), math.random(200, 220), math.random(200, 220))
 
-                part:SetStartSize(math.random(5, 6))
+                part:SetStartSize(math.random(6, 8))
                 part:SetEndSize(0)
 
                 part:SetRoll(0)
