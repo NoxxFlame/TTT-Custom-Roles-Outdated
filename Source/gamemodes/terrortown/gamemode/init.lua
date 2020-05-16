@@ -801,13 +801,13 @@ function BeginRound()
 	timer.Simple(10, SendFullStateUpdate)
 	SCORE:HandleSelection() -- log traitors and detectives
 
-	for k, v in pairs(player.GetAll()) do
+	for _, v in pairs(player.GetAll()) do
 		v:SetPData("IsZombifying", 0)
 		v:SetNWString("AssassinTarget", "")
 		if v:GetRole() == ROLE_ASSASSIN then
 			local enemies = {}
 			local detectives = {}
-			for i, p in pairs(player.GetAll()) do
+			for _, p in pairs(player.GetAll()) do
 				if p:Alive() and not p:IsSpec() then
 					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER or p:GetRole() == ROLE_VAMPIRE or p:GetRole() == ROLE_ZOMBIE then
 						table.insert(enemies, p:Nick())
@@ -822,15 +822,17 @@ function BeginRound()
 				v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
 			end
 
-			local targetCount
-			if #enemies + #detectives > 1 then
-				targetCount = "first"
-			elseif #enemies + #detectives == 1 then
-				targetCount = "final"
-			end
-			local targetMessage = "Your " .. targetCount .. " target is " .. v:GetNWString("AssassinTarget", "")
-			v:PrintMessage(HUD_PRINTCENTER, targetMessage)
-			v:PrintMessage(HUD_PRINTTALK, targetMessage)
+            if #enemies + #detectives >= 1 then
+                local targetCount
+                if #enemies + #detectives > 1 then
+                    targetCount = "first"
+                elseif #enemies + #detectives == 1 then
+                    targetCount = "final"
+                end
+                local targetMessage = "Your " .. targetCount .. " target is " .. v:GetNWString("AssassinTarget", "")
+                v:PrintMessage(HUD_PRINTCENTER, targetMessage)
+                v:PrintMessage(HUD_PRINTTALK, targetMessage)
+            end
 		elseif v:GetRole() == ROLE_HYPNOTIST then
 			v:Give("weapon_hyp_brainwash")
 		elseif v:GetRole() == ROLE_KILLER then

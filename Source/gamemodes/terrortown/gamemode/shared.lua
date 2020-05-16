@@ -43,6 +43,23 @@ ROLE_COLORS = {
 	[ROLE_KILLER] = Color(50, 0, 70, 255)
 }
 
+-- Role strings
+ROLE_STRINGS = {
+	[ROLE_TRAITOR] = "traitor",
+	[ROLE_INNOCENT] = "innocent",
+	[ROLE_DETECTIVE] = "detective",
+	[ROLE_MERCENARY] = "mercenary",
+	[ROLE_HYPNOTIST] = "hypnotist",
+	[ROLE_GLITCH] = "glitch",
+	[ROLE_JESTER] = "jester",
+	[ROLE_PHANTOM] = "phantom",
+	[ROLE_ZOMBIE] = "zombie",
+	[ROLE_VAMPIRE] = "vampire",
+	[ROLE_SWAPPER] = "swapper",
+	[ROLE_ASSASSIN] = "assassin",
+	[ROLE_KILLER] = "killer"
+};
+
 -- Game event log defs
 EVENT_KILL = 1
 EVENT_SPAWN = 2

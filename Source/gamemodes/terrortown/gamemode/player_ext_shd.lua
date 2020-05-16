@@ -106,32 +106,16 @@ function plymeta:IsActiveKiller() return self:IsActiveRole(ROLE_KILLER) end
 
 function plymeta:IsActiveSpecial() return self:IsSpecial() and self:IsActive() end
 
-local role_strings = {
-	[ROLE_TRAITOR] = "traitor",
-	[ROLE_INNOCENT] = "innocent",
-	[ROLE_DETECTIVE] = "detective",
-	[ROLE_MERCENARY] = "mercenary",
-	[ROLE_HYPNOTIST] = "hypnotist",
-	[ROLE_GLITCH] = "glitch",
-	[ROLE_JESTER] = "jester",
-	[ROLE_PHANTOM] = "phantom",
-	[ROLE_ZOMBIE] = "zombie",
-	[ROLE_VAMPIRE] = "vampire",
-	[ROLE_SWAPPER] = "swapper",
-	[ROLE_ASSASSIN] = "assassin",
-	[ROLE_KILLER] = "killer"
-};
-
 local GetRTranslation = CLIENT and LANG.GetRawTranslation or util.passthrough
 
 -- Returns printable role
 function plymeta:GetRoleString()
-	return GetRTranslation(role_strings[self:GetRole()]) or "???"
+	return GetRTranslation(ROLE_STRINGS[self:GetRole()]) or "???"
 end
 
 -- Returns role language string id, caller must translate if desired
 function plymeta:GetRoleStringRaw()
-	return role_strings[self:GetRole()]
+	return ROLE_STRINGS[self:GetRole()]
 end
 
 function plymeta:GetBaseKarma() return self:GetNWFloat("karma", 1000) end
