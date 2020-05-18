@@ -58,7 +58,7 @@ ttt_sprint_regenerate_traitor   0.12 // (Default: 0.12): Sets stamina regenerati
 ttt_sprint_consume              0.2  // (Default: 0.2): Sets stamina consumption speed. (0.1-5)
 
 // Double Jump
-multijump_default_jumps 1 // (Default: 1): The amount of extra jumps players should get
+multijump_default_jumps 1 // (Default: 1): The amount of extra jumps players should get. Set to 0 to disable multiple jumps
 multijump_default_power 1 // (Default: 1): Multiplier for the jump-power when multi jumping
 
 // Weapon Shop
@@ -70,7 +70,10 @@ ttt_shop_hypnotist_sync     0    // (Default: 0): Whether Hypnotists should have
 ttt_mer_credits_starting    1    // (Default: 1): Number of credits the Mercenary starts with
 ttt_kil_credits_starting    2    // (Default: 2): Number of credits the Killer starts with
 ttt_killer_smoke_timer      60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
-ttt_detective_search_only   1    // (Default: 1): Whether only detectives can search bodies or not
+ttt_killer_vision_enable    1    // (Default: 1): Whether Killers have their special vision highlights enabled
+ttt_vampire_vision_enable   1    // (Default: 1): Whether Vampires have their special vision highlights enabled
+ttt_zombie_vision_enable    1    // (Default: 1): Whether Zombies have their special vision highlights enabled
+ttt_detective_search_only   1    // (Default: 1): Whether only Detectives can search bodies or not
 ```
 
 # Role Weapon Shop
