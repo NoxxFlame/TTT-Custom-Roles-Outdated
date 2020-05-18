@@ -510,19 +510,19 @@ local showHighlights = false
 net.Receive("TTT_Killer_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHightlightEnabled(ROLE_KILLER)
+        OnPlayerHighlightEnabled(ROLE_KILLER)
     end)
 end)
 net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHightlightEnabled(ROLE_ZOMBIE, ROLE_VAMPIRE)
+        OnPlayerHighlightEnabled(ROLE_ZOMBIE, ROLE_VAMPIRE)
     end)
 end)
 net.Receive("TTT_Vampire_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHightlightEnabled(ROLE_VAMPIRE, ROLE_ZOMBIE)
+        OnPlayerHighlightEnabled(ROLE_VAMPIRE, ROLE_ZOMBIE)
     end)
 end)
 net.Receive("TTT_PlayerHighlightOff", function(len, ply)
@@ -530,7 +530,7 @@ net.Receive("TTT_PlayerHighlightOff", function(len, ply)
     hook.Remove("PreDrawHalos", "AddPlayerHighlights")
 end)
 
-function OnPlayerHightlightEnabled(role, alliedRole)
+function OnPlayerHighlightEnabled(role, alliedRole)
     local client = LocalPlayer()
     if not IsValid(client) then return end
     if client:GetRole() == role then

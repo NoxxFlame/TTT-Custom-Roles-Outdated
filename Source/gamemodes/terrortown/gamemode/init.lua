@@ -554,10 +554,11 @@ function GM:TTTDelayRoundStartForVote()
 end
 
 function PrepareRound()
-	for k, v in pairs(player.GetAll()) do
+	for _, v in pairs(player.GetAll()) do
 		v:SetNWBool("HauntedSmoke", false)
-		v:SetNWBool("KillerSmoke", false)
-		v:SetNWBool('RoleRevealed', false)
+        v:SetNWBool("KillerSmoke", false)
+        v:SetNWBool("PlayerHighlightOn", false)
+		v:SetNWBool("RoleRevealed", false)
 	end
 
 	jesterkilled = 0
