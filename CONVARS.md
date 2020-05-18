@@ -51,6 +51,7 @@ ttt_karma_jesterkill_penalty 50   // (Default: 50): Karma penalty for killing th
 ttt_karma_jester_ratio       0.5  // (Default: 0.5): Ratio of damage to Jesters, to be taken from karma
 
 // Sprint
+ttt_sprint_enabled              1    // (Default: 1): Whether to enable sprinting. NOTE: Disabling sprinting doesn't hide the bar on the client UI but it will never change from being 100% full
 ttt_sprint_bonus_rel            0.4  // (Default: 0.4): The relative speed bonus given while sprinting. (0.1-2)
 ttt_sprint_big_crosshair        1    // (Default: 1): Makes the crosshair bigger while sprinting.
 ttt_sprint_regenerate_innocent  0.08 // (Default: 0.08): Sets stamina regeneration for innocents. (0.01-2)
