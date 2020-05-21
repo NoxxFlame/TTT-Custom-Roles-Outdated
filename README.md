@@ -1,5 +1,5 @@
 Thanks to [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the 'Town of Terror' mod which was the foundation of this mod.\
-Thanks to [Noxx](https://steamcommunity.com/id/nickpops98), [Lix3](url=https://steamcommunity.com/id/lix3), and [Kommandos0](https://steamcommunity.com/id/Kommandos0) for the original version of this mod.\
+Thanks to [Noxx](https://steamcommunity.com/id/nickpops98), [Lix3](https://steamcommunity.com/id/lix3), and [Kommandos0](https://steamcommunity.com/id/Kommandos0) for the original version of this mod.\
 \
 **Edits the original version to restore some of the Town of Terror functionality**
 
@@ -34,7 +34,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 
 # Special Thanks
 - [Jenssons](https://steamcommunity.com/profiles/76561198044525091) for the ['Town of Terror'](https://steamcommunity.com/sharedfiles/filedetails/?id=1092556189) mod which was the foundation of this mod.
-- [Noxx](https://steamcommunity.com/id/nickpops98), [Lix3](url=https://steamcommunity.com/id/lix3), and [Kommandos0](https://steamcommunity.com/id/Kommandos0) for the [original version](https://steamcommunity.com/sharedfiles/filedetails/?id=1215502383) of this mod.
+- [Noxx](https://steamcommunity.com/id/nickpops98), [Lix3](https://steamcommunity.com/id/lix3), and [Kommandos0](https://steamcommunity.com/id/Kommandos0) for the [original version](https://steamcommunity.com/sharedfiles/filedetails/?id=1215502383) of this mod.
 - [Long Long Longson](https://steamcommunity.com/id/gamerhenne) for the ['Better Equipment Menu'](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) mod
 - [Silky](https://steamcommunity.com/profiles/76561198094798859) for the code used to create the pile of bones after the Vampire eats a body taken from the ['TTT Traitor Weapon Evolve'](https://steamcommunity.com/sharedfiles/filedetails/?id=1240572856) mod.
 - [Minty](https://steamcommunity.com/id/_Minty_) for the code used for the Hypnotist's brain washing device taken from the ['Defibrillator for TTT'](https://steamcommunity.com/sharedfiles/filedetails/?id=801433502) mod.
