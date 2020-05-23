@@ -63,6 +63,17 @@ function AddEvent(e)
     table.insert(customEvents, e)
 end
 
+local function FitNicknameLabel(nicklbl, maxwidth, getstring, args)
+    local nickw, _ = nicklbl:GetSize()
+    while nickw > maxwidth do
+        local nickname = nicklbl:GetText()
+        nickname, args = getstring(nickname, args)
+        nicklbl:SetText(nickname)
+        nicklbl:SizeToContents()
+        nickw, _ = nicklbl:GetSize()
+    end
+end
+
 local function FindTableIndex(playerTable, value)
     for k, name in pairs(playerTable) do
         if name == value then
@@ -297,7 +308,7 @@ function CLSCORE:BuildScorePanel(dpanel)
     dlist:SetMultiSelect(false)
 
     local colnames = { "", "col_player", "col_role", "col_kills1", "col_kills2", "col_kills3", "col_kills4", "col_kills5", "col_points", "col_team", "col_total" }
-    for k, name in pairs(colnames) do
+    for _, name in pairs(colnames) do
         if name == "" then
             -- skull icon column
             local c = dlist:AddColumn("")
@@ -395,7 +406,7 @@ function CLSCORE:AddAward(y, pw, award, dpanel)
     txtlbl:SetText(text)
     txtlbl:SetFont("DermaDefault")
     txtlbl:SizeToContents()
-    local tw, th = txtlbl:GetSize()
+    local tw, _ = txtlbl:GetSize()
 
     titlelbl:SetPos((pw - tiw) / 2, y)
     y = y + tih + 2
@@ -560,6 +571,14 @@ function CLSCORE:BuildSummaryPanel(dpanel)
                 nicklbl:SetTextColor(COLOR_WHITE)
                 nicklbl:SizeToContents()
 
+                local maxwidth = 275
+                if role == "jes" or role == "swa" or role == "kil" then
+                    maxwidth = 600
+                end
+                FitNicknameLabel(nicklbl, maxwidth, function(nickname)
+                    return string.sub(nickname, 0, string.len(nickname) - 4) .. "..."
+                end)
+
                 if role == "inn" or role == "det" or role == "mer" or role == "pha" or role == "gli" then
                     self:AddPlayerRow(dpanel, 317, 8, 96 + 33 * countI, roleIcon, nicklbl, hasDisconnected, dead)
                     countI = countI + 1
@@ -567,14 +586,36 @@ function CLSCORE:BuildSummaryPanel(dpanel)
                     self:AddPlayerRow(dpanel, 666, 357, 96 + 33 * countT, roleIcon, nicklbl, hasDisconnected, dead)
                     countT = countT + 1
                 elseif role == "jes" or role == "swa" then
-                    if jesterkiller ~= "" then
-                        if role == "jes" then
-                            nicklbl:SetText(nicks[id] .. " (Killed by " .. jesterkiller .. ")")
-                            nicklbl:SizeToContents()
-                        else
-                            nicklbl:SetText(nicks[id] .. " (Killed " .. jestervictim .. ")")
-                            nicklbl:SizeToContents()
-                        end
+                    if jesterkiller ~= "" and role == "jes" then
+                        nicklbl:SetText(nicklbl:GetText() .. " (Killed by " .. jesterkiller .. ")")
+                        nicklbl:SizeToContents()
+
+                        FitNicknameLabel(nicklbl, maxwidth, function(_, args)
+                            local player = args.player
+                            local other = args.other
+                            if string.len(player) > string.len(other) then
+                                player = string.sub(player, 0, string.len(player) - 4) .. "..."
+                            else
+                                other = string.sub(other, 0, string.len(other) - 4) .. "..."
+                            end
+
+                            return player .. " (Killed by " .. other .. ")", {player=player, other=other}
+                        end, {player=nicks[id], other=jesterkiller})
+                    elseif jestervictim ~= "" and role == "swa" then
+                        nicklbl:SetText(nicklbl:GetText() .. " (Killed " .. jestervictim .. ")")
+                        nicklbl:SizeToContents()
+
+                        FitNicknameLabel(nicklbl, maxwidth, function(_, args)
+                            local player = args.player
+                            local other = args.other
+                            if string.len(player) > string.len(other) then
+                                player = string.sub(player, 0, string.len(player) - 4) .. "..."
+                            else
+                                other = string.sub(other, 0, string.len(other) - 4) .. "..."
+                            end
+
+                            return player .. " (Killed " .. other .. ")", {player=player, other=other}
+                        end, {player=nicks[id], other=jestervictim})
                     end
                     self:AddPlayerRow(dpanel, 666, 8, 433, roleIcon, nicklbl, hasDisconnected, dead)
                 elseif role == "kil" then
