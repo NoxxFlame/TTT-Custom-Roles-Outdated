@@ -59,8 +59,9 @@ ttt_sprint_regenerate_traitor   0.12 // (Default: 0.12): Sets stamina regenerati
 ttt_sprint_consume              0.2  // (Default: 0.2): Sets stamina consumption speed. (0.1-5)
 
 // Double Jump
-multijump_default_jumps 1 // (Default: 1): The amount of extra jumps players should get. Set to 0 to disable multiple jumps
-multijump_default_power 1 // (Default: 1): Multiplier for the jump-power when multi jumping
+multijump_default_jumps          1 // (Default: 1): The amount of extra jumps players should get. Set to 0 to disable multiple jumps
+multijump_default_power          1 // (Default: 1): Multiplier for the jump-power when multi jumping
+multijump_can_jump_while_falling 1 // (Default: 1): Whether the player should be able to multi-jump if they didn't jump to begin with
 
 // Weapon Shop
 ttt_shop_merc_mode          0    // (Default: 0): How to handle Mercenary shop weapons. All modes include weapons specifically mapped to the Mercenary role. 0 (Disable) - Do not allow additional weapons. 1 (Union) - Allow weapons available to EITHER the Traitor or the Detective. 2 (Intersect) - Allow weapons available to BOTH the Traitor and the Detective. 3 (Detective) - Allow weapons available to the Detective. 4 (Traitor) - Allow weapons available to the Traitor.

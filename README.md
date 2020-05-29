@@ -43,6 +43,8 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Kommandos, Lix3, FunCheetah, B1andy413, Cooliew, The_Samarox, Arack12 and Aspirin for helping Noxx test.
 - Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for the fix for some traitor weapon incompatibilities.
 - Alex and other members of the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for using my versions of these addons and helping me fix and improve them.
+- u/ToXiN_reddit on Reddit for suggesting disallowing multi-jump if you didn't originally jump.
+- [GengarDC](https://steamcommunity.com/id/GengarDC) for his [TTT_Double_Jump_Nerfed](https://steamcommunity.com/sharedfiles/filedetails/?id=1962801891) mod whose functionality was integrated via a setting.
 
 # Changes from the Original Version
 - Mercenary - Added setting to allow Mercenary to buy all Traitor and/or Detective weapons in their shop. See **Configuration** section below
@@ -66,6 +68,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Changed role spawning to not do hidden math to determine role chance. Uses the CVars values directly instead.
 - Ported ability to load weapons into role weapon shops from Town of Terror. See **Configuration** section below.
 - Integrated the [Double Jump!](https://steamcommunity.com/sharedfiles/filedetails/?id=284538302) mod but replaced the particle usage with effects generation to remove the TF2 requirement
+- Added a setting to the multi-jump functionality to disallow multi-jumping if you didn't jump originally (e.g. were batted or fell)
 - Fixed conflicts with certain buyable weapons (like the Time Manipulator). Thanks Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord!
 - Fixed traitor voice chat so regular vanilla Traitors can do global chat (by using the "Sprint (Walk quickly)" keybind) like the other traitor roles
 - Fixed various errors

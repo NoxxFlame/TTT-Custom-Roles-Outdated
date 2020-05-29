@@ -29,9 +29,17 @@ local function GetMoveVector(mv)
 end
 
 hook.Add("SetupMove", "Multi Jump", function(ply, mv)
-	-- Let the engine handle movement from the ground
-	if ply:OnGround() then
-		ply:SetJumpLevel(0)
+    -- Let the engine handle movement from the ground
+    -- Only set the 'jumped' flag if that functionality is enabled
+    if ply:OnGround() and mv:KeyPressed(IN_JUMP) and ply:GetJumped() ~= -1 then
+	    ply:SetJumped(1)
+		return
+	elseif ply:OnGround() then
+        ply:SetJumpLevel(0)
+        -- Only set the 'jumped' flag if that functionality is enabled
+        if ply:GetJumped() ~= -1 then
+            ply:SetJumped(0)
+        end
 		return
 	end
 
@@ -41,6 +49,10 @@ hook.Add("SetupMove", "Multi Jump", function(ply, mv)
 	end
 
 	ply:SetJumpLevel(ply:GetJumpLevel() + 1)
+
+	if not ply:OnGround() and ply:GetJumped() == 0 then
+		return
+	end
 
 	if ply:GetJumpLevel() > ply:GetMaxJumpLevel() then
 		return

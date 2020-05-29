@@ -23,3 +23,11 @@ end
 function PLAYER:SetExtraJumpPower(power)
 	self:SetDTFloat(25, power)
 end
+
+function PLAYER:GetJumped()
+	return self:GetDTInt(26)
+end
+
+function PLAYER:SetJumped(level)
+	self:SetDTInt(26, level)
+end
