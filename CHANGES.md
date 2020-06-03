@@ -13,7 +13,9 @@
 # Monsters
 - Created new "Monsters" team with Zombie and Vampire to ensure they fight against all players, rather than allied with Traitors
 - Created new icons to handle previously-unexpected zombification and hypnotization cases
-- Ported "Zombie Vision" from Town of Terror for both Zombie and Vampire
+- Ported the following from Town of Terror. See [Configuration](CONVARS.md) to disable.
+  - "Zombie Vision" for both Zombie and Vampire
+  - "Kill" icon above other players' heads
 
 ## Zombie
 - Modified attack to look (model, animation) and feel (range, damage, spread) like the Infected from Town of Terror
@@ -23,9 +25,14 @@
 - Changed spawned zombies (e.g. zombies created by dying to the zombie claws) to disallow picking up weapons
 
 # Killer
-- Ported knife (with smoke grenade), throwable crowbar, and "Your Evil is Showing" smoke from Town of Terror
+- Ported the following from Town of Terror. See [Configuration](CONVARS.md) to disable all but the buyable throwable crowbar.
+  - Knife (with smoke grenade)
+  - Buyable throwable crowbar
+  - "Your Evil is Showing" smoke
+  - "Wall Hack Vision"
+  - "Kill" icon above other players' heads
+- Change default max health to 100 to match the other roles. See [Configuration](CONVARS.md) to change.
 - Added new section to the scoreboard for the Killer since there can be a Killer and a Jester/Swapper now
-- Ported "Wall Hack Vision" from Town of Terror
 
 # Additions
 ## General

@@ -138,7 +138,13 @@ CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
 CreateConVar("ttt_shop_merc_mode", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_shop_assassin_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_shop_hypnotist_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_killer_max_health", "100", FCVAR_ARCHIVE)
+CreateConVar("ttt_killer_knife_enabled", "1", FCVAR_ARCHIVE)
+CreateConVar("ttt_killer_smoke_enabled", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_killer_smoke_timer", "60", FCVAR_ARCHIVE)
+CreateConVar("ttt_killer_show_target_icon", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_zombie_show_target_icon", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_vampire_show_target_icon", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 
 CreateConVar("ttt_use_weapon_spawn_scripts", "1")
 CreateConVar("ttt_weapon_spawn_count", "0")
@@ -341,6 +347,10 @@ function GM:SyncGlobals()
     SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 
     SetGlobalBool("sv_voiceenable", GetConVar("sv_voiceenable"):GetBool())
+
+    SetGlobalBool("ttt_killer_show_target_icon", GetConVar("ttt_killer_show_target_icon"):GetBool())
+    SetGlobalBool("ttt_zombie_show_target_icon", GetConVar("ttt_zombie_show_target_icon"):GetBool())
+    SetGlobalBool("ttt_vampire_show_target_icon", GetConVar("ttt_vampire_show_target_icon"):GetBool())
 end
 
 function SendRoundState(state, ply)
@@ -837,8 +847,9 @@ function BeginRound()
                 v:PrintMessage(HUD_PRINTTALK, targetMessage)
             end
 		elseif v:GetRole() == ROLE_HYPNOTIST then
-			v:Give("weapon_hyp_brainwash")
-		elseif v:GetRole() == ROLE_KILLER then
+            v:Give("weapon_hyp_brainwash")
+        -- Ensure the Killer has their knife if it's enabled
+		elseif v:GetRole() == ROLE_KILLER and GetConVar("ttt_killer_knife_enabled"):GetBool() then
 			v:StripWeapon("weapon_zm_improvised")
 			v:Give("weapon_kil_knife")
 		end
@@ -1388,7 +1399,9 @@ function SelectRoles()
 		if GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
 			if IsValid(pply) then
 				print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Killer")
-				pply:SetRole(ROLE_KILLER)
+                pply:SetRole(ROLE_KILLER)
+                pply:SetMaxHealth(GetConVar("ttt_killer_max_health"):GetInt())
+                pply:SetHealth(GetConVar("ttt_killer_max_health"):GetInt())
 				table.remove(choices, pick)
 				hasKiller = true
 			end

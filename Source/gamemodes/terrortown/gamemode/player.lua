@@ -1612,11 +1612,10 @@ function HandlePlayerHighlights(ply)
             ply:SetNWBool("PlayerHighlightOn", false)
         end
 
-        if GetRoundState() >= ROUND_ACTIVE then
-            if ply:HasWeapon("weapon_kil_knife") == false then
-                ply:StripWeapon("weapon_zm_improvised")
-                ply:Give("weapon_kil_knife")
-            end
+        -- Ensure the Killer has their knife, if its enabled
+        if GetRoundState() >= ROUND_ACTIVE and not ply:HasWeapon("weapon_kil_knife") and GetConVar("ttt_killer_knife_enabled"):GetBool() then
+            ply:StripWeapon("weapon_zm_improvised")
+            ply:Give("weapon_kil_knife")
         end
         return
     elseif ply:GetRole() == ROLE_ZOMBIE then
@@ -1749,7 +1748,7 @@ local function HandleKillerSmokeTick()
 end
 
 timer.Create("KillerKillCheckTimer", 1, 0, function()
-    if GetRoundState() == ROUND_ACTIVE and HasKiller() then
+    if GetRoundState() == ROUND_ACTIVE and HasKiller() and GetConVar("ttt_killer_smoke_enabled"):GetBool() then
         killerSmokeTime = killerSmokeTime + 1
         if killerSmokeTime >= GetConVar("ttt_killer_smoke_timer"):GetInt() then
             HandleKillerSmokeTick()
