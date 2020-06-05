@@ -76,11 +76,11 @@ ttt_killer_max_health        100  // (Default: 100): The Killer's starting and m
 ttt_killer_smoke_enabled     1    // (Default: 1): Whether the Killer smoke is enabled
 ttt_killer_smoke_timer       60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
 ttt_killer_vision_enable     1    // (Default: 1): Whether Killers have their special vision highlights enabled
-ttt_killer_show_target_icon  1    // (Default: 1): Whether Killers have an icon over other players' heads showing who to kill
+ttt_killer_show_target_icon  1    // (Default: 1): Whether Killers have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
 ttt_vampire_vision_enable    1    // (Default: 1): Whether Vampires have their special vision highlights enabled
-ttt_vampire_show_target_icon 1    // (Default: 1): Whether Vampires have an icon over other players' heads showing who to kill
+ttt_vampire_show_target_icon 1    // (Default: 1): Whether Vampires have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
 ttt_zombie_vision_enable     1    // (Default: 1): Whether Zombies have their special vision highlights enabled
-ttt_zombie_show_target_icon  1    // (Default: 1): Whether Zombies have an icon over other players' heads showing who to kill
+ttt_zombie_show_target_icon  1    // (Default: 1): Whether Zombies have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
 ttt_detective_search_only    1    // (Default: 1): Whether only Detectives can search bodies or not
 ```
 
