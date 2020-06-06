@@ -16,32 +16,6 @@ local function GetTextForRole(role)
     elseif role == ROLE_MERCENARY then
         return GetPTranslation("info_popup_mercenary", { menukey = menukey })
 
-    elseif role == ROLE_HYPNOTIST then
-        local traitors = {}
-        for _, ply in pairs(player.GetAll()) do
-            if ply:IsTraitor() or ply:IsAssassin() or ply:IsHypnotist() then
-                table.insert(traitors, ply)
-            end
-        end
-
-        local text
-        if #traitors > 0 then
-            local traitorlist = ""
-
-            for k, ply in pairs(traitors) do
-                if ply ~= LocalPlayer() then
-                    traitorlist = traitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
-                end
-            end
-
-            text = GetPTranslation("info_popup_hypnotist",
-                { menukey = menukey, traitorlist = traitorlist })
-        else
-            text = GetPTranslation("info_popup_hypnotist_alone", { menukey = menukey })
-        end
-
-        return text
-
     elseif role == ROLE_GLITCH then
         return GetPTranslation("info_popup_glitch", { menukey = menukey })
 
@@ -70,7 +44,7 @@ local function GetTextForRole(role)
         if #monsters > 1 then
             local monsterlist = ""
 
-            for k, ply in pairs(monsters) do
+            for _, ply in pairs(monsters) do
                 if ply ~= LocalPlayer() then
                     monsterlist = monsterlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                 end
@@ -86,37 +60,10 @@ local function GetTextForRole(role)
     elseif role == ROLE_SWAPPER then
         return GetPTranslation("info_popup_swapper", { menukey = menukey })
 
-    elseif role == ROLE_ASSASSIN then
-        local traitors = {}
-        for _, ply in pairs(player.GetAll()) do
-            if ply:IsTraitor() or ply:IsAssassin() or ply:IsHypnotist() then
-                table.insert(traitors, ply)
-            end
-        end
-        local assassintarget = string.rep(" ", 42) .. LocalPlayer():GetNWString("AssassinTarget", "")
-
-        local text
-        if #traitors > 0 then
-            local traitorlist = ""
-
-            for k, ply in pairs(traitors) do
-                if ply ~= LocalPlayer() then
-                    traitorlist = traitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
-                end
-            end
-
-            text = GetPTranslation("info_popup_assassin",
-                { menukey = menukey, assassintarget = assassintarget, traitorlist = traitorlist })
-        else
-            text = GetPTranslation("info_popup_assassin_alone", { menukey = menukey, assassintarget = assassintarget })
-        end
-
-        return text
-
     elseif role == ROLE_KILLER then
         return GetPTranslation("info_popup_killer", { menukey = menukey })
 
-    elseif role == ROLE_TRAITOR then
+    elseif role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN then
         local traitors = {}
         local hypnotists = {}
         local assassins = {}
@@ -136,20 +83,21 @@ local function GetTextForRole(role)
             end
         end
 
+        local type = (role == ROLE_HYPNOTIST and "hypnotist") or (role == ROLE_ASSASSIN and "assassin") or "traitor"
         local text
         if #traitors > 1 then
-            local traitorlabel = "info_popup_traitor"
+            local traitorlabel = "info_popup_" .. type
             local traitorlist = ""
 
-            for k, ply in pairs(traitors) do
+            for _, ply in pairs(traitors) do
                 if ply ~= LocalPlayer() then
                     traitorlist = traitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                 end
             end
 
             local hypnotistlist = ""
-            if #hypnotists > 0 then
-                for k, ply in pairs(hypnotists) do
+            if #hypnotists > 0 and role ~= ROLE_HYPNOTIST then
+                for _, ply in pairs(hypnotists) do
                     if ply ~= LocalPlayer() then
                         hypnotistlist = hypnotistlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                     end
@@ -157,9 +105,14 @@ local function GetTextForRole(role)
                 traitorlabel = traitorlabel .. "_hypnotist"
             end
 
+            local assassintarget = nil
+            if role == ROLE_ASSASSIN then
+                assassintarget = string.rep(" ", 42) .. LocalPlayer():GetNWString("AssassinTarget", "")
+            end
+
             local assassinlist = ""
-            if #assassins > 0 then
-                for k, ply in pairs(assassins) do
+            if #assassins > 0 and role ~= ROLE_ASSASSIN then
+                for _, ply in pairs(assassins) do
                     if ply ~= LocalPlayer() then
                         assassinlist = assassinlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                     end
@@ -171,9 +124,9 @@ local function GetTextForRole(role)
                 traitorlabel = traitorlabel .. "_glitch"
             end
 
-            text = GetPTranslation(traitorlabel, { menukey = menukey, traitorlist = traitorlist, hypnotistlist = hypnotistlist, assassinlist = assassinlist })
+            text = GetPTranslation(traitorlabel, { menukey = menukey, traitorlist = traitorlist, hypnotistlist = hypnotistlist, assassinlist = assassinlist, assassintarget = assassintarget })
         else
-            text = GetPTranslation("info_popup_traitor_alone", { menukey = menukey })
+            text = GetPTranslation("info_popup_" .. type .. "_alone", { menukey = menukey })
         end
 
         return text

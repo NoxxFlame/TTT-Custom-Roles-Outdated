@@ -19,7 +19,7 @@ ttt_swapper_enabled   1 // (Default: 1): Whether the Swapper should spawn or not
 ttt_killer_enabled    1 // (Default: 1): Whether the Swapper should spawn or not
 
 // Role Spawn Chances
-ttt_glitch_chance    0.25 // (Default: 0.25): Chance of the Glitch spawning in a round
+ttt_glitch_chance    0.25 // (Default: 0.25): Chance of the Glitch spawning in a round. NOTE: Glitch will only spawn if there are 2 vanilla traitors in the round. Any less than that and the Glitch is made obvious by looking at the scoreboard
 ttt_mercenary_chance 0.25 // (Default: 0.25): Chance of the Mercenary spawning in a round
 ttt_phantom_chance   0.25 // (Default: 0.25): Chance of the Phantom spawning in a round
 ttt_assassin_chance  0.20 // (Default: 0.20): Chance of the Assassin spawning in a round

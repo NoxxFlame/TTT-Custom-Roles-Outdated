@@ -1214,6 +1214,8 @@ function SelectRoles()
 
     -- first select traitors
     local ts = 0
+    -- Count the "Traitor" role by itself since the Glitch can be identified via the special roles unless there are 2 vanilla traitors
+    local vanilla_ts = 0
     local ds = 0
     local ms = 0
     local hasMonster = false
@@ -1238,6 +1240,7 @@ function SelectRoles()
                 table.remove(choices, index)
                 if role == ROLE_TRAITOR then
                     ts = ts + 1
+                    vanilla_ts = vanilla_ts + 1
                     print(v:Nick() .. " (" .. v:SteamID() .. ") - Traitor")
                 elseif role == ROLE_ZOMBIE then
                     ms = ms + 1
@@ -1301,6 +1304,7 @@ function SelectRoles()
             else
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Traitor")
                 pply:SetRole(ROLE_TRAITOR)
+                vanilla_ts = vanilla_ts + 1
             end
             table.remove(choices, pick)
             ts = ts + 1
@@ -1437,8 +1441,8 @@ function SelectRoles()
     -- select random index in choices table
     pply, pick = GetRandomPlayer(choices)
     if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_GLITCH) or math.random(1, 3) == 2) then
-        -- Only spawn a glitch if we have multiple traitors since otherwise the role doesn't do anything
-        if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and ts > 1 then
+        -- Only spawn a glitch if we have multiple vanilla Traitors since otherwise the role doesn't do anything
+        if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and vanilla_ts > 1 then
             if IsValid(pply) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Glitch")
                 pply:SetRole(ROLE_GLITCH)
