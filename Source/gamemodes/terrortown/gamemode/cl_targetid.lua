@@ -201,25 +201,28 @@ function GM:PostDrawTranslucentRenderables()
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
-                elseif (client:GetRole() == ROLE_ZOMBIE and GetGlobalBool("ttt_zombie_show_target_icon")) or (client:GetRole() == ROLE_VAMPIRE and GetGlobalBool("ttt_vampire_show_target_icon")) then
+                elseif client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE then
                     if v:GetRole() == ROLE_ZOMBIE then
                         render.SetMaterial(indicator_matzom_noz)
-                        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    elseif v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
-                        render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     elseif v:GetRole() == ROLE_VAMPIRE then
                         render.SetMaterial(indicator_matvam_noz)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    else
-                        render.SetMaterial(indicator_mat_target)
+                    elseif v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
+                        render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                    -- Only show the "KILL" target if the setting is enabled
+                    elseif (client:GetRole() == ROLE_ZOMBIE and GetGlobalBool("ttt_zombie_show_target_icon")) or
+                        (client:GetRole() == ROLE_VAMPIRE and GetGlobalBool("ttt_vampire_show_target_icon")) then
+                            render.SetMaterial(indicator_mat_target)
+                            render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
-                elseif client:GetRole() == ROLE_KILLER and GetGlobalBool("ttt_killer_show_target_icon") then
+                elseif client:GetRole() == ROLE_KILLER then
                     if v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    else
+                    -- Only show the "KILL" target if the setting is enabled
+                    elseif GetGlobalBool("ttt_killer_show_target_icon") then
                         render.SetMaterial(indicator_mat_target)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
