@@ -613,6 +613,28 @@ function IncRoundEnd(incr)
 	SetRoundEnd(GetGlobalFloat("ttt_round_end", 0) + incr)
 end
 
+local function ShowIndependentWarning()
+	local showWarning = false
+
+	for k, v in pairs(player.GetAll()) do
+		if v:IsKiller() or v:IsJester() or v:IsSwapper() then
+			showWarning = true
+			break
+		end
+	end
+
+	if not showWarning then
+		return
+	end
+
+	local warning = "There is an Independent."
+
+	for k, v in pairs(player.GetAll()) do
+		v:PrintMessage(HUD_PRINTTALK, warning)
+		v:PrintMessage(HUD_PRINTCENTER, warning)
+	end
+end
+
 function TellTraitorsAboutTraitors()
 	local traitornicks = {}
 	local hypnotistnick = {}
@@ -831,7 +853,8 @@ function BeginRound()
 
 	-- Give the StateUpdate messages ample time to arrive
 	timer.Simple(1.5, TellTraitorsAboutTraitors)
-	timer.Simple(2.5, ShowRoundStartPopup)
+	timer.Simple(3, ShowIndependentWarning)
+	timer.Simple(3.5, ShowRoundStartPopup)
 
 	timer.Create("zombieHealthRegen", 0.66, 0, function()
 		for k, v in pairs(player.GetAll()) do
