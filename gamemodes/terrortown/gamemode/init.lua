@@ -859,8 +859,8 @@ function BeginRound()
 
 	-- Give the StateUpdate messages ample time to arrive
 	timer.Simple(1.5, TellTraitorsAboutTraitors)
-	timer.Simple(3, ShowIndependentWarning)
-	timer.Simple(3.5, ShowRoundStartPopup)
+	timer.Simple(2.5, ShowRoundStartPopup)
+	timer.Simple(3.5, ShowIndependentWarning)
 
 	timer.Create("zombieHealthRegen", 0.66, 0, function()
 		for k, v in pairs(player.GetAll()) do
