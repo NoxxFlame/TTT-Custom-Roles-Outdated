@@ -152,7 +152,7 @@ CreateConVar("ttt_namechange_bantime", "10")
 
 CreateConVar("ttt_karma_beta", "0", FCVAR_REPLICATED)
 
-CreateConVar("ttt_independent_warn", "0")
+CreateConVar("ttt_independent_warn", "0", FCVAR_NOTIFY)
 
 -- Drinking game punishments
 CreateConVar("ttt_drinking_death", "drink")
