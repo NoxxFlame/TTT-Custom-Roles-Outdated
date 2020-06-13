@@ -152,6 +152,8 @@ CreateConVar("ttt_namechange_bantime", "10")
 
 CreateConVar("ttt_karma_beta", "0", FCVAR_REPLICATED)
 
+CreateConVar("ttt_independent_warn", "1")
+
 -- Drinking game punishments
 CreateConVar("ttt_drinking_death", "drink")
 CreateConVar("ttt_drinking_team_kill", "drink")
@@ -614,6 +616,10 @@ function IncRoundEnd(incr)
 end
 
 local function ShowIndependentWarning()
+	if not GetConVar("ttt_independent_warn"):GetBool() then
+		return
+	end
+
 	local showWarning = false
 
 	for k, v in pairs(player.GetAll()) do
