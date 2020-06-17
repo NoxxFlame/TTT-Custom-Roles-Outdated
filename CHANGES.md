@@ -9,6 +9,7 @@
 - Made Hypnotist and Assassin more integrated traitor team members by
   - Allowing transferring of credits
   - Adding setting to allow Assassin and/or Hypnotist to buy all Traitor weapons in their shop. See [Configuration](CONVARS.md).
+- Added ability to show outlines around other members of the traitor team (including the Glitch). See [Configuration](CONVARS.md).
 
 # Monsters
 - Created new "Monsters" team with Zombie and Vampire to ensure they fight against all players, rather than allied with Traitors

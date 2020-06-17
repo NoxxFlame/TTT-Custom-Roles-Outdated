@@ -71,6 +71,7 @@ ttt_shop_hypnotist_sync     0    // (Default: 0): Whether Hypnotists should have
 // Other
 ttt_mer_credits_starting     1    // (Default: 1): Number of credits the Mercenary starts with
 ttt_kil_credits_starting     2    // (Default: 2): Number of credits the Killer starts with
+ttt_traitor_vision_enable    0    // (Default: 0): Whether members of the Traitor team can see other members of the Traitor team (including Glitches) through walls via a highlight effect.
 ttt_killer_knife_enabled     1    // (Default: 1): Whether the Killer knife is enabled
 ttt_killer_max_health        100  // (Default: 100): The Killer's starting and maximum health
 ttt_killer_smoke_enabled     1    // (Default: 1): Whether the Killer smoke is enabled

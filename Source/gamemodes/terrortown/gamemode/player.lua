@@ -16,6 +16,7 @@ CreateConVar("ttt_killer_dna_basetime", "100")
 CreateConVar("ttt_killer_vision_enable", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_zombie_vision_enable", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_vampire_vision_enable", "1", FCVAR_ARCHIVE)
+CreateConVar("ttt_traitor_vision_enable", "0", FCVAR_ARCHIVE)
 
 -- First spawn on the server
 function GM:PlayerInitialSpawn(ply)
@@ -1596,21 +1597,30 @@ function GM:Tick()
     end
 end
 
-function HandlePlayerHighlights(ply)
-    if ply:GetRole() == ROLE_KILLER then
-        if GetConVar("ttt_killer_vision_enable"):GetBool() then
-            if not ply:GetNWBool("PlayerHighlightOn", false) then
-                net.Start("TTT_Killer_PlayerHighlightOn")
-                net.WriteEntity(ply)
-                net.Send(ply)
-                ply:SetNWBool("PlayerHighlightOn", true)
-            end
-        elseif ply:GetNWBool("PlayerHighlightOn", false) then
-            net.Start("TTT_PlayerHighlightOff")
+
+local function SendHighlightEvent(ply, role, enabled, onenabled, ondisabled)
+    if enabled then
+        if not ply:GetNWBool("PlayerHighlightOn", false) then
+            if onenabled ~= nil then onenabled(ply) end
+
+            net.Start("TTT_" .. role .. "_PlayerHighlightOn")
             net.WriteEntity(ply)
             net.Send(ply)
-            ply:SetNWBool("PlayerHighlightOn", false)
+            ply:SetNWBool("PlayerHighlightOn", true)
         end
+    elseif ply:GetNWBool("PlayerHighlightOn", false) then
+        if ondisabled ~= nil then ondisabled(ply) end
+
+        net.Start("TTT_PlayerHighlightOff")
+        net.WriteEntity(ply)
+        net.Send(ply)
+        ply:SetNWBool("PlayerHighlightOn", false)
+    end
+end
+
+function HandlePlayerHighlights(ply)
+    if ply:GetRole() == ROLE_KILLER then
+        SendHighlightEvent(ply, "Killer", GetConVar("ttt_killer_vision_enable"):GetBool())
 
         -- Ensure the Killer has their knife, if its enabled
         if GetRoundState() >= ROUND_ACTIVE and not ply:HasWeapon("weapon_kil_knife") and GetConVar("ttt_killer_knife_enabled"):GetBool() then
@@ -1620,23 +1630,17 @@ function HandlePlayerHighlights(ply)
         return
     elseif ply:GetRole() == ROLE_ZOMBIE then
         if ply.GetActiveWeapon and IsValid(ply:GetActiveWeapon()) then
-            if GetConVar("ttt_zombie_vision_enable"):GetBool() and ply:GetActiveWeapon():GetClass() == "weapon_zom_claws" then
-                if not ply:GetNWBool("PlayerHighlightOn", false) then 
-                    ply:SetColor(Color(70, 100, 25, 255))
-                    ply:SetRenderMode(RENDERMODE_NORMAL)
-                    net.Start("TTT_Zombie_PlayerHighlightOn")
-                    net.WriteEntity(ply)
-                    net.Send(ply)
-                    ply:SetNWBool("PlayerHighlightOn", true)
-                end
-            elseif ply:GetNWBool("PlayerHighlightOn", false) then
-                ply:SetColor(Color(255, 255, 255, 255))
-                ply:SetRenderMode(RENDERMODE_TRANSALPHA)
-                net.Start("TTT_PlayerHighlightOff")
-                net.WriteEntity(ply)
-                net.Send(ply)
-                ply:SetNWBool("PlayerHighlightOn", false)
-            end
+            SendHighlightEvent(ply, "Zombie", GetConVar("ttt_zombie_vision_enable"):GetBool() and ply:GetActiveWeapon():GetClass() == "weapon_zom_claws",
+                -- OnEnabled
+                function(p)
+                    p:SetColor(Color(70, 100, 25, 255))
+                    p:SetRenderMode(RENDERMODE_NORMAL)
+                end,
+                -- OnDisabled
+                function(p)
+                    p:SetColor(Color(255, 255, 255, 255))
+                    p:SetRenderMode(RENDERMODE_TRANSALPHA)
+                end)
         end
 
         if GetRoundState() >= ROUND_ACTIVE then
@@ -1650,19 +1654,7 @@ function HandlePlayerHighlights(ply)
         return
     elseif ply:GetRole() == ROLE_VAMPIRE then
         if ply.GetActiveWeapon and IsValid(ply:GetActiveWeapon()) then
-            if GetConVar("ttt_vampire_vision_enable"):GetBool() and ply:GetActiveWeapon():GetClass() == "weapon_vam_fangs" then
-                if not ply:GetNWBool("PlayerHighlightOn", false) then
-                    net.Start("TTT_Vampire_PlayerHighlightOn")
-                    net.WriteEntity(ply)
-                    net.Send(ply)
-                    ply:SetNWBool("PlayerHighlightOn", true)
-                end
-            elseif ply:GetNWBool("PlayerHighlightOn", false) then
-                net.Start("TTT_PlayerHighlightOff")
-                net.WriteEntity(ply)
-                net.Send(ply)
-                ply:SetNWBool("PlayerHighlightOn", false)
-            end
+            SendHighlightEvent(ply, "Vampire", GetConVar("ttt_vampire_vision_enable"):GetBool() and ply:GetActiveWeapon():GetClass() == "weapon_vam_fangs")
         end
 
         if GetRoundState() >= ROUND_ACTIVE then
@@ -1670,6 +1662,9 @@ function HandlePlayerHighlights(ply)
                 ply:Give("weapon_vam_fangs")
             end
         end
+        return
+    elseif ply:GetRole() == ROLE_TRAITOR or ply:GetRole() == ROLE_ASSASSIN or ply:GetRole() == ROLE_HYPNOTIST then
+        SendHighlightEvent(ply, "Traitor", GetConVar("ttt_traitor_vision_enable"):GetBool())
         return
     end
 

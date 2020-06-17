@@ -516,13 +516,21 @@ end)
 net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHighlightEnabled(ROLE_ZOMBIE, ROLE_VAMPIRE)
+        OnPlayerHighlightEnabled(ROLE_ZOMBIE, {ROLE_VAMPIRE})
     end)
 end)
 net.Receive("TTT_Vampire_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHighlightEnabled(ROLE_VAMPIRE, ROLE_ZOMBIE)
+        OnPlayerHighlightEnabled(ROLE_VAMPIRE, {ROLE_ZOMBIE})
+    end)
+end)
+net.Receive("TTT_Traitor_PlayerHighlightOn", function(len, ply)
+    hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
+        showHighlights = true
+        OnPlayerHighlightEnabled(ROLE_TRAITOR, {ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_GLITCH}, true, true)
+        OnPlayerHighlightEnabled(ROLE_ASSASSIN, {ROLE_TRAITOR, ROLE_HYPNOTIST, ROLE_GLITCH}, true, true)
+        OnPlayerHighlightEnabled(ROLE_HYPNOTIST, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_GLITCH}, true, true)
     end)
 end)
 net.Receive("TTT_PlayerHighlightOff", function(len, ply)
@@ -530,31 +538,39 @@ net.Receive("TTT_PlayerHighlightOff", function(len, ply)
     hook.Remove("PreDrawHalos", "AddPlayerHighlights")
 end)
 
-function OnPlayerHighlightEnabled(role, alliedRole)
+function OnPlayerHighlightEnabled(role, alliedRoles, hideEnemies, traitorAllies)
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    if client:GetRole() == role then
+    if showHighlights and client:GetRole() == role and GetRoundState() == ROUND_ACTIVE then
         local enemies = {}
         local friends = {}
         local jesters = {}
-        if GetRoundState() == ROUND_ACTIVE then
-            for _, v in pairs(player.GetAll()) do
-                if IsValid(v) and v:Alive() and not v:IsSpec() then
-                    if v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
-                        table.insert(jesters, v)
-                    elseif v:GetRole() == role or (alliedRole and v:GetRole() == alliedRole) then
-                        table.insert(friends, v)
-                    else
-                        table.insert(enemies, v)
-                    end
+        for _, v in pairs(player.GetAll()) do
+            if IsValid(v) and v:Alive() and not v:IsSpec() then
+                if v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
+                    table.insert(jesters, v)
+                elseif v:GetRole() == role or (alliedRoles ~= nil and table.HasValue(alliedRoles, v:GetRole())) then
+                    table.insert(friends, v)
+                -- Don't even track enemies if this role can't see them
+                elseif not hideEnemies then
+                    table.insert(enemies, v)
                 end
             end
-
-            if showHighlights then
-                halo.Add(enemies, Color(255, 0, 0), 1, 1, 1, true, true)
-                halo.Add(friends, Color(0, 255, 0), 1, 1, 1, true, true)
-                halo.Add(jesters, Color(255, 85, 100), 1, 1, 1, true, true)
-            end
         end
+
+        -- Don't show enemies if we're hiding them
+        if not hideEnemies then
+            halo.Add(enemies, Color(255, 0, 0), 1, 1, 1, true, true)
+        end
+
+        -- If the allies of this role are Traitors, show them in red to be thematic
+        if traitorAllies then
+            halo.Add(friends, Color(255, 0, 0), 1, 1, 1, true, true)
+        -- Otherwise green is good
+        else
+            halo.Add(friends, Color(0, 255, 0), 1, 1, 1, true, true)
+        end
+
+        halo.Add(jesters, Color(255, 85, 100), 1, 1, 1, true, true)
     end
 end
