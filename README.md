@@ -51,7 +51,8 @@ Goal: Work on your own to win the round by playing your role carefully\
 See [here](CHANGES.md)
 
 # Conflicts
-This will conflict with the [Better Equipment Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) addon but has its functionality built in
+- [Better Equipment Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) - This has its functionality built in
+- [TTT Damage Logs](https://github.com/Tommy228/tttdamagelogs) - Possibly only conflicts with version 3.1 but I have not personally tested it
 
 # Configuration
 See [here](CONVARS.md)
