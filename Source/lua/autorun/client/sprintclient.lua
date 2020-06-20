@@ -18,7 +18,6 @@ local DoubleTapActivated = false
 local CrosshairSize = 1
 local TimerCon = CurTime()
 local TimerReg = CurTime()
-local ply = LocalPlayer()
 
 -- Receive ConVars (SERVER)
 net.Receive("SprintGetConVars", function()
@@ -46,6 +45,7 @@ ConVars()
 local function SpeedChange(Bool)
     net.Start("SprintSpeedset")
 
+    local ply = LocalPlayer()
     if Bool then
         local value = math.min(math.max(Multiplier, 0.1), 2)
         net.WriteFloat(value)
@@ -113,6 +113,7 @@ end
 hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
     -- reset every round
     realProzent = 100
+    hook.Remove("Think", "TTTSprint4Think")
 
     ConVars()
 
@@ -170,6 +171,33 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
             client:SetNWFloat("sprintMeter", realProzent)
         end
     end)
+end)
+
+-- Set Sprint Speed
+hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, _)
+    if not Enabled then return end
+
+    if IsValid(ply) and sprinting then
+        local wep = ply:GetActiveWeapon()
+        local multi = Multiplier + 1
+        if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
+            return 1.4 * multi
+        elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
+            return 1.25 * multi
+        elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 13 then
+            return 3 * multi
+        elseif wep and IsValid(wep) and wep:GetClass() == "weapon_zom_claws" then
+            if ply:HasEquipmentItem(EQUIP_SPEED) then
+                return 1.5 * multi
+            else
+                return 1.35 * multi
+            end
+        else
+            return multi
+        end
+    else
+        return 1
+    end
 end)
 
 hook.Add("TTTSettingsTabs", "TTTSprint4TTTSettingsTabs", function(dtabs)

@@ -33,7 +33,8 @@ net.Receive("SprintGetConVars", function(len, ply)
     net.Send(ply)
 end)
 
-local function GetPlayerSpeed(ply)
+-- Set Sprint Speed
+hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, _)
     if Enabled:GetBool() and ply.mult then
         local wep = ply:GetActiveWeapon()
         if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
@@ -54,12 +55,4 @@ local function GetPlayerSpeed(ply)
     else
         return 1
     end
-end
-
--- return Speed for old TTT Servers
-hook.Add("TTTPlayerSpeed", "TTTSprint4TTTPlayerSpeed", GetPlayerSpeed)
-
--- return Speed
-hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, _)
-    return GetPlayerSpeed(ply)
 end)
