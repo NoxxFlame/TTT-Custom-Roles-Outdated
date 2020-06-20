@@ -187,6 +187,12 @@ hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, 
     local wep = ply:GetActiveWeapon()
     if wep and IsValid(wep) and wep:GetClass() == "genji_melee" then
         return 1.4 * mult
+    elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_randomatknife" then
+        local knifemult = 1.2
+        if ConVarExists("randomat_murder_knifespeed") then
+            knifemult = GetConVar("randomat_murder_knifespeed"):GetFloat()
+        end
+        return knifemult * mult
     elseif wep and IsValid(wep) and wep:GetClass() == "weapon_ttt_homebat" then
         return 1.25 * mult
     elseif wep and IsValid(wep) and wep:GetClass() == "weapon_vam_fangs" and wep:Clip1() < 15 then
