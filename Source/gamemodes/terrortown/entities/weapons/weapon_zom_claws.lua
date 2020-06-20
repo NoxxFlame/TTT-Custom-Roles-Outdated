@@ -151,7 +151,9 @@ function SWEP:PrimaryAttack()
                             hitEnt:SetHealth(100)
                             hitEnt:StripWeapons()
                             hitEnt:Give("weapon_zom_claws")
-                            body:Remove()
+                            if body ~= nil then
+                                body:Remove()
+                            end
                         end
                         hitEnt:SetPData("IsZombifying", 0)
                         SendFullStateUpdate()
