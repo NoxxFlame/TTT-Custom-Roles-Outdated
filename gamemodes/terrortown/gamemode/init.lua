@@ -152,7 +152,7 @@ CreateConVar("ttt_namechange_bantime", "10")
 
 CreateConVar("ttt_karma_beta", "0", FCVAR_REPLICATED)
 
-CreateConVar("ttt_independent_warn", "0", FCVAR_NOTIFY)
+CreateConVar("ttt_independent_warning", "0", FCVAR_NOTIFY)
 
 -- Drinking game punishments
 CreateConVar("ttt_drinking_death", "drink")
@@ -616,7 +616,7 @@ function IncRoundEnd(incr)
 end
 
 local function ShowIndependentWarning()
-	if not GetConVar("ttt_independent_warn"):GetBool() then
+	if not GetConVar("ttt_independent_warning"):GetBool() then
 		return
 	end
 
