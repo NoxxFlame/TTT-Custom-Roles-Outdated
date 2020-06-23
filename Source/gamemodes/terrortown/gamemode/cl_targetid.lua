@@ -5,9 +5,6 @@ local draw = draw
 local GetPTranslation = LANG.GetParamTranslation
 local GetRaw = LANG.GetRawTranslation
 
-local symbols = false
-local hide_roles = false
-
 local key_params = { usekey = Key("+use", "USE"), walkkey = Key("+walk", "WALK") }
 local ClassHint = {
     prop_ragdoll = {
@@ -59,17 +56,21 @@ local indicator_mat_target = Material("vgui/ttt/sprite_let_target")
 
 local indicator_col = Color(255, 255, 255, 130)
 
-local client, plys, ply, pos, dir, tgt
-local GetPlayers = player.GetAll
-
 local propspec_outline = Material("models/props_combine/portalball001_sheet")
 
 -- using this hook instead of pre/postplayerdraw because playerdraw seems to
 -- happen before certain entities are drawn, which then clip over the sprite
 function GM:PostDrawTranslucentRenderables()
+    local symbols = false
     if ConVarExists("ttt_role_symbols") then
         symbols = GetConVar("ttt_role_symbols"):GetBool()
     end
+
+    local hide_roles = false
+    if ConVarExists("ttt_hide_role") then
+        hide_roles = GetConVar("ttt_hide_role"):GetBool()
+    end
+
     if symbols then
         indicator_mattra_noz = Material("vgui/ttt/sprite_sym_tra_noz")
         indicator_matjes_noz = Material("vgui/ttt/sprite_sym_jes_noz")
@@ -127,18 +128,15 @@ function GM:PostDrawTranslucentRenderables()
         indicator_matkil = Material("vgui/ttt/sprite_let_kil")
         indicator_mat_target = Material("vgui/ttt/sprite_let_target")
     end
-    client = LocalPlayer()
-    plys = GetPlayers()
+    local client = LocalPlayer()
+    local plys = player.GetAll()
+    local dir = client:GetForward() * -1
 
-    if ConVarExists("ttt_hide_role") then
-        hide_roles = GetConVar("ttt_hide_role"):GetBool()
-    end
-
-    dir = client:GetForward() * -1
-
-    for k, v in pairs(player.GetAll()) do
-        if v:IsActive() and v ~= client then
-            pos = v:GetPos()
+    for _, v in pairs(plys) do
+        -- Compatibility with the Dead Ringer
+        local hidden = v.IsFakeDead and v:IsFakeDead()
+        if v:IsActive() and v ~= client and not hidden then
+            local pos = v:GetPos()
             pos.z = pos.z + 74
             local revealed = v:GetNWBool('RoleRevealed', false)
             -- Only show the "KILL" target if the setting is enabled
@@ -233,12 +231,11 @@ function GM:PostDrawTranslucentRenderables()
     end
 
     if client:Team() == TEAM_SPEC then
-        cam.Start3D(EyePos(), EyeAngles())
+        cam.Start3D(client:EyePos(), client:EyeAngles())
 
-        for i = 1, #plys do
-            ply = plys[i]
-            tgt = ply:GetObserverTarget()
-            if IsValid(tgt) and tgt:GetNWEntity("spec_owner", nil) == ply then
+        for _, v in pairs(plys) do
+            local tgt = v:GetObserverTarget()
+            if IsValid(tgt) and tgt:GetNWEntity("spec_owner", nil) == v then
                 render.MaterialOverride(propspec_outline)
                 render.SuppressEngineLighting(true)
                 render.SetColorModulation(1, 0.5, 0)
@@ -387,7 +384,6 @@ function GM:HUDDrawTargetID()
             end
         end
 
-        local _ -- Stop global clutter
         -- in minimalist targetID, colour nick with health level
         if minimal then
             _, color = util.HealthToString(ent:Health(), ent:GetMaxHealth())
