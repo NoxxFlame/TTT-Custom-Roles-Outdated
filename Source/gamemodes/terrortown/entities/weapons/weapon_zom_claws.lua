@@ -151,7 +151,7 @@ function SWEP:PrimaryAttack()
                             hitEnt:SetHealth(100)
                             hitEnt:StripWeapons()
                             hitEnt:Give("weapon_zom_claws")
-                            if body ~= nil then
+                            if IsValid(body) then
                                 body:Remove()
                             end
                         end
