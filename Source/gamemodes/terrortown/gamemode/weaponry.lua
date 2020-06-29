@@ -560,10 +560,10 @@ local function TransferCredits(ply, cmd, args)
 	if (not IsValid(ply)) or (not ply:IsActiveSpecial()) then return end
 	if #args ~= 2 then return end
 
-	local sid = tostring(args[1])
+	local uid = tostring(args[1])
 	local credits = tonumber(args[2])
-	if sid and credits then
-		local target = player.GetBySteamID(sid)
+	if uid and credits then
+		local target = player.GetByUniqueID(uid)
 		if (not IsValid(target)) or (not target:IsActiveSpecial()) or (target:GetRole() ~= ply:GetRole()) or (target == ply) then
 			LANG.Msg(ply, "xfer_no_recip")
 			return
@@ -591,10 +591,10 @@ local function FakeTransferCredits(ply, cmd, args)
 	if (not IsValid(ply)) or (not ply:IsActiveSpecial()) then return end
 	if #args ~= 2 then return end
 
-	local sid = tostring(args[1])
+	local uid = tostring(args[1])
 	local credits = tonumber(args[2])
-	if sid and credits then
-		local target = player.GetBySteamID(sid)
+	if uid and credits then
+		local target = player.GetByUniqueID(uid)
 		if (not IsValid(target)) or (target == ply) then
 			LANG.Msg(ply, "xfer_no_recip")
 			return

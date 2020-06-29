@@ -17,12 +17,12 @@ function CreateTransferMenu(parent)
 	dsubmit:SetDisabled(true)
 	dsubmit:SetText(GetTranslation("xfer_send"))
 
-	local selected_sid = nil
+	local selected_uid = nil
 
 	local dpick = vgui.Create("DComboBox", dform)
 	dpick.OnSelect = function(s, idx, val, data)
 		if data then
-			selected_sid = data
+			selected_uid = data
 			dsubmit:SetDisabled(false)
 		end
 	end
@@ -39,9 +39,9 @@ function CreateTransferMenu(parent)
 				-- and target is a traitor team member (or a glitch)
 				(p:IsActiveRole(ROLE_TRAITOR) or p:IsActiveRole(ROLE_HYPNOTIST) or p:IsActiveRole(ROLE_ASSASSIN) or p:IsActiveRole(ROLE_GLITCH))
 			) or
-			-- Local player is a zombie and target is a zombie
-			(r == ROLE_ZOMBIE and p:IsActiveRole(ROLE_ZOMBIE))) then
-			dpick:AddChoice(p:Nick(), p:SteamID())
+			-- Local player is a monster and target is a monster
+			((r == ROLE_ZOMBIE or r == ROLE_VAMPIRE) and (p:IsActiveRole(ROLE_ZOMBIE) or p:IsActiveRole(ROLE_VAMPIRE)))) then
+			dpick:AddChoice(p:Nick(), p:UniqueID())
 		end
 	end
 
@@ -49,11 +49,11 @@ function CreateTransferMenu(parent)
 	if dpick:GetOptionText(1) then dpick:ChooseOptionID(1) end
 
 	dsubmit.DoClick = function(s)
-		if selected_sid then
-			if player.GetBySteamID(selected_sid):IsActiveRole(ROLE_GLITCH) then
-				RunConsoleCommand("ttt_fake_transfer_credits", selected_sid, "1")
+		if selected_uid then
+			if player.GetByUniqueID(selected_uid):IsActiveRole(ROLE_GLITCH) then
+				RunConsoleCommand("ttt_fake_transfer_credits", selected_uid, "1")
 			else
-				RunConsoleCommand("ttt_transfer_credits", selected_sid, "1")
+				RunConsoleCommand("ttt_transfer_credits", selected_uid, "1")
 			end
 		end
 	end
