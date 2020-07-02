@@ -2,9 +2,6 @@
 ## Mercenary
 - Added setting to allow Mercenary to buy all Traitor and/or Detective weapons in their shop. See [Configuration](CONVARS.md).
 
-## Vampire
-- Fixed never decloaking when using the fangs right-click
-
 # Traitors
 - Made Hypnotist and Assassin more integrated traitor team members by
   - Allowing transferring of credits
@@ -17,13 +14,21 @@
 - Ported the following from Town of Terror. See [Configuration](CONVARS.md) to disable.
   - "Zombie Vision" for both Zombie and Vampire
   - "Kill" icon above other players' heads
+  - Configurable bullet damage reduction. See [Configuration](CONVARS.md).
 
 ## Zombie
-- Modified attack to look (model, animation) and feel (range, damage, spread) like the Infected from Town of Terror
-- Ported Infected Jump and Spit attacks from Town of Terror
+- Ported/Inspired by Infected from Town of Terror
+ - Claw attack look (model, animation) and feel (range, damage, spread)
+ - Jump attack
+ - Spit attack
+ - Configurable damage scaling when not using the claws. See [Configuration](CONVARS.md).
 - Added recoil to Spit attack
 - Made Spit not 100% accurate
 - Changed spawned zombies (e.g. zombies created by dying to the zombie claws) to disallow picking up weapons
+
+## Vampire
+- Fixed never decloaking when using the fangs' right-click
+- Added configurable bullet damage reduction similar to Infected from Town of Terror. See [Configuration](CONVARS.md).
 
 # Killer
 - Ported the following from Town of Terror. See [Configuration](CONVARS.md) to disable all but the buyable throwable crowbar.
@@ -32,6 +37,8 @@
   - "Your Evil is Showing" smoke
   - "Wall Hack Vision"
   - "Kill" icon above other players' heads
+  - Configurable bullet damage reduction. See [Configuration](CONVARS.md).
+  - Configurable damage scaling when not using the knife. See [Configuration](CONVARS.md).
 - Change default max health to 100 to match the other roles. See [Configuration](CONVARS.md) to change.
 - Added new section to the scoreboard for the Killer since there can be a Killer and a Jester/Swapper now
 
@@ -57,4 +64,5 @@
 # Fixes
 - Fixed conflicts with certain buyable weapons (like the Time Manipulator). Thanks Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord!
 - Fixed traitor voice chat so regular vanilla Traitors can do global chat (by using the "Sprint (Walk quickly)" keybind) like the other traitor roles
-- Fixed various errors
+- Fixed compatibility with Dead Ringer weapon so that Detectives who use the Dead Ringer don't have their target icon ("D" over their head) visible when they should be cloaked
+- Fixed various other errors

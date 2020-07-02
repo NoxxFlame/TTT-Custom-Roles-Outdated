@@ -78,10 +78,15 @@ ttt_killer_smoke_enabled     1    // (Default: 1): Whether the Killer smoke is e
 ttt_killer_smoke_timer       60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
 ttt_killer_vision_enable     1    // (Default: 1): Whether Killers have their special vision highlights enabled
 ttt_killer_show_target_icon  1    // (Default: 1): Whether Killers have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
+ttt_killer_damage_scale      0.25 // (Default: 0.25): The fraction a Killer's damage will be scaled to when they are attacking without using their knife.
+ttt_killer_damage_reduction  0.55 // (Default: 0.55): The fraction an attacker's bullet damage will be reduced to when they are shooting a Killer.
 ttt_vampire_vision_enable    1    // (Default: 1): Whether Vampires have their special vision highlights enabled
 ttt_vampire_show_target_icon 1    // (Default: 1): Whether Vampires have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
+ttt_vampire_damage_reduction 0.8  // (Default: 0.8): The fraction an attacker's bullet damage will be reduced to when they are shooting a Vampire.
 ttt_zombie_vision_enable     1    // (Default: 1): Whether Zombies have their special vision highlights enabled
 ttt_zombie_show_target_icon  1    // (Default: 1): Whether Zombies have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
+ttt_zombie_damage_scale      0.2  // (Default: 0.2): The fraction a Zombie's damage will be scaled to when they are attacking without using their knife.
+ttt_zombie_damage_reduction  0.8  // (Default: 0.8): The fraction an attacker's bullet damage will be reduced to when they are shooting a Zombie.
 ttt_detective_search_only    1    // (Default: 1): Whether only Detectives can search bodies or not
 ```
 

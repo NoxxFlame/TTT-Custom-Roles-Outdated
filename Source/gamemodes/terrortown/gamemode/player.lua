@@ -1167,14 +1167,17 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
         dmginfo:ScaleDamage(0.7)
     end
 
-    -- Killers take less damage
+    -- Killers take less bullet damage
     if dmginfo:IsBulletDamage() and ply:GetRole() == ROLE_KILLER then
-        dmginfo:ScaleDamage(0.55)
+        dmginfo:ScaleDamage(GetConVar("ttt_killer_damage_reduction"):GetFloat())
     end
 
-     -- Monsters take less damage
-    if dmginfo:IsBulletDamage() and (ply:GetRole() == ROLE_ZOMBIE or ply:GetRole() == ROLE_VAMPIRE) then
-        dmginfo:ScaleDamage(0.80)
+     -- Monsters take less bullet damage
+    if dmginfo:IsBulletDamage() and ply:GetRole() == ROLE_ZOMBIE then
+        dmginfo:ScaleDamage(GetConVar("ttt_zombie_damage_reduction"):GetFloat())
+    end
+    if dmginfo:IsBulletDamage() and ply:GetRole() == ROLE_VAMPIRE then
+        dmginfo:ScaleDamage(GetConVar("ttt_vampire_damage_reduction"):GetFloat())
     end
 
     if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
@@ -1191,12 +1194,12 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
 
     -- Killers do less damage to encourage using the knife
     if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetRole() == ROLE_KILLER and GetRoundState() >= ROUND_ACTIVE then
-        dmginfo:ScaleDamage(0.25)
+        dmginfo:ScaleDamage(GetConVar("ttt_killer_damage_scale"):GetFloat())
     end
 
     -- Zombies do less damage when using non-claw weapons
     if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:GetAttacker():GetActiveWeapon():GetClass() ~= "weapon_zom_claws" and GetRoundState() >= ROUND_ACTIVE then
-        dmginfo:ScaleDamage(0.2)
+        dmginfo:ScaleDamage(GetConVar("ttt_zombie_damage_scale"):GetFloat())
     end
 
     if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and GetRoundState() ~= ROUND_ACTIVE then
