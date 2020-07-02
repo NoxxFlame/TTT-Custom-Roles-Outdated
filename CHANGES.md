@@ -24,7 +24,7 @@
  - Configurable damage scaling when not using the claws. See [Configuration](CONVARS.md).
 - Added recoil to Spit attack
 - Made Spit not 100% accurate
-- Changed spawned zombies (e.g. zombies created by dying to the zombie claws) to disallow picking up weapons
+- Changed spawned Zombies (e.g. Zombies created by dying to the Zombie claws) to configurably disallow picking up weapons. See [Configuration](CONVARS.md).
 
 ## Vampire
 - Fixed never decloaking when using the fangs' right-click

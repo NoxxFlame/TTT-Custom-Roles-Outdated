@@ -69,25 +69,26 @@ ttt_shop_assassin_sync      0    // (Default: 0): Whether Assassins should have 
 ttt_shop_hypnotist_sync     0    // (Default: 0): Whether Hypnotists should have all weapons that vanilla Traitors have in their weapon shop
 
 // Other
-ttt_mer_credits_starting     1    // (Default: 1): Number of credits the Mercenary starts with
-ttt_kil_credits_starting     2    // (Default: 2): Number of credits the Killer starts with
-ttt_traitor_vision_enable    0    // (Default: 0): Whether members of the Traitor team can see other members of the Traitor team (including Glitches) through walls via a highlight effect.
-ttt_killer_knife_enabled     1    // (Default: 1): Whether the Killer knife is enabled
-ttt_killer_max_health        100  // (Default: 100): The Killer's starting and maximum health
-ttt_killer_smoke_enabled     1    // (Default: 1): Whether the Killer smoke is enabled
-ttt_killer_smoke_timer       60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
-ttt_killer_vision_enable     1    // (Default: 1): Whether Killers have their special vision highlights enabled
-ttt_killer_show_target_icon  1    // (Default: 1): Whether Killers have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
-ttt_killer_damage_scale      0.25 // (Default: 0.25): The fraction a Killer's damage will be scaled to when they are attacking without using their knife.
-ttt_killer_damage_reduction  0.55 // (Default: 0.55): The fraction an attacker's bullet damage will be reduced to when they are shooting a Killer.
-ttt_vampire_vision_enable    1    // (Default: 1): Whether Vampires have their special vision highlights enabled
-ttt_vampire_show_target_icon 1    // (Default: 1): Whether Vampires have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
-ttt_vampire_damage_reduction 0.8  // (Default: 0.8): The fraction an attacker's bullet damage will be reduced to when they are shooting a Vampire.
-ttt_zombie_vision_enable     1    // (Default: 1): Whether Zombies have their special vision highlights enabled
-ttt_zombie_show_target_icon  1    // (Default: 1): Whether Zombies have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
-ttt_zombie_damage_scale      0.2  // (Default: 0.2): The fraction a Zombie's damage will be scaled to when they are attacking without using their knife.
-ttt_zombie_damage_reduction  0.8  // (Default: 0.8): The fraction an attacker's bullet damage will be reduced to when they are shooting a Zombie.
-ttt_detective_search_only    1    // (Default: 1): Whether only Detectives can search bodies or not
+ttt_mer_credits_starting      1    // (Default: 1): Number of credits the Mercenary starts with
+ttt_kil_credits_starting      2    // (Default: 2): Number of credits the Killer starts with
+ttt_traitor_vision_enable     0    // (Default: 0): Whether members of the Traitor team can see other members of the Traitor team (including Glitches) through walls via a highlight effect.
+ttt_killer_knife_enabled      1    // (Default: 1): Whether the Killer knife is enabled
+ttt_killer_max_health         100  // (Default: 100): The Killer's starting and maximum health
+ttt_killer_smoke_enabled      1    // (Default: 1): Whether the Killer smoke is enabled
+ttt_killer_smoke_timer        60   // (Default: 60): Number of seconds before a Killer will start to smoke after their last kill
+ttt_killer_vision_enable      1    // (Default: 1): Whether Killers have their special vision highlights enabled
+ttt_killer_show_target_icon   1    // (Default: 1): Whether Killers have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
+ttt_killer_damage_scale       0.25 // (Default: 0.25): The fraction a Killer's damage will be scaled to when they are attacking without using their knife.
+ttt_killer_damage_reduction   0.55 // (Default: 0.55): The fraction an attacker's bullet damage will be reduced to when they are shooting a Killer.
+ttt_vampire_vision_enable     1    // (Default: 1): Whether Vampires have their special vision highlights enabled
+ttt_vampire_show_target_icon  1    // (Default: 1): Whether Vampires have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
+ttt_vampire_damage_reduction  0.8  // (Default: 0.8): The fraction an attacker's bullet damage will be reduced to when they are shooting a Vampire.
+ttt_zombie_vision_enable      1    // (Default: 1): Whether Zombies have their special vision highlights enabled
+ttt_zombie_show_target_icon   1    // (Default: 1): Whether Zombies have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
+ttt_zombie_damage_scale       0.2  // (Default: 0.2): The fraction a Zombie's damage will be scaled to when they are attacking without using their knife.
+ttt_zombie_damage_reduction   0.8  // (Default: 0.8): The fraction an attacker's bullet damage will be reduced to when they are shooting a Zombie.
+ttt_zombie_prime_only_weapons 1    // (Default: 1): Whether only Prime Zombies (e.g. players who spawn as Zombies originally) are allowed to pick up weapons.
+ttt_detective_search_only     1    // (Default: 1): Whether only Detectives can search bodies or not
 ```
 
 # Role Weapon Shop

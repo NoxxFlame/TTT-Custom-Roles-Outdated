@@ -148,6 +148,7 @@ CreateConVar("ttt_killer_damage_reduction", "0.55", FCVAR_ARCHIVE + FCVAR_REPLIC
 CreateConVar("ttt_zombie_show_target_icon", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_zombie_damage_scale", "0.2", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_zombie_damage_reduction", "0.8", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_zombie_prime_only_weapons", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_vampire_show_target_icon", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_vampire_damage_reduction", "0.8", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 

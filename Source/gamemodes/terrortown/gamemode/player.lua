@@ -1647,10 +1647,10 @@ function HandlePlayerHighlights(ply)
         end
 
         if GetRoundState() >= ROUND_ACTIVE then
+            if GetConVar("ttt_zombie_prime_only_weapons"):GetBool() and not ply:GetZombiePrime() and #ply:GetWeapons() > 0 then
+                ply:StripWeapons()
+            end
             if ply:HasWeapon("weapon_zom_claws") == false then
-                if not ply:GetZombiePrime() and #ply:GetWeapons() > 0 then
-                    ply:StripWeapons()
-                end
                 ply:Give("weapon_zom_claws")
             end
         end
