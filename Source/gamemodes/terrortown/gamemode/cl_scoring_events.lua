@@ -45,6 +45,15 @@ local Event = CLSCORE.DeclareEventDisplay
 
 local is_dmg = util.BitSet
 
+local function StartsWithVowel(word)
+    local firstletter = string.sub(word, 1, 1)
+    return firstletter == "a" or
+        firstletter == "e" or
+        firstletter == "i" or
+        firstletter == "o" or
+        firstletter == "u"
+end
+
 -- Round end event
 Event(EVENT_FINISH,
       { text = function(e)
@@ -83,7 +92,37 @@ Event(EVENT_GAME,
         icon = function(e)
                   return app_icon, "Game"
                end
-     })
+      })
+
+-- Roles
+Event(EVENT_SPAWN,
+      { text = function(e)
+                  if e.ply then
+                    local rolestring = ROLE_STRINGS[e.rol]
+                    local a = StartsWithVowel(rolestring) and "an" or "a"
+                    return PT("ev_spawn", {player = e.ply,
+                                           a = a,
+                                           role = rolestring})
+                  end
+               end,
+        icon = function(e)
+                  return app_icon, "Game"
+               end
+      })
+Event(EVENT_ROLECHANGE,
+      { text = function(e)
+                  if e.ply then
+                    local rolestring = ROLE_STRINGS[e.rol]
+                    local a = StartsWithVowel(rolestring) and "an" or "a"
+                    return PT("ev_role_changed", {player = e.ply,
+                                                  a = a,
+                                                  role = rolestring})
+                  end
+               end,
+        icon = function(e)
+                  return app_icon, "Game"
+               end
+      })
 
 -- Credits event
 Event(EVENT_CREDITFOUND,

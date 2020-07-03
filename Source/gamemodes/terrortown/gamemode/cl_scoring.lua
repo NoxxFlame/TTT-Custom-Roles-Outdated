@@ -177,13 +177,31 @@ end)
 
 net.Receive("TTT_SpawnedPlayers", function(len)
     local name = net.ReadString()
+    local role = net.ReadUInt(8)
     table.insert(spawnedplayers, name)
+    AddEvent({
+        id = EVENT_SPAWN,
+        ply = name,
+        rol = role
+    })
 end)
 
 net.Receive("TTT_RoleChanged", function(len)
-    local uid = net.ReadInt(8)
-    local role = net.ReadInt(8)
+    local uid = net.ReadString()
+    local role = net.ReadUInt(8)
     rolechanges[uid] = role
+
+    local ply = player.GetByUniqueID(uid)
+    local name = "UNKNOWN"
+    if IsValid(ply) then
+        name = ply:Nick()
+    end
+
+    AddEvent({
+        id = EVENT_ROLECHANGE,
+        ply = name,
+        rol = role
+    })
 end)
 
 function CLSCORE:GetDisplay(key, event)

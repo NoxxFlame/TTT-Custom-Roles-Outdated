@@ -61,7 +61,7 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
 	local e = {
 		id = EVENT_KILL,
 		att = { ni = "", sid = -1, uid = -1, tr = false, inno = false, mon = false, jes = false, kil = false },
-		vic = { ni = victim:Nick(), sid = victim:SteamID(), uid = victim:UserID(), tr = false, inno = false, mon = false, jes = false, kil = false },
+		vic = { ni = victim:Nick(), sid = victim:SteamID(), uid = victim:UniqueID(), tr = false, inno = false, mon = false, jes = false, kil = false },
         dmg = CopyDmg(dmginfo),
         tk = false
 	};
@@ -78,7 +78,7 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
 	if IsValid(attacker) and attacker:IsPlayer() then
 		e.att.ni = attacker:Nick()
 		e.att.sid = attacker:SteamID()
-        e.att.uid = attacker:UserID()
+        e.att.uid = attacker:UniqueID()
         e.att.role = attacker:GetRole()
         e.att.tr = attacker:GetRole() == ROLE_TRAITOR or attacker:GetRole() == ROLE_HYPNOTIST or attacker:GetRole() == ROLE_ASSASSIN
         e.att.inno = attacker:GetRole() == ROLE_DETECTIVE or attacker:GetRole() == ROLE_INNOCENT or attacker:GetRole() == ROLE_MERCENARY or attacker:GetRole() == ROLE_GLITCH or attacker:GetRole() == ROLE_PHANTOM
@@ -102,7 +102,7 @@ end
 
 function SCORE:HandleSpawn(ply)
 	if ply:Team() == TEAM_TERROR then
-		self:AddEvent({ id = EVENT_SPAWN, ni = ply:Nick(), sid = ply:SteamID(), uid = ply:UserID() })
+		self:AddEvent({ id = EVENT_SPAWN, ni = ply:Nick(), sid = ply:SteamID(), uid = ply:UniqueID() })
 	end
 end
 
@@ -122,31 +122,31 @@ function SCORE:HandleSelection()
 	local killers = {}
 	for k, ply in pairs(player.GetAll()) do
 		if ply:GetTraitor() then
-			table.insert(traitors, ply:UserID())
+			table.insert(traitors, ply:UniqueID())
 		elseif ply:GetDetective() then
-			table.insert(detectives, ply:UserID())
+			table.insert(detectives, ply:UniqueID())
 		elseif ply:GetMercenary() then
-			table.insert(mercenaries, ply:UserID())
+			table.insert(mercenaries, ply:UniqueID())
 		elseif ply:GetHypnotist() then
-			table.insert(hypnotists, ply:UserID())
+			table.insert(hypnotists, ply:UniqueID())
 		elseif ply:GetGlitch() then
-			table.insert(glitches, ply:UserID())
+			table.insert(glitches, ply:UniqueID())
 		elseif ply:GetJester() then
-			table.insert(jesters, ply:UserID())
+			table.insert(jesters, ply:UniqueID())
 		elseif ply:GetPhantom() then
-			table.insert(phantoms, ply:UserID())
+			table.insert(phantoms, ply:UniqueID())
 		elseif ply:GetZombie() then
-			table.insert(zombies, ply:UserID())
+			table.insert(zombies, ply:UniqueID())
 		elseif ply:GetVampire() then
-			table.insert(vampires, ply:UserID())
+			table.insert(vampires, ply:UniqueID())
 		elseif ply:GetSwapper() then
-			table.insert(swappers, ply:UserID())
+			table.insert(swappers, ply:UniqueID())
 		elseif ply:GetAssassin() then
-			table.insert(assassins, ply:UserID())
+			table.insert(assassins, ply:UniqueID())
 		elseif ply:GetKiller() then
-			table.insert(killers, ply:UserID())
+			table.insert(killers, ply:UniqueID())
 		elseif ply:GetInnocent() then
-			table.insert(innocents, ply:UserID())
+			table.insert(innocents, ply:UniqueID())
 		end
 	end
 
@@ -154,7 +154,7 @@ function SCORE:HandleSelection()
 end
 
 function SCORE:HandleBodyFound(finder, found)
-	self:AddEvent({ id = EVENT_BODYFOUND, ni = finder:Nick(), sid = finder:SteamID(), uid = finder:UserID(), b = found:Nick() })
+	self:AddEvent({ id = EVENT_BODYFOUND, ni = finder:Nick(), sid = finder:SteamID(), uid = finder:UniqueID(), b = found:Nick() })
 end
 
 function SCORE:HandleC4Explosion(planter, arm_time, exp_time)
@@ -164,7 +164,7 @@ function SCORE:HandleC4Explosion(planter, arm_time, exp_time)
 	if IsValid(planter) and planter:IsPlayer() then
         nick = planter:Nick()
         sid = planter:SteamID()
-        uid = planter:UserID()
+        uid = planter:UniqueID()
 	end
 
 	self:AddEvent({ id = EVENT_C4PLANT, ni = nick, sid = sid, uid = uid }, arm_time)
@@ -179,7 +179,7 @@ function SCORE:HandleC4Disarm(disarmer, owner, success)
         id = EVENT_C4DISARM,
 		ni = disarmer:Nick(),
 		sid = disarmer:SteamID(),
-		uid = disarmer:UserID(),
+		uid = disarmer:UniqueID(),
 		s = success
 	};
 
@@ -191,7 +191,7 @@ function SCORE:HandleC4Disarm(disarmer, owner, success)
 end
 
 function SCORE:HandleCreditFound(finder, found_nick, credits)
-	self:AddEvent({ id = EVENT_CREDITFOUND, ni = finder:Nick(), sid = finder:SteamID(), uid = finder:UserID(), b = found_nick, cr = credits })
+	self:AddEvent({ id = EVENT_CREDITFOUND, ni = finder:Nick(), sid = finder:SteamID(), uid = finder:UniqueID(), b = found_nick, cr = credits })
 end
 
 function SCORE:ApplyEventLogScores(wintype)
@@ -210,34 +210,34 @@ function SCORE:ApplyEventLogScores(wintype)
 	local assassins = {}
 	local killers = {}
 	for _, ply in pairs(player.GetAll()) do
-		scores[ply:UserID()] = {}
+		scores[ply:UniqueID()] = {}
 
 		if ply:GetTraitor() then
-			table.insert(traitors, ply:UserID())
+			table.insert(traitors, ply:UniqueID())
 		elseif ply:GetDetective() then
-			table.insert(detectives, ply:UserID())
+			table.insert(detectives, ply:UniqueID())
 		elseif ply:GetMercenary() then
-			table.insert(mercenaries, ply:UserID())
+			table.insert(mercenaries, ply:UniqueID())
 		elseif ply:GetHypnotist() then
-			table.insert(hypnotists, ply:UserID())
+			table.insert(hypnotists, ply:UniqueID())
 		elseif ply:GetGlitch() then
-			table.insert(glitches, ply:UserID())
+			table.insert(glitches, ply:UniqueID())
 		elseif ply:GetJester() then
-			table.insert(jesters, ply:UserID())
+			table.insert(jesters, ply:UniqueID())
 		elseif ply:GetPhantom() then
-			table.insert(phantoms, ply:UserID())
+			table.insert(phantoms, ply:UniqueID())
 		elseif ply:GetZombie() then
-			table.insert(zombies, ply:UserID())
+			table.insert(zombies, ply:UniqueID())
 		elseif ply:GetVampire() then
-			table.insert(vampires, ply:UserID())
+			table.insert(vampires, ply:UniqueID())
 		elseif ply:GetSwapper() then
-			table.insert(swappers, ply:UserID())
+			table.insert(swappers, ply:UniqueID())
 		elseif ply:GetAssassin() then
-			table.insert(assassins, ply:UserID())
+			table.insert(assassins, ply:UniqueID())
 		elseif ply:GetKiller() then
-			table.insert(killers, ply:UserID())
+			table.insert(killers, ply:UniqueID())
 		elseif ply:GetInnocent() then
-			table.insert(innocents, ply:UserID())
+			table.insert(innocents, ply:UniqueID())
 		end
 	end
 

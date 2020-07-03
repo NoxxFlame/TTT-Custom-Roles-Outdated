@@ -1163,6 +1163,8 @@ L.ev_c4_disarm2 = "{player} failed to disarm C4 planted by {owner}"
 L.ev_credit = "{finder} found {num} credit(s) on the corpse of {player}"
 
 L.ev_start = "The round started"
+L.ev_spawn = "{player} spawned as {a} {role}"
+L.ev_role_changed = "{player} changed roles to {a} {role}"
 L.ev_win_traitor = "The dastardly traitors won the round!"
 L.ev_win_jester = "The tricky jester won the round!"
 L.ev_win_inno = "The lovable innocent terrorists won the round!"

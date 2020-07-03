@@ -62,8 +62,8 @@ function plymeta:SetRoleAndBroadcast(role)
 
     if SERVER then
         net.Start("TTT_RoleChanged")
-        net.WriteInt(self:UserID(), 8)
-        net.WriteInt(role, 8)
+        net.WriteString(self:UniqueID())
+        net.WriteUInt(role, 8)
         net.Broadcast()
     end
 end
