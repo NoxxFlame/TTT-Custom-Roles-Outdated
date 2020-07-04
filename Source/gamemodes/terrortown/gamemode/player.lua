@@ -1647,9 +1647,19 @@ function HandlePlayerHighlights(ply)
         end
 
         if GetRoundState() >= ROUND_ACTIVE then
-            if GetConVar("ttt_zombie_prime_only_weapons"):GetBool() and not ply:GetZombiePrime() and #ply:GetWeapons() > 0 then
-                ply:StripWeapons()
+            -- Strip all non-claw weapons for non-prime zombies if that feature is enabled
+            -- Strip individual weapons instead of all because otherwise the player will have their claws added and removed constantly
+            if GetConVar("ttt_zombie_prime_only_weapons"):GetBool() and not ply:GetZombiePrime() then
+                local weapons = ply:GetWeapons()
+                for _, v in pairs(weapons) do
+                    local weapclass = WEPS.GetClass(v)
+                    if weapclass ~= "weapon_zom_claws" then
+                        ply:StripWeapon(weapclass)
+                    end
+                end
             end
+
+            -- If this zombie doesn't have claws, give them claws
             if ply:HasWeapon("weapon_zom_claws") == false then
                 ply:Give("weapon_zom_claws")
             end
