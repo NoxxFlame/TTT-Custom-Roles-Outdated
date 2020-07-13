@@ -370,10 +370,14 @@ function GM:KeyPress(ply, key)
             local pos = ply:GetPos()
             local ang = ply:EyeAngles()
 
-            local target = ply:GetObserverTarget()
-            if IsValid(target) and target:IsPlayer() then
-                pos = target:EyePos()
-                ang = target:EyeAngles()
+            -- Only set the spectator's position to the player they are spectating if they are in chase or eye mode
+            -- They can use the reload key if they want to return to the person they're spectating
+            if ply:GetObserverMode() ~= OBS_MODE_ROAMING then
+                local target = ply:GetObserverTarget()
+                if IsValid(target) and target:IsPlayer() then
+                    pos = target:EyePos()
+                    ang = target:EyeAngles()
+                end
             end
 
             -- reset
@@ -385,7 +389,7 @@ function GM:KeyPress(ply, key)
             return true
         elseif key == IN_JUMP then
             -- unfuck if you're on a ladder etc
-            if not (ply:GetMoveType() == MOVETYPE_NOCLIP) then
+            if ply:GetMoveType() ~= MOVETYPE_NOCLIP then
                 ply:SetMoveType(MOVETYPE_NOCLIP)
             end
         elseif key == IN_RELOAD then
