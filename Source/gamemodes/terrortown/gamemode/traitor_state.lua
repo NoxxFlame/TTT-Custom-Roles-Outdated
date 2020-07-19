@@ -186,6 +186,7 @@ local function force_traitor(ply)
     ply:SetRoleAndBroadcast(ROLE_TRAITOR)
     ply:SetMaxHealth(100)
     ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_credits_starting"))
     if ply:HasWeapon("weapon_hyp_brainwash") then
         ply:StripWeapon("weapon_hyp_brainwash")
     end
@@ -209,6 +210,7 @@ local function force_detective(ply)
     ply:SetRoleAndBroadcast(ROLE_DETECTIVE)
     ply:SetMaxHealth(100)
     ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_det_credits_starting"))
     if ply:HasWeapon("weapon_hyp_brainwash") then
         ply:StripWeapon("weapon_hyp_brainwash")
     end
@@ -232,6 +234,7 @@ local function force_mercenary(ply)
     ply:SetRoleAndBroadcast(ROLE_MERCENARY)
     ply:SetMaxHealth(100)
     ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_mer_credits_starting"))
     if ply:HasWeapon("weapon_hyp_brainwash") then
         ply:StripWeapon("weapon_hyp_brainwash")
     end
@@ -255,6 +258,7 @@ local function force_hypnotist(ply)
     ply:SetRoleAndBroadcast(ROLE_HYPNOTIST)
     ply:SetMaxHealth(100)
     ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_hyp_credits_starting"))
     if ply:HasWeapon("weapon_vam_fangs") then
         ply:StripWeapon("weapon_vam_fangs")
     end
@@ -410,6 +414,7 @@ local function force_assassin(ply)
     ply:SetRoleAndBroadcast(ROLE_ASSASSIN)
     ply:SetMaxHealth(100)
     ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_asn_credits_starting"))
     if ply:HasWeapon("weapon_hyp_brainwash") then
         ply:StripWeapon("weapon_hyp_brainwash")
     end

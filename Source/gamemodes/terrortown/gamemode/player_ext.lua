@@ -78,6 +78,10 @@ function plymeta:SetDefaultCredits()
 		self:SetCredits(math.ceil(GetConVarNumber("ttt_mer_credits_starting")))
 	elseif self:GetKiller() then
 		self:SetCredits(math.ceil(GetConVarNumber("ttt_kil_credits_starting")))
+	elseif self:GetAssassin() then
+		self:SetCredits(math.ceil(GetConVarNumber("ttt_asn_credits_starting")))
+	elseif self:GetHypnotist() then
+		self:SetCredits(math.ceil(GetConVarNumber("ttt_hyp_credits_starting")))
 	else
 		self:SetCredits(0)
 	end

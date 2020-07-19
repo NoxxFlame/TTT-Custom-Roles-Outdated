@@ -129,8 +129,11 @@ CreateConVar("ttt_det_credits_starting", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_det_credits_traitorkill", "0", FCVAR_ARCHIVE)
 CreateConVar("ttt_det_credits_traitordead", "1", FCVAR_ARCHIVE)
 
+-- Starting credits
 CreateConVar("ttt_mer_credits_starting", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_kil_credits_starting", "2", FCVAR_ARCHIVE)
+CreateConVar("ttt_asn_credits_starting", "0", FCVAR_ARCHIVE)
+CreateConVar("ttt_hyp_credits_starting", "0", FCVAR_ARCHIVE)
 
 CreateConVar("ttt_detective_search_only", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 
