@@ -1184,30 +1184,30 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
         dmginfo:ScaleDamage(GetConVar("ttt_vampire_damage_reduction"):GetFloat())
     end
 
-    if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
-        -- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
-        if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
-            dmginfo:ScaleDamage(0)
+    if GetRoundState() == ROUND_ACTIVE then
+        if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) then
+            -- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
+            if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
+                dmginfo:ScaleDamage(0)
+            end
         end
-    end
 
-    -- Jesters and Swappers do no damage
-    if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and (dmginfo:GetAttacker():GetRole() == ROLE_JESTER or dmginfo:GetAttacker():GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
-        dmginfo:ScaleDamage(0)
-    end
+        if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() then
+            -- Jesters and Swappers do no damage
+            if dmginfo:GetAttacker():GetRole() == ROLE_JESTER or dmginfo:GetAttacker():GetRole() == ROLE_SWAPPER then
+                dmginfo:ScaleDamage(0)
+            end
 
-    -- Killers do less damage to encourage using the knife
-    if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetRole() == ROLE_KILLER and GetRoundState() >= ROUND_ACTIVE then
-        dmginfo:ScaleDamage(GetConVar("ttt_killer_damage_scale"):GetFloat())
-    end
+            -- Killers do less damage to encourage using the knife
+            if dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetRole() == ROLE_KILLER then
+                dmginfo:ScaleDamage(GetConVar("ttt_killer_damage_scale"):GetFloat())
+            end
 
-    -- Zombies do less damage when using non-claw weapons
-    if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:GetAttacker():GetActiveWeapon():GetClass() ~= "weapon_zom_claws" and GetRoundState() >= ROUND_ACTIVE then
-        dmginfo:ScaleDamage(GetConVar("ttt_zombie_damage_scale"):GetFloat())
-    end
-
-    if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() and GetRoundState() ~= ROUND_ACTIVE then
-        dmginfo:ScaleDamage(0)
+            -- Zombies do less damage when using non-claw weapons
+            if dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:GetAttacker():GetActiveWeapon():GetClass() ~= "weapon_zom_claws" then
+                dmginfo:ScaleDamage(GetConVar("ttt_zombie_damage_scale"):GetFloat())
+            end
+        end
     end
 
     ply.was_headshot = false
@@ -1254,7 +1254,7 @@ local fallsounds = {
 };
 
 function GM:OnPlayerHitGround(ply, in_water, on_floater, speed)
-    if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER or ply:GetRole() == ROLE_ZOMBIE) and GetRoundState() >= ROUND_ACTIVE then
+    if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER or ply:GetRole() == ROLE_ZOMBIE) and GetRoundState() == ROUND_ACTIVE then
     else
         if in_water or speed < 450 or not IsValid(ply) then return end
 
@@ -1327,14 +1327,12 @@ function GM:AllowPVP()
     return not (rs == ROUND_PREP or (rs == ROUND_POST and not ttt_postdm:GetBool()))
 end
 
-local rag_collide = CreateConVar("ttt_ragdoll_collide", "0")
-
 -- No damage during prep, etc
 function GM:EntityTakeDamage(ent, dmginfo)
     if not IsValid(ent) then return end
     local att = dmginfo:GetAttacker()
 
-    if SERVER then
+    if SERVER and GetRoundState() == ROUND_ACTIVE then
         local assassintarget = ""
         for _, v in pairs(player.GetAll()) do
             if v:GetRole() == ROLE_ASSASSIN then
@@ -1351,15 +1349,16 @@ function GM:EntityTakeDamage(ent, dmginfo)
                 end
             end
         end
-        if (ent:IsPlayer() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE) then
+
+        if ent:IsPlayer() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) then
             -- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
             if ((att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE))) or dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
-                dmginfo:ScaleDamage(0) -- no damages
+                dmginfo:ScaleDamage(0)
                 dmginfo:SetDamage(0)
             end
         -- No zombie team killing
         -- This can be funny, but it can also be used by frustrated players who didn't appreciate being zombified
-        elseif (ent:IsPlayer() and ent:GetRole() == ROLE_ZOMBIE and att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE or att:GetRole() == ROLE_VAMPIRE)) then
+        elseif ent:IsPlayer() and ent:GetRole() == ROLE_ZOMBIE and att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE or att:GetRole() == ROLE_VAMPIRE) then
             dmginfo:ScaleDamage(0)
             dmginfo:SetDamage(0)
         elseif dmginfo:GetAttacker() ~= ent then
@@ -1367,21 +1366,19 @@ function GM:EntityTakeDamage(ent, dmginfo)
         end
     end
 
-    if att:IsPlayer() and (att:GetRole() == ROLE_JESTER or att:GetRole() == ROLE_SWAPPER) and GetRoundState() >= ROUND_ACTIVE then
+    if att:IsPlayer() and (att:GetRole() == ROLE_JESTER or att:GetRole() == ROLE_SWAPPER) and GetRoundState() == ROUND_ACTIVE then
         dmginfo:ScaleDamage(0)
         dmginfo:SetDamage(0)
     end
 
     if not GAMEMODE:AllowPVP() then
         -- if player vs player damage, or if damage versus a prop, then zero
-        if (ent:IsExplosive() or (ent:IsPlayer() and IsValid(att) and att:IsPlayer())) then
+        if ent:IsExplosive() or (ent:IsPlayer() and IsValid(att) and att:IsPlayer()) then
             dmginfo:ScaleDamage(0)
             dmginfo:SetDamage(0)
         end
     elseif ent:IsPlayer() then
-
         GAMEMODE:PlayerTakeDamage(ent, dmginfo:GetInflictor(), att, dmginfo:GetDamage(), dmginfo)
-
     elseif ent:IsExplosive() then
         -- When a barrel hits a player, that player damages the barrel because
         -- Source physics. This gives stupid results like a player who gets hit
@@ -1396,13 +1393,11 @@ function GM:EntityTakeDamage(ent, dmginfo)
         end
     elseif ent.is_pinned and ent.OnPinnedDamage then
         ent:OnPinnedDamage(dmginfo)
-
         dmginfo:SetDamage(0)
     end
 end
 
 function GM:PlayerTakeDamage(ent, infl, att, amount, dmginfo)
-
     -- Change damage attribution if necessary
     if infl or att then
         local hurter, owner, owner_time
@@ -1604,7 +1599,6 @@ function GM:Tick()
     end
 end
 
-
 local function SendHighlightEvent(ply, role, enabled, onenabled, ondisabled)
     if enabled then
         if not ply:GetNWBool("PlayerHighlightOn", false) then
@@ -1630,7 +1624,7 @@ function HandlePlayerHighlights(ply)
         SendHighlightEvent(ply, "Killer", GetConVar("ttt_killer_vision_enable"):GetBool())
 
         -- Ensure the Killer has their knife, if its enabled
-        if GetRoundState() >= ROUND_ACTIVE and not ply:HasWeapon("weapon_kil_knife") and GetConVar("ttt_killer_knife_enabled"):GetBool() then
+        if GetRoundState() == ROUND_ACTIVE and not ply:HasWeapon("weapon_kil_knife") and GetConVar("ttt_killer_knife_enabled"):GetBool() then
             ply:StripWeapon("weapon_zm_improvised")
             ply:Give("weapon_kil_knife")
         end
@@ -1650,7 +1644,7 @@ function HandlePlayerHighlights(ply)
                 end)
         end
 
-        if GetRoundState() >= ROUND_ACTIVE then
+        if GetRoundState() == ROUND_ACTIVE then
             -- Strip all non-claw weapons for non-prime zombies if that feature is enabled
             -- Strip individual weapons instead of all because otherwise the player will have their claws added and removed constantly
             if GetConVar("ttt_zombie_prime_only_weapons"):GetBool() and not ply:GetZombiePrime() then
@@ -1674,7 +1668,7 @@ function HandlePlayerHighlights(ply)
             SendHighlightEvent(ply, "Vampire", GetConVar("ttt_vampire_vision_enable"):GetBool() and ply:GetActiveWeapon():GetClass() == "weapon_vam_fangs")
         end
 
-        if GetRoundState() >= ROUND_ACTIVE then
+        if GetRoundState() == ROUND_ACTIVE then
             if ply:HasWeapon("weapon_vam_fangs") == false then
                 ply:Give("weapon_vam_fangs")
             end

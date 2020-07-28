@@ -253,7 +253,7 @@ function PANEL:Paint(width, height)
 		self.sresult:SetVisible(false)
 	end
 
-	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") and GetRoundState() >= ROUND_ACTIVE then
+	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") and GetRoundState() == ROUND_ACTIVE then
 		surface.SetDrawColor(200, 90, 0, math.Round(math.sin(RealTime() * 8) / 2 + 0.5) * 20)
 		surface.DrawRect(0, 0, width, SB_ROW_HEIGHT)
 		surface.SetDrawColor(112, 50, 0, 255)
@@ -313,9 +313,9 @@ function PANEL:UpdatePlayerData()
 	end
 
 	self.nick:SetText(ply:Nick())
-	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") and GetRoundState() >= ROUND_ACTIVE then
+	if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") and GetRoundState() == ROUND_ACTIVE then
 		self.nick:SetText(ply:Nick() .. " (TARGET)")
-	elseif (LocalPlayer():GetTraitor() or LocalPlayer():GetHypnotist()) and GetRoundState() >= ROUND_ACTIVE then
+	elseif (LocalPlayer():GetTraitor() or LocalPlayer():GetHypnotist()) and GetRoundState() == ROUND_ACTIVE then
 		for k, v in pairs(player.GetAll()) do
 			if ply:Nick() == v:GetNWString("AssassinTarget", "") then
 				self.nick:SetText(ply:Nick() .. " (" .. v:Nick() .. "'s Target)")
