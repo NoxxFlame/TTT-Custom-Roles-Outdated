@@ -56,6 +56,9 @@ SWEP.NextReload = CurTime()
 SWEP.DeploySpeed = 2
 local sound_single = Sound("Weapon_Crowbar.Single")
 
+local zombie_leap = CreateConVar("ttt_zombie_leap_enable", "1", FCVAR_ARCHIVE)
+local zombie_spit = CreateConVar("ttt_zombie_spit_enable", "1", FCVAR_ARCHIVE)
+
 function SWEP:Initialize()
 	self:SetHoldType(self.HoldType)
 
@@ -181,7 +184,8 @@ Jump Attack
 ]]
 
 function SWEP:SecondaryAttack()
-	if (SERVER) then
+    if SERVER then
+        if not zombie_leap:GetBool() then return end
 		if (not self:CanSecondaryAttack()) or self.Owner:IsOnGround() == false then return end
 
 		local jumpsounds = { "npc/fast_zombie/leap1.wav", "npc/zombie/zo_attack2.wav", "npc/fast_zombie/fz_alert_close1.wav", "npc/zombie/zombie_alert1.wav" }
@@ -197,6 +201,7 @@ Spit Attack
 ]]
 
 function SWEP:Reload()
+    if not zombie_spit:GetBool() then return end
 	if self.NextReload > CurTime() then return end
 	self.NextReload = CurTime() + 3
 	self.Weapon:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
