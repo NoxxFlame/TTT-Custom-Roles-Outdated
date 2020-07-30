@@ -177,7 +177,7 @@ end)
 hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, _)
     local mult = 1
     if IsValid(ply) then
-        mult = tonumber(ply:GetPData("RmdtSpeedModifier", 1))
+        mult = ply:GetNWFloat("RmdtSpeedModifier", 1)
 
         if Enabled and sprinting then
             mult = mult * (Multiplier + 1)
