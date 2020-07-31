@@ -141,6 +141,7 @@ CreateConVar("ttt_detective_search_only", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_shop_merc_mode", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_shop_assassin_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_shop_hypnotist_sync", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_assassin_show_target_icon", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_killer_max_health", "100", FCVAR_ARCHIVE)
 CreateConVar("ttt_killer_knife_enabled", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_killer_smoke_enabled", "1", FCVAR_ARCHIVE)
@@ -357,7 +358,8 @@ function GM:SyncGlobals()
     SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 
     SetGlobalBool("sv_voiceenable", GetConVar("sv_voiceenable"):GetBool())
-
+    
+    SetGlobalBool("ttt_assassin_show_target_icon", GetConVar("ttt_assassin_show_target_icon"):GetBool())
     SetGlobalBool("ttt_killer_show_target_icon", GetConVar("ttt_killer_show_target_icon"):GetBool())
     SetGlobalBool("ttt_zombie_show_target_icon", GetConVar("ttt_zombie_show_target_icon"):GetBool())
     SetGlobalBool("ttt_vampire_show_target_icon", GetConVar("ttt_vampire_show_target_icon"):GetBool())

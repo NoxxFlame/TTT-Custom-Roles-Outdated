@@ -8,6 +8,9 @@
   - Adding setting to allow Assassin and/or Hypnotist to buy all Traitor weapons in their shop. See [Configuration](CONVARS.md).
 - Added ability to show outlines around other members of the traitor team (including the Glitch). See [Configuration](CONVARS.md).
 
+## Assassin
+- Added ability to show "Kill" icon over target's head. See [Configuration](CONVARS.md) to enable.
+
 # Monsters
 - Created new "Monsters" team with Zombie and Vampire to ensure they fight against all players, rather than allied with Traitors
 - Created new icons to handle previously-unexpected zombification and hypnotization cases
@@ -19,8 +22,8 @@
 ## Zombie
 - Ported/Inspired by Infected from Town of Terror
  - Claw attack look (model, animation) and feel (range, damage, spread)
- - Jump attack
- - Spit attack
+ - Jump attack. See [Configuration](CONVARS.md) to disable.
+ - Spit attack. See [Configuration](CONVARS.md) to disable.
  - Configurable damage scaling when not using the claws. See [Configuration](CONVARS.md).
 - Added recoil to Spit attack
 - Made Spit not 100% accurate
