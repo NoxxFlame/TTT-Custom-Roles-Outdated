@@ -146,7 +146,7 @@ function SWEP:Think()
 		self.lastTickSecond = CurTime()
 	end
 
-	if self:Clip1() < 13 and not self.fading then
+	if self:Clip1() < 15 and not self.fading then
 		self.fading = true
 		self:GetOwner():SetColor(Color(255, 255, 255, 0))
 		self:GetOwner():SetMaterial("sprites/heatwave")
