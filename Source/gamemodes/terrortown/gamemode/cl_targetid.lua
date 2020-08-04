@@ -133,8 +133,8 @@ function GM:PostDrawTranslucentRenderables()
     local dir = client:GetForward() * -1
 
     for _, v in pairs(plys) do
-        -- Compatibility with the Dead Ringer
-        local hidden = v.IsFakeDead and v:IsFakeDead()
+        -- Compatibility with the disguises and Dead Ringer
+        local hidden = v:GetNWBool("disguised", false) or (v.IsFakeDead and v:IsFakeDead())
         if v:IsActive() and v ~= client and not hidden then
             local pos = v:GetPos()
             pos.z = pos.z + 74
@@ -190,7 +190,7 @@ function GM:PostDrawTranslucentRenderables()
                 end
             end
             if not hide_roles then
-                if client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ASSASSIN then
+                if client:IsTraitorTeam() then
                     if v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_GLITCH then
                         render.SetMaterial(indicator_mattra_noz)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
@@ -207,7 +207,7 @@ function GM:PostDrawTranslucentRenderables()
                         render.SetMaterial(indicator_mat_target)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
-                elseif client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE then
+                elseif client:IsMonsterTeam() then
                     if v:GetRole() == ROLE_ZOMBIE then
                         render.SetMaterial(indicator_matzom_noz)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
@@ -222,7 +222,7 @@ function GM:PostDrawTranslucentRenderables()
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
                 elseif client:GetRole() == ROLE_KILLER then
-                    if v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
+                    if v:IsJesterTeam() then
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     elseif showkillicon then
@@ -377,11 +377,10 @@ function GM:HUDDrawTargetID()
     if ent:IsPlayer() and ent:Alive() then
         text = ent:Nick()
         client.last_id = ent
-
-        if ent:GetActiveWeapon():IsValid() and ent:GetActiveWeapon():GetClass() == "weapon_ttt_cloak" then
+        if ent:GetNWBool("disguised", false) or (ent:GetActiveWeapon():IsValid() and ent:GetActiveWeapon():GetClass() == "weapon_ttt_cloak") then
             client.last_id = nil
 
-            if client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE or client:GetRole() == ROLE_ASSASSIN or client:IsSpec() then
+            if client:IsTraitorTeam() or client:IsSpec() then
                 text = ent:Nick() .. L.target_disg
             else
                 return
@@ -407,7 +406,7 @@ function GM:HUDDrawTargetID()
             target_swapper = ent:IsRole(ROLE_SWAPPER)
             target_killer = ent:IsRole(ROLE_KILLER)
         end
-        if (client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ASSASSIN) and GetRoundState() == ROUND_ACTIVE then
+        if client:IsTraitorTeam() and GetRoundState() == ROUND_ACTIVE then
             target_glitch = ent:IsRole(ROLE_GLITCH)
             if client:GetRole() == ROLE_TRAITOR then
                 target_fellow_traitor = ent:IsRole(ROLE_TRAITOR) or target_glitch
@@ -418,7 +417,7 @@ function GM:HUDDrawTargetID()
             target_jester = ent:IsRole(ROLE_JESTER) or ent:IsRole(ROLE_SWAPPER)
             target_assassin = ent:IsRole(ROLE_ASSASSIN)
         end
-        if (client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE) and GetRoundState() == ROUND_ACTIVE then
+        if client:IsMonsterTeam() and GetRoundState() == ROUND_ACTIVE then
             if client:GetRole() == ROLE_ZOMBIE then
                 target_fellow_zombie = ent:IsRole(ROLE_ZOMBIE)
             else

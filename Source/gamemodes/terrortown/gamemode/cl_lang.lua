@@ -6,6 +6,8 @@
 -- have far more control. Maybe it's slower, but maybe not, we aren't scanning
 -- strings for "#identifiers" after all.
 
+include("shared.lua")
+
 LANG.Strings = {}
 
 CreateConVar("ttt_language", "auto", FCVAR_ARCHIVE)
@@ -20,15 +22,15 @@ local cached_default, cached_active
 function LANG.CreateLanguage(lang_name)
     if not lang_name then return end
     lang_name = string.lower(lang_name)
-    
+
     if not LANG.IsLanguage(lang_name) then
         -- Empty string is very convenient to have, so init with that.
         LANG.Strings[lang_name] = { [""] = "" }
     end
-    
+
     if lang_name == LANG.DefaultLanguage then
         cached_default = LANG.Strings[lang_name]
-        
+
         -- when a string is not found in the active or the default language, an
         -- error message is shown
         setmetatable(LANG.Strings[lang_name],
@@ -38,7 +40,7 @@ function LANG.CreateLanguage(lang_name)
                 end
             })
     end
-    
+
     return LANG.Strings[lang_name]
 end
 
@@ -46,13 +48,13 @@ end
 -- adding strings elsewhere, such as a SWEP script.
 function LANG.AddToLanguage(lang_name, string_name, string_text)
     lang_name = lang_name and string.lower(lang_name)
-    
+
     if not LANG.IsLanguage(lang_name) then
         ErrorNoHalt(Format("Failed to add '%s' to language '%s': language does not exist.\n", tostring(string_name), tostring(lang_name)))
     end
-    
+
     LANG.Strings[lang_name][string_name] = string_text
-    
+
     return string_name
 end
 
@@ -99,10 +101,10 @@ function LANG.GetUnsafeNamed(name) return LANG.Strings[name] end
 -- Safe and slow access, not sure if it's ever useful.
 function LANG.GetLanguageTable(lang_name)
     lang_name = lang_name or LANG.ActiveLanguage
-    
+
     local cpy = table.Copy(LANG.Strings[lang_name])
     SetFallback(cpy)
-    
+
     return cpy
 end
 
@@ -110,7 +112,7 @@ local function SetFallback(tbl)
     -- languages may deal with this themselves, or may already have the fallback
     local m = getmetatable(tbl)
     if m and m.__index then return end
-    
+
     -- Set the __index of the metatable to use the default lang, which makes any
     -- keys not found in the table to be looked up in the default. This is faster
     -- than using branching ("return lang[x] or default[x] or errormsg") and
@@ -124,24 +126,24 @@ end
 
 function LANG.SetActiveLanguage(lang_name)
     lang_name = lang_name and string.lower(lang_name)
-    
+
     if LANG.IsLanguage(lang_name) then
         local old_name = LANG.ActiveLanguage
         LANG.ActiveLanguage = lang_name
-        
+
         -- cache ref to table to avoid hopping through LANG and Strings every time
         cached_active = LANG.Strings[lang_name]
-        
+
         -- set the default lang as fallback, if it hasn't yet
         SetFallback(cached_active)
-        
+
         -- some interface elements will want to know so they can update themselves
         if old_name ~= lang_name then
             hook.Call("TTTLanguageChanged", GAMEMODE, old_name, lang_name)
         end
     else
         MsgN(Format("The language '%s' does not exist on this server. Falling back to English...", lang_name))
-        
+
         -- fall back to default if possible
         if lang_name ~= LANG.DefaultLanguage then
             LANG.SetActiveLanguage(LANG.DefaultLanguage)
@@ -151,13 +153,13 @@ end
 
 function LANG.Init()
     local lang_name = GetConVarString("ttt_language")
-    
+
     -- if we want to use the server language, we'll be switching to it as soon as
     -- we hear from the server which one it is, for now use default
     if LANG.IsServerDefault(lang_name) then
         lang_name = LANG.ServerLanguage
     end
-    
+
     LANG.SetActiveLanguage(lang_name)
 end
 
@@ -173,11 +175,11 @@ end
 
 local function LanguageChanged(cv, old, new)
     if new and new ~= LANG.ActiveLanguage then
-        
+
         if LANG.IsServerDefault(new) then
             new = LANG.ServerLanguage
         end
-        
+
         LANG.SetActiveLanguage(new)
     end
 end
@@ -201,22 +203,6 @@ end
 
 -- Styling
 
-local bgcolor = {
-    [ROLE_TRAITOR] = Color(150, 0, 0, 200),
-    [ROLE_DETECTIVE] = Color(0, 0, 150, 200),
-    [ROLE_MERCENARY] = Color(245, 200, 0, 200),
-    [ROLE_HYPNOTIST] = Color(255, 80, 235, 200),
-    [ROLE_GLITCH] = Color(245, 106, 0, 200),
-    [ROLE_JESTER] = Color(180, 23, 253, 200),
-    [ROLE_PHANTOM] = Color(82, 226, 255, 200),
-    [ROLE_ZOMBIE] = Color(69, 97, 0, 200),
-    [ROLE_VAMPIRE] = Color(45, 45, 45, 200),
-    [ROLE_SWAPPER] = Color(111, 0, 255, 200),
-    [ROLE_ASSASSIN] = Color(112, 50, 0, 200),
-    [ROLE_INNOCENT] = Color(0, 50, 0, 200),
-    [ROLE_KILLER] = Color(50, 0, 70, 200)
-};
-
 -- Table of styles that can take a string and display it in some position,
 -- colour, etc.
 LANG.Styles = {
@@ -226,16 +212,16 @@ LANG.Styles = {
     end,
     rolecolour = function(text)
         local hide_role = false
-        
+
         if ConVarExists("ttt_hide_role") then
             hide_role = GetConVar("ttt_hide_role"):GetBool()
         end
-        
+
         if hide_role then
             MSTACK:AddMessage(text)
             print("TTT:   " .. text)
         else
-            MSTACK:AddColoredBgMessage(text, bgcolor[LocalPlayer():GetRole()])
+            MSTACK:AddColoredBgMessage(text, ROLE_COLORS[LocalPlayer():GetRole()])
             print("TTT:   " .. text)
         end
     end,
@@ -260,7 +246,7 @@ function LANG.SetStyle(name, style)
     if type(style) == "string" then
         style = LANG.Styles[style]
     end
-    
+
     LANG.MsgStyle[name] = style
 end
 
@@ -270,9 +256,9 @@ end
 
 function LANG.ProcessMsg(name, params)
     local raw = LANG.GetTranslation(name)
-    
+
     local text = raw
-    
+
     if params then
         -- some of our params may be string names themselves
         for k, v in pairs(params) do
@@ -283,10 +269,10 @@ function LANG.ProcessMsg(name, params)
                 end
             end
         end
-        
+
         text = interp(raw, params)
     end
-    
+
     LANG.ShowStyledMsg(text, LANG.GetStyle(name))
 end
 
@@ -304,22 +290,22 @@ local styledmessages = {
     rolecolour = {
         "round_traitors_one",
         "round_traitors_more",
-        
+
         "buy_no_stock",
         "buy_pending",
         "buy_received",
-        
+
         "xfer_no_recip",
         "xfer_no_credits",
         "xfer_success",
         "xfer_received",
-        
+
         "c4_no_disarm",
-        
+
         "tele_failed",
         "tele_no_mark",
         "tele_marked",
-        
+
         "dna_identify",
         "dna_notfound",
         "dna_limit",
@@ -329,7 +315,7 @@ local styledmessages = {
         "dna_armed",
         "dna_object",
         "dna_gone",
-        
+
         "credit_det_all",
         "credit_tr_all",
         "credit_kill"
@@ -345,12 +331,12 @@ local styledmessages = {
         "radar_charging",
         "drop_no_room",
         "body_burning",
-        
+
         "tele_no_ground",
         "tele_no_crouch",
         "tele_no_mark_ground",
         "tele_no_mark_crouch",
-        
+
         "drop_no_ammo"
     }
 };

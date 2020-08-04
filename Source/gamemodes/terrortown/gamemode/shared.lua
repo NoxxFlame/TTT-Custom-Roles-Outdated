@@ -42,6 +42,21 @@ ROLE_COLORS = {
 	[ROLE_ASSASSIN] = Color(112, 50, 0, 255),
 	[ROLE_KILLER] = Color(50, 0, 70, 255)
 }
+ROLE_COLORS_DARK = {
+    [ROLE_INNOCENT] = Color(60, 160, 50, 155),
+    [ROLE_TRAITOR] = Color(160, 50, 60, 155),
+    [ROLE_DETECTIVE] = Color(50, 60, 160, 155),
+    [ROLE_MERCENARY] = Color(230, 190, 0, 255),
+    [ROLE_JESTER] = Color(170, 20, 240, 155),
+    [ROLE_PHANTOM] = Color(92, 236, 255, 55),
+    [ROLE_HYPNOTIST] = Color(240, 70, 220, 155),
+    [ROLE_GLITCH] = Color(230, 90, 0, 155),
+    [ROLE_ZOMBIE] = Color(59, 87, 0, 155),
+    [ROLE_VAMPIRE] = Color(35, 35, 35, 200),
+    [ROLE_SWAPPER] = Color(111, 0, 255, 100),
+    [ROLE_ASSASSIN] = Color(112, 50, 0, 155),
+    [ROLE_KILLER] = Color(50, 0, 70, 200)
+}
 
 -- Role strings
 ROLE_STRINGS = {

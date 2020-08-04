@@ -19,6 +19,8 @@ local serverSizeVar = GetConVar("ttt_bem_sv_size")
 -- add favorites DB functions
 include("favorites_db.lua")
 
+include("shared.lua")
+
 -- Buyable weapons are loaded automatically. Buyable items are defined in
 -- equip_items_shd.luaslotnumber
 
@@ -318,17 +320,6 @@ local SafeTranslate = LANG.TryTranslation
 
 local color_darkened = Color(255, 255, 255, 80)
 
-local color_slot = {
-    [ROLE_TRAITOR] = Color(180, 50, 40, 255),
-    [ROLE_DETECTIVE] = Color(50, 60, 180, 255),
-    [ROLE_MERCENARY] = Color(245, 200, 0, 255),
-    [ROLE_ZOMBIE] = Color(69, 97, 0, 255),
-    [ROLE_HYPNOTIST] = Color(255, 80, 235, 255),
-    [ROLE_VAMPIRE] = Color(45, 45, 45, 255),
-    [ROLE_ASSASSIN] = Color(112, 50, 0, 255),
-    [ROLE_KILLER] = Color(50, 0, 70, 255)
-};
-
 local eqframe = nil
 
 local function TraitorMenuPopup()
@@ -476,7 +467,7 @@ local function TraitorMenuPopup()
             if ItemIsWeapon(item) and showSlotVar:GetBool() then
                 local slot = vgui.Create("SimpleIconLabelled")
                 slot:SetIcon("vgui/ttt/sprite_slot_cap")
-                slot:SetIconColor(color_slot[ply:GetRole()] or COLOR_GREY)
+                slot:SetIconColor(ROLE_COLORS[ply:GetRole()] or COLOR_GREY)
                 slot:SetIconSize(16)
 
                 slot:SetIconText(item.slot)

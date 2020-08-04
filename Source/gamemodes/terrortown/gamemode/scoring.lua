@@ -69,10 +69,10 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
 	e.dmg.h = victim.was_headshot
 
     e.vic.role = victim:GetRole()
-    e.vic.tr = victim:GetRole() == ROLE_TRAITOR or victim:GetRole() == ROLE_HYPNOTIST or victim:GetRole() == ROLE_ASSASSIN
-    e.vic.inno = victim:GetRole() == ROLE_DETECTIVE or victim:GetRole() == ROLE_INNOCENT or victim:GetRole() == ROLE_MERCENARY or victim:GetRole() == ROLE_GLITCH or victim:GetRole() == ROLE_PHANTOM
-    e.vic.mon = victim:GetRole() == ROLE_ZOMBIE or victim:GetRole() == ROLE_VAMPIRE
-    e.vic.jes = victim:GetRole() == ROLE_JESTER or victim:GetRole() == ROLE_SWAPPER
+    e.vic.tr = victim:IsTraitorTeam()
+    e.vic.inno = victim:IsInnocentTeam()
+    e.vic.mon = victim:IsMonsterTeam()
+    e.vic.jes = victim:IsJesterTeam()
     e.vic.kil = victim:GetRole() == ROLE_KILLER
 
 	if IsValid(attacker) and attacker:IsPlayer() then
@@ -80,10 +80,10 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
 		e.att.sid = attacker:SteamID()
         e.att.uid = attacker:UniqueID()
         e.att.role = attacker:GetRole()
-        e.att.tr = attacker:GetRole() == ROLE_TRAITOR or attacker:GetRole() == ROLE_HYPNOTIST or attacker:GetRole() == ROLE_ASSASSIN
-        e.att.inno = attacker:GetRole() == ROLE_DETECTIVE or attacker:GetRole() == ROLE_INNOCENT or attacker:GetRole() == ROLE_MERCENARY or attacker:GetRole() == ROLE_GLITCH or attacker:GetRole() == ROLE_PHANTOM
-        e.att.mon = attacker:GetRole() == ROLE_ZOMBIE or attacker:GetRole() == ROLE_VAMPIRE
-        e.att.jes = attacker:GetRole() == ROLE_JESTER or attacker:GetRole() == ROLE_SWAPPER
+        e.att.tr = attacker:IsTraitorTeam()
+        e.att.inno = attacker:IsInnocentTeam()
+        e.att.mon = attacker:IsMonsterTeam()
+        e.att.jes = attacker:IsJesterTeam()
         e.att.kil = attacker:GetRole() == ROLE_KILLER
         e.tk = (e.att.tr and e.vic.tr) or (e.att.inno and e.vic.inno) or (e.att.mon and e.vic.mon) or (e.att.jes and e.vic.jes) or (e.att.kil and e.vic.kil)
 

@@ -29,18 +29,20 @@ function CreateTransferMenu(parent)
 
 	dpick:SetWide(250)
 
-	-- fill combobox
-	local r = LocalPlayer():GetRole()
+    -- fill combobox
+    local ply = LocalPlayer()
 	for _, p in pairs(player.GetAll()) do
-		if IsValid(p) and p ~= LocalPlayer() and
+		if IsValid(p) and p ~= ply and
 			((
 				-- Local player is a traitor team member
-				(r == ROLE_TRAITOR or r == ROLE_HYPNOTIST or r == ROLE_ASSASSIN) and
+				ply:IsTraitorTeam() and
 				-- and target is a traitor team member (or a glitch)
-				(p:IsActiveRole(ROLE_TRAITOR) or p:IsActiveRole(ROLE_HYPNOTIST) or p:IsActiveRole(ROLE_ASSASSIN) or p:IsActiveRole(ROLE_GLITCH))
+				(p:IsTraitorTeam() or p:IsActiveRole(ROLE_GLITCH))
 			) or
-			-- Local player is a monster and target is a monster
-			((r == ROLE_ZOMBIE or r == ROLE_VAMPIRE) and (p:IsActiveRole(ROLE_ZOMBIE) or p:IsActiveRole(ROLE_VAMPIRE)))) then
+            (
+                -- Local player is a monster and target is a monster
+                ply:IsMonsterTeam() and p:IsMonsterTeam()
+            )) then
 			dpick:AddChoice(p:Nick(), p:UniqueID())
 		end
 	end

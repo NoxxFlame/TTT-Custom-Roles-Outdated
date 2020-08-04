@@ -40,6 +40,14 @@ function plymeta:GetAssassin() return self:GetRole() == ROLE_ASSASSIN end
 
 function plymeta:GetKiller() return self:GetRole() == ROLE_KILLER end
 
+function plymeta:GetTraitorTeam() return self:GetTraitor() or self:GetAssassin() or self:GetHypnotist() end
+
+function plymeta:GetInnocentTeam() return self:GetDetective() or self:GetInnocent() or self:GetMercenary() or self:GetPhantom() or self:GetGlitch() end
+
+function plymeta:GetMonsterTeam() return self:GetZombie() or self:GetVampire() end
+
+function plymeta:GetJesterTeam() return self:GetJester() or self:GetSwapper() end
+
 plymeta.IsInnocent = plymeta.GetInnocent
 plymeta.IsTraitor = plymeta.GetTraitor
 plymeta.IsDetective = plymeta.GetDetective
@@ -54,6 +62,10 @@ plymeta.IsVampire = plymeta.GetVampire
 plymeta.IsSwapper = plymeta.GetSwapper
 plymeta.IsAssassin = plymeta.GetAssassin
 plymeta.IsKiller = plymeta.GetKiller
+plymeta.IsTraitorTeam = plymeta.GetTraitorTeam
+plymeta.IsInnocentTeam = plymeta.GetInnocentTeam
+plymeta.IsMonsterTeam = plymeta.GetMonsterTeam
+plymeta.IsJesterTeam = plymeta.GetJesterTeam
 
 function plymeta:IsSpecial() return self:GetRole() ~= ROLE_INNOCENT end
 

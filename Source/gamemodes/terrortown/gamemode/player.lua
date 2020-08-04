@@ -881,15 +881,15 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
         KARMA.Killed(attacker, ply, dmginfo)
         if not (IsValid(attacker) and attacker:IsPlayer() and attacker == ply) then
             if IsValid(attacker) and attacker:IsPlayer() then
-                if ply:IsRole(ROLE_INNOCENT) or ply:IsRole(ROLE_DETECTIVE) or ply:IsRole(ROLE_GLITCH) or ply:IsRole(ROLE_MERCENARY) or ply:IsRole(ROLE_PHANTOM) then
-                    if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) then
+                if ply:IsInnocentTeam() then
+                    if attacker:IsInnocentTeam() then
                         if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
                             DRINKS.AddDrink(attacker)
                         elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
                             DRINKS.AddShot(attacker)
                         end
                         DRINKS.AddPlayerAction("teamkill", attacker)
-                    elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) or attacker:IsRole(ROLE_VAMPIRE) or attacker:IsRole(ROLE_ZOMBIE) or attacker:IsRole(ROLE_KILLER) then
+                    elseif attacker:IsTraitorTeam() or attacker:IsMonsterTeam() or attacker:IsKiller() then
                         if GetConVar("ttt_drinking_death"):GetString() == "drink" then
                             DRINKS.AddDrink(ply)
                         elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
@@ -897,15 +897,15 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
                         end
                         DRINKS.AddPlayerAction("death", ply)
                     end
-                elseif ply:IsRole(ROLE_TRAITOR) or ply:IsRole(ROLE_ASSASSIN) or ply:IsRole(ROLE_HYPNOTIST) then
-                    if attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) or attacker:IsRole(ROLE_KILLER) then
+                elseif ply:IsTraitorTeam() then
+                    if attacker:IsInnocentTeam() or attacker:IsMonsterTeam() or attacker:IsKiller() then
                         if GetConVar("ttt_drinking_death"):GetString() == "drink" then
                             DRINKS.AddDrink(ply)
                         elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
                             DRINKS.AddShot(ply)
                         end
                         DRINKS.AddPlayerAction("death", ply)
-                    elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) then
+                    elseif attacker:IsTraitorTeam() then
                         if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
                             DRINKS.AddDrink(attacker)
                         elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
@@ -913,15 +913,15 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
                         end
                         DRINKS.AddPlayerAction("teamkill", attacker)
                     end
-                elseif ply:IsRole(ROLE_ZOMBIE) or ply:IsRole(ROLE_VAMPIRE) then
-                    if attacker:IsRole(ROLE_ZOMBIE) or attacker:IsRole(ROLE_VAMPIRE) then
+                elseif ply:IsMonsterTeam() then
+                    if attacker:IsMonsterTeam() then
                         if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
                             DRINKS.AddDrink(attacker)
                         elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
                             DRINKS.AddShot(attacker)
                         end
                         DRINKS.AddPlayerAction("teamkill", attacker)
-                    elseif attacker:IsRole(ROLE_TRAITOR) or attacker:IsRole(ROLE_ASSASSIN) or attacker:IsRole(ROLE_HYPNOTIST) or attacker:IsRole(ROLE_INNOCENT) or attacker:IsRole(ROLE_DETECTIVE) or attacker:IsRole(ROLE_GLITCH) or attacker:IsRole(ROLE_MERCENARY) or attacker:IsRole(ROLE_PHANTOM) or attacker:IsRole(ROLE_KILLER) then
+                    elseif attacker:IsTraitorTeam() or attacker:IsInnocentTeam() or attacker:IsKiller() then
                         if GetConVar("ttt_drinking_death"):GetString() == "drink" then
                             DRINKS.AddDrink(ply)
                         elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
@@ -929,14 +929,14 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
                         end
                         DRINKS.AddPlayerAction("death", ply)
                     end
-                elseif ply:IsRole(ROLE_JESTER) or ply:IsRole(ROLE_SWAPPER) then
+                elseif ply:IsJesterTeam() then
                     if GetConVar("ttt_drinking_jester_kill"):GetString() == "drink" then
                         DRINKS.AddDrink(attacker)
                     elseif GetConVar("ttt_drinking_jester_kill"):GetString() == "shot" then
                         DRINKS.AddShot(attacker)
                     end
                     DRINKS.AddPlayerAction("jesterkill", attacker)
-                elseif ply:IsRole(ROLE_KILLER) then
+                elseif ply:IsKiller() then
                     if GetConVar("ttt_drinking_death"):GetString() == "drink" then
                         DRINKS.AddDrink(ply)
                     elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
@@ -1034,7 +1034,7 @@ function GM:PlayerDeath(victim, infl, attacker)
             if ply == attacker then
                 attacker:PrintMessage(HUD_PRINTCENTER, "You killed the swapper!")
             else
-                if ply:GetRole() == ROLE_TRAITOR or ply:GetRole() == ROLE_HYPNOTIST or ply:GetRole() == ROLE_ZOMBIE or ply:GetRole() == ROLE_VAMPIRE or ply:GetRole() == ROLE_ASSASSIN then
+                if ply:IsTraitorTeam() then
                     if attacker:GetRole() == ROLE_TRAITOR then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with a traitor (" .. attacker:GetName() .. ")")
                     elseif attacker:GetRole() == ROLE_HYPNOTIST then
@@ -1678,7 +1678,7 @@ function HandlePlayerHighlights(ply)
             end
         end
         return
-    elseif ply:GetRole() == ROLE_TRAITOR or ply:GetRole() == ROLE_ASSASSIN or ply:GetRole() == ROLE_HYPNOTIST then
+    elseif ply:IsTraitorTeam() then
         SendHighlightEvent(ply, "Traitor", GetConVar("ttt_traitor_vision_enable"):GetBool())
         return
     end
