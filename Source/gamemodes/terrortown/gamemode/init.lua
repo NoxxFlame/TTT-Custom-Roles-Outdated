@@ -581,6 +581,7 @@ function PrepareRound()
         v:SetNWBool("KillerSmoke", false)
         v:SetNWBool("PlayerHighlightOn", false)
         v:SetNWBool("RoleRevealed", false)
+        v:SetNWFloat("RmdtSpeedModifier", 1)
     end
 
     jesterkilled = 0
