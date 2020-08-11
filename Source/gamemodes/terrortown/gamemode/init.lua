@@ -134,6 +134,8 @@ CreateConVar("ttt_mer_credits_starting", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_kil_credits_starting", "2", FCVAR_ARCHIVE)
 CreateConVar("ttt_asn_credits_starting", "0", FCVAR_ARCHIVE)
 CreateConVar("ttt_hyp_credits_starting", "0", FCVAR_ARCHIVE)
+CreateConVar("ttt_zom_credits_starting", "0", FCVAR_ARCHIVE)
+CreateConVar("ttt_vam_credits_starting", "0", FCVAR_ARCHIVE)
 
 CreateConVar("ttt_detective_search_only", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 

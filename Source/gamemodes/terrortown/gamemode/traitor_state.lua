@@ -349,6 +349,7 @@ local function force_zombie(ply)
     ply:SetRoleAndBroadcast(ROLE_ZOMBIE)
     ply:SetMaxHealth(100)
     ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_zom_credits_starting"))
     if ply:HasWeapon("weapon_hyp_brainwash") then
         ply:StripWeapon("weapon_hyp_brainwash")
     end
@@ -370,6 +371,7 @@ local function force_vampire(ply)
     ply:SetRoleAndBroadcast(ROLE_VAMPIRE)
     ply:SetMaxHealth(100)
     ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_vam_credits_starting"))
     if ply:HasWeapon("weapon_hyp_brainwash") then
         ply:StripWeapon("weapon_hyp_brainwash")
     end

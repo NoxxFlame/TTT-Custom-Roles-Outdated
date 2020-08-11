@@ -73,6 +73,8 @@ ttt_mer_credits_starting      1    // Number of credits the Mercenary starts wit
 ttt_kil_credits_starting      2    // Number of credits the Killer starts with
 ttt_asn_credits_starting      0    // Number of credits the Assassin starts with
 ttt_hyp_credits_starting      0    // Number of credits the Hypnotist starts with
+ttt_zom_credits_starting      0    // Number of credits the Zombie starts with
+ttt_vam_credits_starting      0    // Number of credits the Vampire starts with
 ttt_traitor_vision_enable     0    // Whether members of the Traitor team can see other members of the Traitor team (including Glitches) through walls via a highlight effect.
 ttt_assassin_show_target_icon 0    // Whether Assassins have an icon over their target's heads showing who to kill. Server or round must be restarted for changes to take effect.
 ttt_killer_knife_enabled      1    // Whether the Killer knife is enabled

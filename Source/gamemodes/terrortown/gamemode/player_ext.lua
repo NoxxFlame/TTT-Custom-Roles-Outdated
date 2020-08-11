@@ -82,6 +82,10 @@ function plymeta:SetDefaultCredits()
 		self:SetCredits(math.ceil(GetConVarNumber("ttt_asn_credits_starting")))
 	elseif self:GetHypnotist() then
 		self:SetCredits(math.ceil(GetConVarNumber("ttt_hyp_credits_starting")))
+	elseif self:GetZombie() then
+		self:SetCredits(math.ceil(GetConVarNumber("ttt_zom_credits_starting")))
+	elseif self:GetVampire() then
+		self:SetCredits(math.ceil(GetConVarNumber("ttt_vam_credits_starting")))
 	else
 		self:SetCredits(0)
 	end
