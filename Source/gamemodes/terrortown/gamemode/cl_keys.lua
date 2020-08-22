@@ -13,7 +13,7 @@ function GM:OnSpawnMenuOpen()
 end
 
 function GM:PlayerBindPress(ply, bind, pressed)
-    if not IsValid(ply) then return end
+    if not IsValid(ply) then return false end
 
     if bind == "invnext" and pressed then
         if ply:IsSpec() then
@@ -36,13 +36,14 @@ function GM:PlayerBindPress(ply, bind, pressed)
             end
             return true
         end
-    elseif bind == "+sprint" then
+    elseif bind == "+speed" then
         -- set voice type here just in case shift is no longer down when the
         -- PlayerStartVoice hook runs, which might be the case when switching to
         -- steam overlay
         ply.traitor_gvoice = false
         RunConsoleCommand("tvog", "0")
-        return true
+        -- Block this command so that the default GMod sprinting doesn't activate
+        return false
     elseif bind == "+use" and pressed then
         if ply:IsSpec() then
             RunConsoleCommand("ttt_spec_use")
