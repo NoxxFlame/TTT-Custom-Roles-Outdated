@@ -42,8 +42,7 @@ function GM:PlayerBindPress(ply, bind, pressed)
         -- steam overlay
         ply.traitor_gvoice = false
         RunConsoleCommand("tvog", "0")
-        -- Block this command so that the default GMod sprinting doesn't activate
-        return false
+        return true
     elseif bind == "+use" and pressed then
         if ply:IsSpec() then
             RunConsoleCommand("ttt_spec_use")

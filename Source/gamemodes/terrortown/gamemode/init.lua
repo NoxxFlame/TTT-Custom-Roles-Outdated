@@ -584,6 +584,8 @@ function PrepareRound()
         v:SetNWBool("PlayerHighlightOn", false)
         v:SetNWBool("RoleRevealed", false)
         v:SetNWFloat("RmdtSpeedModifier", 1)
+        -- Workaround to prevent GMod sprint from working
+        v:SetRunSpeed(v:GetWalkSpeed())
     end
 
     jesterkilled = 0
