@@ -37,6 +37,7 @@ local credit_icon = Material("icon16/coins.png")
 local wrench_icon  = Material("icon16/wrench.png")
 
 local zombie_icon = Material("icon16/user_green.png")
+local vampire_icon = Material("icon16/user_gray.png")
 local traitor_icon = Material("icon16/user_red.png")
 local disconnect_icon = Material("icon16/disconnect.png")
 
@@ -327,6 +328,14 @@ Event(EVENT_ZOMBIFIED, {
 		icon = function(e)
 					return zombie_icon, "Zombified"
 				end})
+
+Event(EVENT_VAMPIFIED, {
+        text = function(e)
+                    return PT("ev_vampi", {victim = e.vic})
+                end,
+        icon = function(e)
+                    return vampire_icon, "Vampified"
+                end})
 
 Event(EVENT_DISCONNECTED, {
 		text = function(e)

@@ -158,6 +158,9 @@ CreateConVar("ttt_zombie_damage_reduction", "0.8", FCVAR_ARCHIVE + FCVAR_REPLICA
 CreateConVar("ttt_zombie_prime_only_weapons", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_vampire_show_target_icon", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_vampire_damage_reduction", "0.8", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_vampire_fang_timer", "5", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_vampire_fang_heal", "50", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_vampire_fang_overheal", "25", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 
 CreateConVar("ttt_use_weapon_spawn_scripts", "1")
 CreateConVar("ttt_weapon_spawn_count", "0")

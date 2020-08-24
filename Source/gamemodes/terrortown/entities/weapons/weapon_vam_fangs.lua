@@ -1,16 +1,18 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "Fangs"
-	SWEP.EquipMenuData = {
-		type = "Weapon",
-		desc = "Left click to eat bodies. Right click to fade."
-	};
+    SWEP.PrintName = "Fangs"
+    SWEP.EquipMenuData = {
+        type = "Weapon",
+        desc = "Left click to eat bodies. Right click to fade."
+    };
 
-	SWEP.Slot = 8 -- add 1 to get the slot number key
-	SWEP.ViewModelFOV = 54
-	SWEP.ViewModelFlip = false
-	SWEP.UseHands = true
+    SWEP.Slot = 8 -- add 1 to get the slot number key
+    SWEP.ViewModelFOV = 54
+    SWEP.ViewModelFlip = false
+    SWEP.UseHands = true
+else
+    util.AddNetworkString("TTT_Vampified")
 end
 
 SWEP.InLoadoutFor = { ROLE_VAMPIRE }
@@ -33,192 +35,296 @@ SWEP.Kind = WEAPON_ROLE
 SWEP.LimitedStock = false
 SWEP.AllowDrop = false
 
-local STATE_NONE, STATE_EAT = 0, 1
+SWEP.Target = nil
+
+local STATE_ERROR = -1
+local STATE_NONE = 0
+local STATE_EAT = 1
+local STATE_DRAIN = 2
+local STATE_CONVERT = 3
+
+local beep = Sound("npc/fast_zombie/fz_alert_close1.wav")
 
 function SWEP:SetupDataTables()
-	self:NetworkVar("Int", 0, "State")
-	self:NetworkVar("Float", 0, "StartTime")
-	if SERVER then
-		self:SetState(STATE_NONE)
-		self:SetStartTime(0)
-	end
+    self:NetworkVar("Int", 0, "State")
+    self:NetworkVar("Float", 0, "StartTime")
+    self:NetworkVar("String", 0, "Message")
+    if SERVER then
+        self:Reset()
+    end
 end
 
 function SWEP:Initialize()
-	self:SetHoldType(self.HoldType)
-	self.lastTickSecond = 0
-	self.fading = false
+    self:SetHoldType(self.HoldType)
+    self.lastTickSecond = 0
+    self.fading = false
 
-	if CLIENT then
-		self:AddHUDHelp("Left click to eat bodies", "Right click to fade", false)
-	end
+    if CLIENT then
+        self:AddHUDHelp("Left click to eat bodies", "Right click to fade", false)
+    end
 end
 
 function SWEP:Holster()
-	self:FireError()
-	return not self.fading
+    self:FireError()
+    return not self.fading
 end
 
 function SWEP:OnDrop()
-	self:Remove()
+    self:Remove()
+end
+
+local function GetPlayerFromBody(body)
+    local ply = false
+    if body.sid == "BOT" then
+        ply = player.GetByUniqueID(body.uqid)
+    else
+        ply = player.GetBySteamID(body.sid)
+    end
+
+    if not IsValid(ply) then return false end
+
+    return ply
 end
 
 function SWEP:PrimaryAttack()
-	if CLIENT then return end
+    if CLIENT then return end
 
-	local tr = util.TraceLine({
-		start = self:GetOwner():GetShootPos(),
-		endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 100,
-		filter = self:GetOwner()
-	})
+    local tr = self:GetTraceEntity()
+    if IsValid(tr.Entity) then
+        local ent = tr.Entity
+        if ent:GetClass() == "prop_ragdoll" then
+            local ply = GetPlayerFromBody(ent)
+            if not IsValid(ply) or ply:Alive() then
+                self:Error("INVALID TARGET")
+                return
+            end
 
-	if IsValid(tr.Entity) and tr.Entity:GetClass() == "prop_ragdoll" then
-		if not tr.Entity.uqid then return end
-
-		local ply = player.GetByUniqueID(tr.Entity.uqid)
-
-		if IsValid(ply) and ply:Alive() then
-		else
-			self:Eat(tr.Entity)
-			self:GetOwner():EmitSound("weapons/ttt/vampireeat.wav")
-		end
-	end
+            self:Eat(tr.Entity)
+        elseif ent:IsPlayer() then
+            if ent:GetJester() or ent:GetSwapper() then
+                self:Error("TARGET IS A JESTER")
+            elseif ent:GetZombie() or ent:GetVampire() then
+                self:Error("TARGET IS AN ALLY")
+            else
+                self:Drain(ent)
+            end
+        end
+    end
 end
 
 function SWEP:SecondaryAttack()
-	if self:Clip1() == 100 then
-		self:SetClip1(0)
-	end
+    if self:Clip1() == 100 then
+        self:SetClip1(0)
+    end
 end
 
-function SWEP:Eat(ragdoll)
-	self:SetState(STATE_EAT)
-	self:SetStartTime(CurTime())
+function SWEP:Eat(entity)
+    self:GetOwner():EmitSound("weapons/ttt/vampireeat.wav")
+    self:SetState(STATE_EAT)
+    self:SetStartTime(CurTime())
+    self:SetMessage("EATING BODY")
 
-	self.TargetRagdoll = ragdoll
+    self.TargetEntity = entity
 
-	self:SetNextPrimaryFire(CurTime() + 5)
+    self:SetNextPrimaryFire(CurTime() + GetConVar("ttt_vampire_fang_timer"):GetInt())
+end
+
+function SWEP:Drain(entity)
+    self:GetOwner():EmitSound("weapons/ttt/vampireeat.wav")
+    self:SetState(STATE_DRAIN)
+    self:SetStartTime(CurTime())
+    self:SetMessage("DRAINING")
+
+    entity:PrintMessage(HUD_PRINTCENTER, self:GetOwner():Nick() .. " is draining your blood!")
+    entity:Freeze(true)
+    self.TargetEntity = entity
+
+    self:SetNextPrimaryFire(CurTime() + GetConVar("ttt_vampire_fang_timer"):GetInt())
 end
 
 function SWEP:FireError()
-	self:SetState(STATE_NONE)
+    self:SetState(STATE_NONE)
 
-	self:SetNextPrimaryFire(CurTime() + 0.1)
+    if IsValid(self.TargetEntity) and self.TargetEntity:IsPlayer() then
+        self.TargetEntity:Freeze(false)
+    end
+
+    self:SetNextPrimaryFire(CurTime() + 0.1)
 end
 
 function SWEP:DropBones()
-	local pos = self.TargetRagdoll:GetPos()
+    local pos = self.TargetEntity:GetPos()
 
-	local skull = ents.Create("prop_physics")
-	if not IsValid(skull) then return end
-	skull:SetModel("models/Gibs/HGIBS.mdl")
-	skull:SetPos(pos)
-	skull:Spawn()
-	skull:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+    local skull = ents.Create("prop_physics")
+    if not IsValid(skull) then return end
+    skull:SetModel("models/Gibs/HGIBS.mdl")
+    skull:SetPos(pos)
+    skull:Spawn()
+    skull:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 
-	local ribs = ents.Create("prop_physics")
-	if not IsValid(ribs) then return end
-	ribs:SetModel("models/Gibs/HGIBS_rib.mdl")
-	ribs:SetPos(pos + Vector(0, 0, 15))
-	ribs:Spawn()
-	ribs:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+    local ribs = ents.Create("prop_physics")
+    if not IsValid(ribs) then return end
+    ribs:SetModel("models/Gibs/HGIBS_rib.mdl")
+    ribs:SetPos(pos + Vector(0, 0, 15))
+    ribs:Spawn()
+    ribs:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 
-	local spine = ents.Create("prop_physics")
-	if not IsValid(ribs) then return end
-	spine:SetModel("models/Gibs/HGIBS_spine.mdl")
-	spine:SetPos(pos + Vector(0, 0, 30))
-	spine:Spawn()
-	spine:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+    local spine = ents.Create("prop_physics")
+    if not IsValid(ribs) then return end
+    spine:SetModel("models/Gibs/HGIBS_spine.mdl")
+    spine:SetPos(pos + Vector(0, 0, 30))
+    spine:Spawn()
+    spine:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 
-	local scapula = ents.Create("prop_physics")
-	if not IsValid(scapula) then return end
-	scapula:SetModel("models/Gibs/HGIBS_scapula.mdl")
-	scapula:SetPos(pos + Vector(0, 0, 45))
-	scapula:Spawn()
-	scapula:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+    local scapula = ents.Create("prop_physics")
+    if not IsValid(scapula) then return end
+    scapula:SetModel("models/Gibs/HGIBS_scapula.mdl")
+    scapula:SetPos(pos + Vector(0, 0, 45))
+    scapula:Spawn()
+    scapula:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 end
 
 function SWEP:Think()
-	if CLIENT then return end
+    if CLIENT then return end
 
-	if (CurTime() - self.lastTickSecond > 0.08) and (self:Clip1() <= 100) then
-		self:SetClip1(self:Clip1() + math.min(1, 100 - self:Clip1()))
-		self.lastTickSecond = CurTime()
-	end
+    if (CurTime() - self.lastTickSecond > 0.08) and (self:Clip1() <= 100) then
+        self:SetClip1(self:Clip1() + math.min(1, 100 - self:Clip1()))
+        self.lastTickSecond = CurTime()
+    end
 
-	if self:Clip1() < 15 and not self.fading then
-		self.fading = true
-		self:GetOwner():SetColor(Color(255, 255, 255, 0))
-		self:GetOwner():SetMaterial("sprites/heatwave")
-		self:GetOwner():EmitSound("weapons/ttt/fade.wav")
-	elseif self:Clip1() >= 40 and self.fading then
-		self.fading = false
-		self:GetOwner():SetColor(Color(255, 255, 255, 255))
-		self:GetOwner():SetMaterial("models/glass")
-		self:GetOwner():EmitSound("weapons/ttt/unfade.wav")
-	end
+    if self:Clip1() < 15 and not self.fading then
+        self.fading = true
+        self:GetOwner():SetColor(Color(255, 255, 255, 0))
+        self:GetOwner():SetMaterial("sprites/heatwave")
+        self:GetOwner():EmitSound("weapons/ttt/fade.wav")
+    elseif self:Clip1() >= 40 and self.fading then
+        self.fading = false
+        self:GetOwner():SetColor(Color(255, 255, 255, 255))
+        self:GetOwner():SetMaterial("models/glass")
+        self:GetOwner():EmitSound("weapons/ttt/unfade.wav")
+    end
 
-	if self:GetState() == STATE_EAT then
-		if not IsValid(self:GetOwner()) then
-			self:FireError()
-			return
-		end
+    if self:GetState() == STATE_EAT or self:GetState() == STATE_DRAIN or self:GetState() == STATE_CONVERT then
+        if not IsValid(self:GetOwner()) then
+            self:FireError()
+            return
+        end
 
-		if not IsValid(self.TargetRagdoll) then
-			self:FireError()
-			return
-		end
+        local tr = self:GetTraceEntity()
+        if not self:GetOwner():KeyDown(IN_ATTACK) or tr.Entity ~= self.TargetEntity then
+            if self:GetState() == STATE_CONVERT then
+                local ply = self.TargetEntity
+                -- TODO
+                print("Converting " .. ply:Nick())
 
-		local tr = util.TraceLine({
-			start = self:GetOwner():GetShootPos(),
-			endpos = self:GetOwner():GetShootPos() + self:GetOwner():GetAimVector() * 100,
-			filter = self:GetOwner()
-		})
+                net.Start("TTT_Vampified")
+                net.WriteString(ply:Nick())
+                net.Broadcast()
 
-		if tr.Entity ~= self.TargetRagdoll then
-			self:FireError()
-			return
-		end
+                -- Not actually an error, but it resets the things we want
+                self:FireError()
+            else
+                self:Error("DRAINING ABORTED")
+            end
+            return
+        end
 
-		if CurTime() >= self:GetStartTime() + 5 then
-			self:SetState(STATE_NONE)
+        if self:GetState() == STATE_EAT or self:GetState() == STATE_CONVERT then
+            if CurTime() >= self:GetStartTime() + GetConVar("ttt_vampire_fang_timer"):GetInt() then
+                if self:GetState() == STATE_CONVERT then
+                    local attacker = self:GetOwner()
+                    local dmginfo = DamageInfo()
+                    dmginfo:SetDamage(10000)
+                    dmginfo:SetAttacker(attacker)
+                    dmginfo:SetInflictor(game.GetWorld())
+                    dmginfo:SetDamageType(DMG_SLASH)
+                    dmginfo:SetDamageForce(Vector(0, 0, 0))
+                    dmginfo:SetDamagePosition(attacker:GetPos())
+                    self.TargetEntity:TakeDamageInfo(dmginfo)
 
-			self:GetOwner():SetHealth(math.min(self:GetOwner():Health() + 50, self:GetOwner():GetMaxHealth() + 25))
+                    -- Remove the body
+                    local rag = self.TargetEntity.server_ragdoll or self.TargetEntity:GetRagdollEntity()
+                    if IsValid(rag) then
+                        rag:Remove()
+                    end
+                else
+                    self.TargetEntity:Remove()
+                end
 
-			self:DropBones()
+                self:SetState(STATE_NONE)
 
-			self.TargetRagdoll:Remove()
-		end
-	end
+                local vamheal = GetConVar("ttt_vampire_fang_heal"):GetInt()
+                local vamoverheal = GetConVar("ttt_vampire_fang_overheal"):GetInt()
+                self:GetOwner():SetHealth(math.min(self:GetOwner():Health() + vamheal, self:GetOwner():GetMaxHealth() + vamoverheal))
+
+                self:DropBones()
+            end
+        else
+            if CurTime() >= self:GetStartTime() + (GetConVar("ttt_vampire_fang_timer"):GetInt() / 2) then
+                self:SetState(STATE_CONVERT)
+                self:SetMessage("DRAINING - RELEASE TO CONVERT")
+            end
+        end
+    end
 end
 
 if CLIENT then
-	function SWEP:DrawHUD()
+    function SWEP:DrawHUD()
+        local x = ScrW() / 2.0
+        local y = ScrH() / 2.0
 
-		local x = ScrW() / 2.0
-		local y = ScrH() / 2.0
+        y = y + (y / 3)
 
-		y = y + (y / 3)
+        local w, h = 255, 20
 
-		local w, h = 255, 20
+        if self:GetState() == STATE_EAT or self:GetState() == STATE_DRAIN or self:GetState() == STATE_CONVERT then
+            local progress = math.TimeFraction(self:GetStartTime(), self:GetStartTime() + GetConVar("ttt_vampire_fang_timer"):GetInt(), CurTime())
 
-		if self:GetState() == STATE_EAT then
-			local progress = math.TimeFraction(self:GetStartTime(), self:GetStartTime() + 5, CurTime())
+            if progress < 0 then return end
 
-			if progress < 0 then return end
+            progress = math.Clamp(progress, 0, 1)
 
-			progress = math.Clamp(progress, 0, 1)
+            surface.SetDrawColor(0, 255, 0, 155)
 
-			surface.SetDrawColor(0, 255, 0, 155)
+            surface.DrawOutlinedRect(x - w / 2, y - h, w, h)
 
-			surface.DrawOutlinedRect(x - w / 2, y - h, w, h)
+            surface.DrawRect(x - w / 2, y - h, w * progress, h)
 
-			surface.DrawRect(x - w / 2, y - h, w * progress, h)
+            surface.SetFont("TabLarge")
+            surface.SetTextColor(255, 255, 255, 180)
+            surface.SetTextPos((x - w / 2) + 3, y - h - 15)
+            surface.DrawText(self:GetMessage())
+        end
+    end
+else
+    function SWEP:Reset()
+        self:SetState(STATE_NONE)
+        self:SetStartTime(-1)
+        self:SetMessage('')
+        self:SetNextPrimaryFire(CurTime() + 0.1)
+        self.TargetEntity = nil
+    end
 
-			surface.SetFont("TabLarge")
-			surface.SetTextColor(255, 255, 255, 180)
-			surface.SetTextPos((x - w / 2) + 3, y - h - 15)
-			surface.DrawText("EATING BODY")
-		end
-	end
+    function SWEP:Error(msg)
+        self:SetState(STATE_ERROR)
+        self:SetStartTime(CurTime())
+        self:SetMessage(msg)
+
+        self:GetOwner():EmitSound(beep, 60, 50, 1)
+        self.TargetEntity:Freeze(false)
+        self.TargetEntity = nil
+
+        timer.Simple(0.75, function()
+            if IsValid(self) then self:Reset() end
+        end)
+    end
+
+    function SWEP:GetTraceEntity()
+        local spos = self:GetOwner():GetShootPos()
+        local sdest = spos + (self:GetOwner():GetAimVector() * 70)
+        local kmins = Vector(1,1,1) * -10
+        local kmaxs = Vector(1,1,1) * 10
+
+        return util.TraceHull({start=spos, endpos=sdest, filter=self:GetOwner(), mask=MASK_SHOT_HULL, mins=kmins, maxs=kmaxs})
+    end
 end

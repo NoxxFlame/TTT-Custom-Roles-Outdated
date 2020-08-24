@@ -53,6 +53,7 @@ local jesterkillerrole = -1
 local hypnotised = {}
 local revived = {}
 local zombified = {}
+local vampified = {}
 local disconnected = {}
 local spawnedplayers = {}
 local rolechanges = {}
@@ -126,6 +127,12 @@ net.Receive("TTT_Hypnotised", function(len)
         table.remove(zombified, zomIndex)
     end
 
+    -- Remove any record of this player being vampified
+    local vamIndex = FindTableIndex(vampified, name)
+    if vamIndex > 0 then
+        table.remove(vampified, vamIndex)
+    end
+
     AddEvent({
         id = EVENT_HYPNOTISED,
         vic = name
@@ -156,6 +163,21 @@ net.Receive("TTT_Zombified", function(len)
     })
 end)
 
+net.Receive("TTT_Vampified", function(len)
+    local name = net.ReadString()
+    InsertPlayerToTable(vampified, name)
+
+    -- Remove any record of this player being hypnotized
+    local hypIndex = FindTableIndex(hypnotised, name)
+    if hypIndex > 0 then
+        table.remove(hypnotised, hypIndex)
+    end
+    AddEvent({
+        id = EVENT_VAMPIFIED,
+        vic = name
+    })
+end)
+
 net.Receive("TTT_PlayerDisconnected", function(len)
     local name = net.ReadString()
     table.insert(disconnected, name)
@@ -169,6 +191,7 @@ net.Receive("TTT_ClearRoleSwaps", function(len)
     hypnotised = {}
     revived = {}
     zombified = {}
+    vampified = {}
     disconnected = {}
     spawnedplayers = {}
     rolechanges = {}
@@ -572,11 +595,20 @@ function CLSCORE:BuildSummaryPanel(dpanel)
                     end
                 end
 
+                local wavamped = false
+                for _, v in pairs(vampified) do
+                    if v == nicks[id] then
+                        wavamped = true
+                    end
+                end
+
                 local roleIconName = "score_" .. symorlet .. "_" .. role
-                if (washyped) then
+                if washyped then
                     roleIconName = roleIconName .. "_hyped"
-                elseif (waszomed) then
+                elseif waszomed then
                     roleIconName = roleIconName .. "_zomed"
+                elseif wavamped then
+                    roleIconName = roleIconName .. "_vamped"
                 end
 
                 local roleIcon = vgui.Create("DImage", dpanel)
