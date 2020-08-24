@@ -96,6 +96,7 @@ ttt_zombie_damage_scale       0.2  // The fraction a Zombie's damage will be sca
 ttt_zombie_damage_reduction   0.8  // The fraction an attacker's bullet damage will be reduced to when they are shooting a Zombie.
 ttt_zombie_prime_only_weapons 1    // Whether only Prime Zombies (e.g. players who spawn as Zombies originally) are allowed to pick up weapons.
 ttt_detective_search_only     1    // Whether only Detectives can search bodies or not
+ttt_all_search_postround      1    // Whether to allow anyone to search bodies in the post-round time
 ```
 
 # Role Weapon Shop
