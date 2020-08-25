@@ -225,6 +225,8 @@ function SWEP:Think()
 
                 -- Not actually an error, but it resets the things we want
                 self:FireError()
+
+                SendFullStateUpdate()
             else
                 self:Error("DRAINING ABORTED")
             end
@@ -296,6 +298,17 @@ if CLIENT then
             surface.SetTextColor(255, 255, 255, 180)
             surface.SetTextPos((x - w / 2) + 3, y - h - 15)
             surface.DrawText(self:GetMessage())
+        elseif self:GetState() == STATE_ERROR then
+            surface.SetDrawColor(200 + math.sin(CurTime() * 32) * 50, 0, 0, 155)
+
+            surface.DrawOutlinedRect(x - w / 2, y - h, w, h)
+
+            surface.DrawRect(x - w / 2, y - h, w, h)
+
+            surface.SetFont("TabLarge")
+            surface.SetTextColor(255, 255, 255, 180)
+            surface.SetTextPos((x - w / 2) + 3, y - h - 15)
+            surface.DrawText(self:GetMessage())
         end
     end
 else
@@ -313,7 +326,10 @@ else
         self:SetMessage(msg)
 
         self:GetOwner():EmitSound(beep, 60, 50, 1)
-        self.TargetEntity:Freeze(false)
+
+        if IsValid(self.TargetEntity) and self.TargetEntity:IsPlayer() then
+            self.TargetEntity:Freeze(false)
+        end
         self.TargetEntity = nil
 
         timer.Simple(0.75, function()
