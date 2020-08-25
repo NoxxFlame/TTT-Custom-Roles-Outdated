@@ -135,7 +135,7 @@ function SWEP:Drain(entity)
     self:SetStartTime(CurTime())
     self:SetMessage("DRAINING")
 
-    entity:PrintMessage(HUD_PRINTCENTER, self:GetOwner():Nick() .. " is draining your blood!")
+    entity:PrintMessage(HUD_PRINTCENTER, "Someone is draining your blood!")
     entity:Freeze(true)
     self.TargetEntity = entity
 
