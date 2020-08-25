@@ -32,6 +32,8 @@
 ## Vampire
 - Fixed never decloaking when using the fangs' right-click
 - Added configurable bullet damage reduction similar to Infected from Town of Terror. See [Configuration](CONVARS.md).
+- Added the ability to drain the blood of a living target, converting them to a Vampire or killing them and healing the player.
+- Added configurations for the amount of time it takes to drain a target's blood and the amount of health healed. See [Configuration](CONVARS.md).
 
 # Killer
 - Ported the following from Town of Terror. See [Configuration](CONVARS.md) to disable all but the buyable throwable crowbar.

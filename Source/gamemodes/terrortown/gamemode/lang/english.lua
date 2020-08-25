@@ -779,7 +779,7 @@ L.info_popup_vampire = [[You are a Vampire! Work with fellow monsters to kill al
 These are your comrades:
 {monsterlist}
 
-You can use your fangs to eat corpses and refill your health.
+You can use your fangs (left-click) to drink blood from the living and the dead to refill your health or to fade from view (right-click).
 
 Press {menukey} to receive your special equipment!]]
 
@@ -787,7 +787,7 @@ L.info_popup_vampire_alone = [[You are a Vampire! You have no fellow monsters th
 
 Kill all others to win!
 
-You can use your fangs to eat corpses and refill your health.
+You can use your fangs (left-click) to drink blood from the living and the dead to refill your health or to fade from view (right-click).
 
 Press {menukey} to receive your special equipment!]]
 

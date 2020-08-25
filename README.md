@@ -22,7 +22,7 @@ Goal: Kill all non-team members (except Jester/Swapper)\
 # Monster Team
 Goal: Kill all non-monsters (except Jester/Swapper)\
 \
-**Vampire** - Kill players and use your fangs to regain health\
+**Vampire** - Kill players and use your fangs to convert other players, regain health, and fade from view\
 **Zombie** - Kill players with your claws to make more zombies
 
 # Independent Players

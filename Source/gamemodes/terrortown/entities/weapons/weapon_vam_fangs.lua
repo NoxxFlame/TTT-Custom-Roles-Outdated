@@ -60,7 +60,7 @@ function SWEP:Initialize()
     self.fading = false
 
     if CLIENT then
-        self:AddHUDHelp("Left click to eat bodies", "Right click to fade", false)
+        self:AddHUDHelp("Left click suck blood from the living and dead", "Right click to fade", false)
     end
 end
 
@@ -214,8 +214,10 @@ function SWEP:Think()
         if not self:GetOwner():KeyDown(IN_ATTACK) or tr.Entity ~= self.TargetEntity then
             if self:GetState() == STATE_CONVERT then
                 local ply = self.TargetEntity
-                -- TODO
-                print("Converting " .. ply:Nick())
+                ply:StripWeapon("weapon_hyp_brainwash")
+                ply:StripWeapon("weapon_ttt_wtester")
+                ply:SetRole(ROLE_VAMPIRE)
+                ply:PrintMessage(HUD_PRINTCENTER, "You have become a Vampire! Use your fangs to suck blood or fade from view")
 
                 net.Start("TTT_Vampified")
                 net.WriteString(ply:Nick())

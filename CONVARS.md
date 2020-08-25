@@ -88,6 +88,9 @@ ttt_killer_damage_reduction   0.55 // The fraction an attacker's bullet damage w
 ttt_vampire_vision_enable     1    // Whether Vampires have their special vision highlights enabled
 ttt_vampire_show_target_icon  1    // Whether Vampires have an icon over other players' heads showing who to kill. Server or round must be restarted for changes to take effect.
 ttt_vampire_damage_reduction  0.8  // The fraction an attacker's bullet damage will be reduced to when they are shooting a Vampire.
+ttt_vampire_fang_timer        5    // The amount of time fangs must be used to fully drain a target's blood
+ttt_vampire_fang_heal         50   // The amount of health a Vampire will heal by when they fully drain a target's blood
+ttt_vampire_fang_overheal     25   // The amount over the Vampire's normal maximum health (e.g. 100 + this ConVar) that the Vampire can heal to by drinking blood.
 ttt_zombie_vision_enable      1    // Whether Zombies have their special vision highlights enabled
 ttt_zombie_spit_enable        1    // Whether Zombies have their spit attack enabled
 ttt_zombie_leap_enable        1    // Whether Zombies have their leap attack enabled
