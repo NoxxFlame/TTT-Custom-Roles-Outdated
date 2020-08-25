@@ -4,7 +4,7 @@ if CLIENT then
     SWEP.PrintName = "Fangs"
     SWEP.EquipMenuData = {
         type = "Weapon",
-        desc = "Left click to eat bodies. Right click to fade."
+        desc = "Left click suck blood from the living and dead. Right click to fade."
     };
 
     SWEP.Slot = 8 -- add 1 to get the slot number key
@@ -122,7 +122,7 @@ function SWEP:Eat(entity)
     self:GetOwner():EmitSound("weapons/ttt/vampireeat.wav")
     self:SetState(STATE_EAT)
     self:SetStartTime(CurTime())
-    self:SetMessage("EATING BODY")
+    self:SetMessage("DRAINING BODY")
 
     self.TargetEntity = entity
 
