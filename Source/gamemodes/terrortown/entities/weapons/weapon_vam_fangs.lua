@@ -72,6 +72,10 @@ function SWEP:Holster()
 end
 
 function SWEP:OnDrop()
+    if IsValid(self.TargetEntity) and self.TargetEntity:IsPlayer() then
+        self.TargetEntity:Freeze(false)
+    end
+    self:Reset()
     self:Remove()
 end
 
