@@ -51,13 +51,13 @@ function SWEP:SetupDataTables()
     self:NetworkVar("Float", 0, "StartTime")
     self:NetworkVar("String", 0, "Message")
     if SERVER then
+        self:SetFangTime(GetConVar("ttt_vampire_fang_timer"):GetInt())
         self:Reset()
     end
 end
 
 function SWEP:Initialize()
     self:SetHoldType(self.HoldType)
-    self:SetFangTime(GetConVar("ttt_vampire_fang_timer"):GetInt())
     self.lastTickSecond = 0
     self.fading = false
 
