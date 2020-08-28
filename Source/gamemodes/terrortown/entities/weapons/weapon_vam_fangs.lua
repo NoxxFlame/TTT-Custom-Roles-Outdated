@@ -47,6 +47,7 @@ local beep = Sound("npc/fast_zombie/fz_alert_close1.wav")
 
 function SWEP:SetupDataTables()
     self:NetworkVar("Int", 0, "State")
+    self:NetworkVar("Int", 1, "FangTime")
     self:NetworkVar("Float", 0, "StartTime")
     self:NetworkVar("String", 0, "Message")
     if SERVER then
@@ -56,6 +57,7 @@ end
 
 function SWEP:Initialize()
     self:SetHoldType(self.HoldType)
+    self:SetFangTime(GetConVar("ttt_vampire_fang_timer"):GetInt())
     self.lastTickSecond = 0
     self.fading = false
 
@@ -126,7 +128,7 @@ function SWEP:Eat(entity)
 
     self.TargetEntity = entity
 
-    self:SetNextPrimaryFire(CurTime() + GetConVar("ttt_vampire_fang_timer"):GetInt())
+    self:SetNextPrimaryFire(CurTime() + self:GetFangTime())
 end
 
 function SWEP:Drain(entity)
@@ -139,7 +141,7 @@ function SWEP:Drain(entity)
     entity:Freeze(true)
     self.TargetEntity = entity
 
-    self:SetNextPrimaryFire(CurTime() + GetConVar("ttt_vampire_fang_timer"):GetInt())
+    self:SetNextPrimaryFire(CurTime() + self:GetFangTime())
 end
 
 function SWEP:FireError()
@@ -234,7 +236,7 @@ function SWEP:Think()
         end
 
         if self:GetState() == STATE_EAT or self:GetState() == STATE_CONVERT then
-            if CurTime() >= self:GetStartTime() + GetConVar("ttt_vampire_fang_timer"):GetInt() then
+            if CurTime() >= self:GetStartTime() + self:GetFangTime() then
                 if self:GetState() == STATE_CONVERT then
                     local attacker = self:GetOwner()
                     local dmginfo = DamageInfo()
@@ -264,7 +266,7 @@ function SWEP:Think()
                 self:DropBones()
             end
         else
-            if CurTime() >= self:GetStartTime() + (GetConVar("ttt_vampire_fang_timer"):GetInt() / 2) then
+            if CurTime() >= self:GetStartTime() + (self:GetFangTime() / 2) then
                 self:SetState(STATE_CONVERT)
                 self:SetMessage("DRAINING - RELEASE TO CONVERT")
             end
@@ -282,7 +284,7 @@ if CLIENT then
         local w, h = 255, 20
 
         if self:GetState() == STATE_EAT or self:GetState() == STATE_DRAIN or self:GetState() == STATE_CONVERT then
-            local progress = math.TimeFraction(self:GetStartTime(), self:GetStartTime() + GetConVar("ttt_vampire_fang_timer"):GetInt(), CurTime())
+            local progress = math.TimeFraction(self:GetStartTime(), self:GetStartTime() + self:GetFangTime(), CurTime())
 
             if progress < 0 then return end
 
