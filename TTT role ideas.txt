@@ -1,7 +1,7 @@
 D-Traitor:
 counts as 2 traitors
 appears as detective
-has access to detective shop
+has all abilities of detective
 
 Turncoat:
 can see traitors
