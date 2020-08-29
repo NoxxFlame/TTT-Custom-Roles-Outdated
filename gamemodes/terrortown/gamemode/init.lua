@@ -810,6 +810,8 @@ function BeginRound()
 			end
 		elseif v:GetRole() == ROLE_HYPNOTIST then
 			v:Give("weapon_hyp_brainwash")
+		elseif v:GetRole() == ROLE_DOCTOR then
+			v:Give("weapon_doc_defib")
 		elseif v:GetRole() == ROLE_KILLER then
 			v:SetMaxHealth(150)
 			v:SetHealth(150)
