@@ -16,3 +16,8 @@ traitors don't know who they are
 they don't know who the traitor is
 takes jester slot
 
+Avenger:
+when killed immediately respawns as a member of the team that didn't kill them
+
+Kamikaze:
+traitor when kill explodes (jihad bomb)
