@@ -1,0 +1,23 @@
+D-Traitor:
+counts as 2 traitors
+appears as detective
+has access to detective shop
+
+Turncoat:
+can see traitors
+traitors can't see who they are
+traitors are made aware that there is one
+They win if the traitors win
+Cannot deal damage
+
+Minion:
+spawns as an additional traitor
+traitors don't know who they are
+they don't know who the traitor is
+takes jester slot
+
+Avenger:
+when killed immediately respawns as a member of the team that didn't kill them
+
+Kamikaze:
+traitor when kill explodes (jihad bomb)
