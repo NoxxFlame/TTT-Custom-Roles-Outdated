@@ -387,7 +387,7 @@ function CLSCORE:ShowPanel()
 	
 	for id, s in pairs(scores) do
 		if id ~= -1 then
-			local role = s.was_traitor and "tra" or (s.was_detective and "det" or (s.was_hypnotist and "hyp" or (s.was_jester and "jes" or (s.was_swapper and "swa" or (s.was_mercenary and "mer" or (s.was_glitch and "gli" or (s.was_phantom and "pha" or (s.was_zombie and "zom" or (s.was_assassin and "ass" or (s.was_vampire and "vam" or (s.was_killer and "kil" or (s.was_doctor and "doc" or "inn")))))))))))
+			local role = s.was_traitor and "tra" or (s.was_detective and "det" or (s.was_hypnotist and "hyp" or (s.was_jester and "jes" or (s.was_swapper and "swa" or (s.was_mercenary and "mer" or (s.was_glitch and "gli" or (s.was_phantom and "pha" or (s.was_zombie and "zom" or (s.was_assassin and "ass" or (s.was_vampire and "vam" or (s.was_killer and "kil" or (s.was_doctor and "doc" or "inn"))))))))))))
 			
 			if role == "swa" and jesterkillerrole >= 0 then
 				if jesterkillerrole == 0 then

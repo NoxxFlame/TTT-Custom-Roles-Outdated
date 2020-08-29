@@ -18,7 +18,7 @@ function plymeta:GetDetective() return self:GetRole() == ROLE_DETECTIVE end
 
 function plymeta:GetMercenary() return self:GetRole() == ROLE_MERCENARY end
 
-function plymeta:GetDoctor() return self:GetRole() = ROLE_DOCTOR end
+function plymeta:GetDoctor() return self:GetRole() == ROLE_DOCTOR end
 
 function plymeta:GetHypnotist() return self:GetRole() == ROLE_HYPNOTIST end
 

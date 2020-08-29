@@ -100,7 +100,7 @@ EquipmentItems = {
 			name = "item_regen",
 			desc = "item_regen_desc"
 		}
-	}
+	};
 	
 	[ROLE_HYPNOTIST] = {
 		-- body armor

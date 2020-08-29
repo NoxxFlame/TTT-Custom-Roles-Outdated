@@ -216,7 +216,7 @@ function PANEL:Paint(width, height)
 		rolestr = "det"
 	elseif c == rolecolor.mercenary then
 		rolestr = "mer"
-	elseif c= rolecolor.doctor then
+	elseif c == rolecolor.doctor then
 		rolestr = "doc"
 	elseif c == rolecolor.glitch then
 		rolestr = "gli"
