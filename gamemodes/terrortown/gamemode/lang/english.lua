@@ -15,6 +15,7 @@ L.vampire = "Vampire"
 L.swapper = "Swapper"
 L.assassin = "Assassin"
 L.killer = "Killer"
+L.doctor = "Doctor"
 L.innocent = "Innocent"
 L.hidden = "Hidden"
 L.last_words = "Last Words"
@@ -72,6 +73,7 @@ L.body_found_v = "They were a Vampire."
 L.body_found_s = "They were a Swapper."
 L.body_found_a = "They were an Assassin."
 L.body_found_k = "They were a Killer."
+L.body_found_doc = "They were a Doctor."
 L.body_found_i = "They were Innocent."
 
 L.body_confirm = "{finder} confirmed the death of {victim}."
@@ -208,6 +210,7 @@ L.search_role_v = "This person was a Vampire"
 L.search_role_s = "This person was a Swapper"
 L.search_role_a = "This person was an Assassin"
 L.search_role_k = "This person was a Killer"
+L.search_role_doc = "This person was a Doctor"
 L.search_role_i = "This person was Innocent."
 
 L.search_words = "Something tells you some of this person's last words were: '{lastwords}'"
@@ -587,6 +590,10 @@ number of uses is limited.]]
 
 L.brainwash_help_pri = "Hold {primaryfire} to revive dead body."
 L.brainwash_help_sec = "The revived player will become a traitor."
+
+L.defib_help_pri = "Hold {primaryfire} to revive dead body."
+L.defib_help_sec = "The revived player will become a traitor."
+
 -- Ammo names, shown when picked up
 L.ammo_alyxgun = "Pistol ammo"
 
@@ -643,6 +650,7 @@ L.target_zombie = "ZOMBIE"
 L.target_jester = "JESTER"
 L.target_swapper = "SWAPPER"
 L.target_killer = "KILLER"
+L.target_doctor = "DOCTOR"
 L.target_fellow_traitor = "FELLOW TRAITOR"
 L.target_fellow_zombie = "FELLOW ZOMBIE"
 L.target_current_target = "CURRENT TARGET"
@@ -718,6 +726,12 @@ but you deal no damage so you must be killed by some one else.]]
 L.info_popup_phantom = [[You are a Phantom!  Try to survive and help your innocent friends!
 You will haunt the player who kills you causing black smoke to appear.
 The haunting will then spread if other players kill your attacker.]]
+
+L.info_popup_doctor = [[You are a Doctor! Try to survive and help your innocent friends!
+You can revive a single dead player, bringing them back at full health.
+Be careful! Revived traitors are still traitors!
+
+Press {menukey} to receive your special equipment!]]
 
 L.info_popup_zombie = [[You are a Zombie! Work with fellow zombies to kill all others.
 

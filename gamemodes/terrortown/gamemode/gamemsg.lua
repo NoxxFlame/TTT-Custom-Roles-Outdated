@@ -127,6 +127,10 @@ function GetKillerFilter(alive_only)
 	return GetPlayerFilter(function(p) return p:IsKiller() and (not alive_only or p:IsTerror()) end)
 end
 
+function GetDoctorFilter(alive_only)
+	return GetPlayerFilter(function(p) return p:IsDoctor() and (not alive_only or p:IsTerror()) end)
+end
+
 function GetInnocentFilter(alive_only)
 	return GetPlayerFilter(function(p) return (not (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin())) and (not alive_only or p:IsTerror()) end)
 end

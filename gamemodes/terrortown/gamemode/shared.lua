@@ -25,6 +25,7 @@ ROLE_VAMPIRE = 9
 ROLE_SWAPPER = 10
 ROLE_ASSASSIN = 11
 ROLE_KILLER = 12
+ROLE_DOCTOR = 13
 ROLE_NONE = ROLE_INNOCENT
 
 -- Game event log defs
@@ -278,7 +279,10 @@ DefaultEquipment = {
 		EQUIP_ARMOR,
 		EQUIP_RADAR
 	},
-	
+	[ROLE_DOCTOR] = {
+		"weapon_ttt_health_station",
+		EQUIP_REGEN
+	},
 	-- non-buyable
 	[ROLE_NONE] = {
 		"weapon_ttt_confgrenade",

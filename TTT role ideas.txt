@@ -1,0 +1,65 @@
+DeTraitor -- Traitor:
+Counts as 2 traitors
+Appears as detective to innocents
+Has all abilities of detective
+
+Turncoat -- Jester:
+Can see traitors
+Traitors can't see who they are
+Traitors are made aware that there is one
+Win if the traitors win
+Cannot deal damage
+
+Minion -- Traitor:
+Spawns as an additional traitor
+Traitors don't know who they are
+Doesn't know who traitors are
+Takes jester slot
+
+Avenger -- Jester:
+When killed immediately respawns as a member of the team that didn't kill them
+Not visible to traitors
+
+Avenger -- Innocent:
+If killed by an innocent, respawns as a traitor
+
+Kamikaze -- Traitor:
+C4 explosion when killed (jihad bomb)
+
+Soulmate -- Innocent:
+Spawn in pairs
+Can see other Soulmate
+If one dies, so does the other
+
+Cursed -- Traitor:
+When killed, reduce killer's HP to 1
+
+Doctor -- Innocent:
+Can revive a dead player once
+Can buy health station/regen
+
+Seer -- Innocent:
+Secretly learns the role of a random non-detective player at the start of the game
+
+Deputy -- Innocent:
+Becomes a detective if alive and all detectives are dead
+
+Drunk -- ????:
+Does not know what team they're on
+Traitors can see if they're a traitor
+
+Paranoid -- Innocent:
+Health drains when near people
+Health regenerates when far from them
+
+Wildcard -- Innocent
+Choose to become any non-detective innocent role at the start of the round
+	-If soulmate is picked and there are no other soulmates, you die instantly
+Possible to pick a role someone already has?
+
+Pickpocket -- Traitor
+Can take credits and buy menu items from nearby innocents
+People get notified when they're pickpocketed
+
+Spy -- Traitor
+Learns which innocent roles are in play at the start of the round

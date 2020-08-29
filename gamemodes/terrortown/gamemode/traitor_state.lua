@@ -57,6 +57,8 @@ function SendDetectiveList(ply_or_rf) SendRoleList(ROLE_DETECTIVE, ply_or_rf) en
 
 function SendMercenaryList(ply_or_rf) SendRoleList(ROLE_MERCENARY, ply_or_rf) end
 
+function SendDoctorList(ply_or_rf) SendRoleList(ROLE_DOCTOR, ply_or_rf) end
+
 function SendHypnotistList(ply_or_rf) SendRoleList(ROLE_HYPNOTIST, ply_or_rf) end
 
 function SendGlitchList(ply_or_rf) SendRoleList(ROLE_GLITCH, ply_or_rf) end
@@ -87,6 +89,7 @@ function SendFullStateUpdate()
 	SendTraitorList()
 	SendDetectiveList()
 	SendMercenaryList()
+	SendDoctorList()
 	SendHypnotistList()
 	SendGlitchList()
 	SendJesterList()
@@ -124,6 +127,7 @@ local function request_rolelist(ply)
 		SendRoleReset(ply)
 		SendDetectiveList(ply)
 		SendMercenaryList(ply)
+		SendDoctorList(ply)
 		SendHypnotistList(ply)
 		SendGlitchList(ply)
 		SendJesterList(ply)
@@ -166,6 +170,9 @@ local function force_innocent(ply)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
@@ -181,6 +188,9 @@ local function force_traitor(ply)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
 	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
@@ -198,6 +208,9 @@ local function force_detective(ply)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
@@ -214,6 +227,9 @@ local function force_mercenary(ply)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
@@ -223,12 +239,36 @@ end
 
 concommand.Add("ttt_force_mercenary", force_mercenary, nil, nil, FCVAR_CHEAT)
 
+local function force_doctor(ply)
+	ply:SetRole(ROLE_DOCTOR)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
+	if ply:HasWeapon("weapon_hyp_brainwash") then
+		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
+	if ply:HasWeapon("weapon_vam_fangs") then
+		ply:StripWeapon("weapon_vam_fangs")
+	end
+	
+	ply:Give("weapon_doc_defib")
+
+	SendFullStateUpdate()
+end
+
+concommand.Add("ttt_force_doctor", force_doctor, nil, nil, FCVAR_CHEAT)
+
 local function force_hypnotist(ply)
 	ply:SetRole(ROLE_HYPNOTIST)
 	ply:SetMaxHealth(100)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
 	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
@@ -247,6 +287,9 @@ local function force_glitch(ply)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
@@ -262,6 +305,9 @@ local function force_jester(ply)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
 	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
@@ -279,6 +325,9 @@ local function force_phantom(ply)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
@@ -294,6 +343,9 @@ local function force_zombie(ply)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
 	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
@@ -311,6 +363,9 @@ local function force_vampire(ply)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
@@ -326,6 +381,9 @@ local function force_swapper(ply)
 	ply:SetHealth(100)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
 	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
@@ -344,6 +402,9 @@ local function force_assassin(ply)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
 	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")
 	end
@@ -359,6 +420,9 @@ local function force_killer(ply)
 	ply:SetHealth(150)
 	if ply:HasWeapon("weapon_hyp_brainwash") then
 		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
 	end
 	if ply:HasWeapon("weapon_vam_fangs") then
 		ply:StripWeapon("weapon_vam_fangs")

@@ -42,6 +42,7 @@ local indicator_matvam_noz = Material("vgui/ttt/sprite_let_vam_noz")
 local indicator_matswa_noz = Material("vgui/ttt/sprite_let_swa_noz")
 local indicator_matass_noz = Material("vgui/ttt/sprite_let_ass_noz")
 local indicator_matkil_noz = Material("vgui/ttt/sprite_let_kil_noz")
+local indicator_matdoc_noz = Material("vgui/ttt/sprite_let_doc_noz")
 local indicator_mattra = Material("vgui/ttt/sprite_let_tra")
 local indicator_matjes = Material("vgui/ttt/sprite_let_jes")
 local indicator_mathyp = Material("vgui/ttt/sprite_let_hyp")
@@ -55,6 +56,7 @@ local indicator_matvam = Material("vgui/ttt/sprite_let_vam")
 local indicator_matswa = Material("vgui/ttt/sprite_let_swa")
 local indicator_matass = Material("vgui/ttt/sprite_let_ass")
 local indicator_matkil = Material("vgui/ttt/sprite_let_kil")
+local indicator_matdoc = Material("vgui/ttt/sprite_let_doc")
 
 local indicator_col = Color(255, 255, 255, 130)
 
@@ -83,6 +85,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa_noz = Material("vgui/ttt/sprite_sym_swa_noz")
 		indicator_matass_noz = Material("vgui/ttt/sprite_sym_ass_noz")
 		indicator_matkil_noz = Material("vgui/ttt/sprite_sym_kil_noz")
+		indicator_matdoc_noz = Material("vgui/ttt/sprite_sym_doc_noz")
 		indicator_mattra = Material("vgui/ttt/sprite_sym_tra")
 		indicator_matjes = Material("vgui/ttt/sprite_sym_jes")
 		indicator_mathyp = Material("vgui/ttt/sprite_sym_hyp")
@@ -96,6 +99,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa = Material("vgui/ttt/sprite_sym_swa")
 		indicator_matass = Material("vgui/ttt/sprite_sym_ass")
 		indicator_matkil = Material("vgui/ttt/sprite_sym_kil")
+		indicator_matdoc = Material("vgui/ttt/sprite_sym_doc")
 	else
 		indicator_mattra_noz = Material("vgui/ttt/sprite_let_tra_noz")
 		indicator_matjes_noz = Material("vgui/ttt/sprite_let_jes_noz")
@@ -110,6 +114,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa_noz = Material("vgui/ttt/sprite_let_swa_noz")
 		indicator_matass_noz = Material("vgui/ttt/sprite_let_ass_noz")
 		indicator_matkil_noz = Material("vgui/ttt/sprite_let_kil_noz")
+		indicator_matdoc_noz = Material("vgui/ttt/sprite_let_doc_noz")
 		indicator_mattra = Material("vgui/ttt/sprite_let_tra")
 		indicator_matjes = Material("vgui/ttt/sprite_let_jes")
 		indicator_mathyp = Material("vgui/ttt/sprite_let_hyp")
@@ -123,6 +128,7 @@ function GM:PostDrawTranslucentRenderables()
 		indicator_matswa = Material("vgui/ttt/sprite_let_swa")
 		indicator_matass = Material("vgui/ttt/sprite_let_ass")
 		indicator_matkil = Material("vgui/ttt/sprite_let_kil")
+		indicator_matdoc = Material("vgui/ttt/sprite_let_doc")
 	end
 	client = LocalPlayer()
 	plys = GetPlayers()
@@ -179,6 +185,9 @@ function GM:PostDrawTranslucentRenderables()
 				elseif v:GetRole() == ROLE_KILLER then
 					render.SetMaterial(indicator_matkil)
 					render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+				elseif v:GetRole() == ROLE_DOCTOR then
+					render.SetMaterial(indicator_matdoc)
+					render.DrawQuadEasy(pos, dir, 8, 8, indicatorcol, 180)
 				end
 			end
 			if not hide_roles then
@@ -334,6 +343,7 @@ function GM:HUDDrawTargetID()
 	local target_jester = false
 	local target_swapper = false
 	local target_killer = false
+	local target_doctor = false
 	local target_fellow_traitor = false
 	local target_fellow_zombie = false
 	local target_current_target = false
@@ -386,6 +396,7 @@ function GM:HUDDrawTargetID()
 			target_jester = ent:IsRole(ROLE_JESTER)
 			target_swapper = ent:IsRole(ROLE_SWAPPER)
 			target_killer = ent:IsRole(ROLE_KILLER)
+			target_doctor = ent:IsRole(ROLE_DOCTOR)
 		end
 		if (client:GetRole() == ROLE_TRAITOR or client:GetRole() == ROLE_HYPNOTIST or client:GetRole() == ROLE_ZOMBIE or client:GetRole() == ROLE_VAMPIRE or client:GetRole() == ROLE_ASSASSIN) and GetRoundState() == ROUND_ACTIVE then
 			target_fellow_traitor = ent:IsRole(ROLE_TRAITOR)
@@ -425,7 +436,7 @@ function GM:HUDDrawTargetID()
 	
 	local w, h = 0, 0 -- text width/height, reused several times
 	
-	if target_innocent or target_detective or target_glitch or target_mercenary or target_phantom or target_traitor or target_assassin or target_hypnotist or target_vampire or target_zombie or target_jester or target_swapper or target_killer or target_fellow_traitor or target_fellow_zombie then
+	if target_innocent or target_detective or target_glitch or target_mercenary or target_phantom or target_traitor or target_assassin or target_hypnotist or target_vampire or target_zombie or target_jester or target_swapper or target_killer or target_doctor or target_fellow_traitor or target_fellow_zombie then
 		surface.SetTexture(ring_tex)
 		
 		if target_innocent then
@@ -454,6 +465,8 @@ function GM:HUDDrawTargetID()
 			surface.SetDrawColor(180, 23, 253, 200)
 		elseif target_killer then
 			surface.SetDrawColor(50, 0, 70, 200)
+		elseif target_doctor then
+			surface.SetDrawColor(7, 183, 160, 200)
 		end
 		surface.DrawTexturedRect(x - 32, y - 32, 64, 64)
 	end
@@ -583,6 +596,9 @@ function GM:HUDDrawTargetID()
 	elseif target_killer then
 		text = L.target_killer
 		clr = Color(50, 0, 70, 200)
+	elseif target_doctor then
+		text = L.target_doctor
+		clr = Color(7, 183, 160, 200)
 	elseif ent.sb_tag and ent.sb_tag.txt ~= nil then
 		text = L[ent.sb_tag.txt]
 		clr = ent.sb_tag.color
@@ -592,7 +608,7 @@ function GM:HUDDrawTargetID()
 	elseif target_fellow_zombie or (target_glitch and client:GetRole() == ROLE_ZOMBIE) then
 		text = L.target_fellow_zombie
 		clr = Color(69, 97, 0, 200)
-	elseif target_corpse and (client:IsActiveDetective() or client:IsActiveTraitor() or client:IsActiveMercenary() or client:IsActiveZombie() or client:IsActiveVampire() or client:IsActiveHypnotist() or client:IsActiveAssassin() or client:IsActiveKiller()) and CORPSE.GetCredits(ent, 0) > 0 then
+	elseif target_corpse and (client:IsActiveDetective() or client:IsActiveTraitor() or client:IsActiveMercenary() or client:IsActiveZombie() or client:IsActiveVampire() or client:IsActiveHypnotist() or client:IsActiveAssassin() or client:IsActiveKiller() or client:IsActiveDoctor()) and CORPSE.GetCredits(ent, 0) > 0 then
 		text = L.target_credits
 		clr = COLOR_YELLOW
 	end

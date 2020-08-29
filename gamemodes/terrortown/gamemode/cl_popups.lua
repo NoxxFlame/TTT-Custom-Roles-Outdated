@@ -15,6 +15,9 @@ local function GetTextForRole(role)
 	
 	elseif role == ROLE_MERCENARY then
 		return GetPTranslation("info_popup_mercenary", { menukey = Key("+menu_context", "C") })
+
+	elseif role == ROLE_DOCTOR then
+		return GetPTranslation("info_popup_doctor", { menukey = Key("+menu_context", "c") })
 	
 	elseif role == ROLE_HYPNOTIST then
 		local traitors = {}

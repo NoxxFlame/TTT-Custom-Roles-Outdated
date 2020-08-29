@@ -47,7 +47,8 @@ local bg_colors = {
 	vampire = Color(45, 45, 45, 200),
 	swapper = Color(111, 0, 255, 200),
 	assassin = Color(112, 50, 0, 200),
-	killer = Color(50, 0, 70, 200)
+	killer = Color(50, 0, 70, 200),
+	doctor = Color(7, 183, 160, 255)
 };
 
 local health_colors = {
@@ -174,6 +175,8 @@ local function DrawBg(x, y, width, height, client)
 		col = bg_colors.assassin
 	elseif client:GetKiller() then
 		col = bg_colors.killer
+	elseif client::GetDoctor() then
+		col = bg_colors.doctor
 	end
 	
 	draw.RoundedBoxEx(8, x, y, tw, th, col, true, false, false, true)
