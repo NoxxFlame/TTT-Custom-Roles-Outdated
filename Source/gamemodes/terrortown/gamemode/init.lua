@@ -1140,21 +1140,21 @@ end
 
 local function GetTraitorCount(ply_count)
     -- get number of traitors: pct of players rounded up
-    local traitor_count = math.ceil(ply_count * GetConVar("ttt_traitor_pct"):GetFloat())
+    local traitor_count = math.floor(ply_count * GetConVar("ttt_traitor_pct"):GetFloat())
     -- make sure the traitor count is within the range [1, max]
     return math.Clamp(traitor_count, 1, GetConVar("ttt_traitor_max"):GetInt())
 end
 
 local function GetMonsterCount(ply_count)
     -- get number of monsters: pct of players rounded up
-    return math.ceil(ply_count * GetConVar("ttt_monster_pct"):GetFloat())
+    return math.floor(ply_count * GetConVar("ttt_monster_pct"):GetFloat())
 end
 
 local function GetDetectiveCount(ply_count)
     if ply_count < GetConVar("ttt_detective_min_players"):GetInt() then return 0 end
 
     -- get number of detectives: pct of players rounded up
-    local det_count = math.ceil(ply_count * GetConVar("ttt_detective_pct"):GetFloat())
+    local det_count = math.floor(ply_count * GetConVar("ttt_detective_pct"):GetFloat())
     -- make sure the detective count is within the range [1, max]
     return math.Clamp(det_count, 1, GetConVar("ttt_detective_max"):GetInt())
 end
@@ -1208,7 +1208,7 @@ function SelectRoles()
             table.insert(choices, v)
         end
 
-        v:SetRole(ROLE_INNOCENT)
+        v:SetRole(ROLE_NONE)
     end
 
     -- determine how many of each role we want
@@ -1259,7 +1259,7 @@ function SelectRoles()
                 end
             end
             local role = v:GetRole()
-            if role ~= ROLE_INNOCENT then
+            if role ~= ROLE_NONE then
                 table.remove(choices, index)
                 if role == ROLE_TRAITOR then
                     ts = ts + 1
@@ -1303,6 +1303,8 @@ function SelectRoles()
                 elseif role == ROLE_GLITCH then
                     hasGlitch = true
                     print(v:Nick() .. " (" .. v:SteamID() .. ") - Glitch")
+                elseif role == ROLE_INNOCENT then
+                    print(v:Nick() .. " (" .. v:SteamID() .. ") - Innocent")
                 end
             end
         end
@@ -1477,9 +1479,8 @@ function SelectRoles()
 
     -- Anyone left is innocent
     for _, v in pairs(choices) do
-        if v:GetRole() ~= ROLE_DETECTIVE then
-            print(v:Nick() .. " (" .. v:SteamID() .. ") - Innocent")
-        end
+        v:SetRole(ROLE_INNOCENT)
+        print(v:Nick() .. " (" .. v:SteamID() .. ") - Innocent")
     end
     print("------------DONE PICKING ROLES------------")
 

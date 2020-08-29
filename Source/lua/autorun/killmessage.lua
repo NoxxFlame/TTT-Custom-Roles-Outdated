@@ -68,20 +68,24 @@ if SERVER then
             local killerz = "nil"
             local role = "nil"
 
-            if entity:GetClass() == "entityflame" and killer:GetClass() == "entityflame" then
-                reason = "burned"
-            elseif victim.DiedByWater then
+            if victim.DiedByWater then
                 reason = "water"
-            elseif entity:GetClass() == "worldspawn" and killer:GetClass() == "worldspawn" then
-                reason = "fell"
-            elseif victim:IsPlayer() and entity:GetClass() == "prop_physics" or entity:GetClass() == "prop_dynamic" or entity:GetClass() == "prop_physics" then -- If the killer is also a prop
-                reason = "prop"
-            elseif (killer == victim) then
+            elseif killer == victim then
                 reason = "suicide"
-            elseif killer:IsPlayer() and victim ~= killer then
-                reason = "ply"
-                killerz = killer:Nick()
-                role = killer:GetRole()
+            elseif IsValid(entity) then
+                if victim:IsPlayer() and entity:GetClass() == "prop_physics" or entity:GetClass() == "prop_dynamic" or entity:GetClass() == "prop_physics" then -- If the killer is also a prop
+                    reason = "prop"
+                elseif IsValid(killer) then
+                    if entity:GetClass() == "entityflame" and killer:GetClass() == "entityflame" then
+                        reason = "burned"
+                    elseif entity:GetClass() == "worldspawn" and killer:GetClass() == "worldspawn" then
+                        reason = "fell"
+                    elseif killer:IsPlayer() and victim ~= killer then
+                        reason = "ply"
+                        killerz = killer:Nick()
+                        role = killer:GetRole()
+                    end
+                end
             end
 
             -- Send the buffer message with the death information to the victim
