@@ -18,6 +18,8 @@ function plymeta:GetDetective() return self:GetRole() == ROLE_DETECTIVE end
 
 function plymeta:GetMercenary() return self:GetRole() == ROLE_MERCENARY end
 
+function plymeta:GetDoctor() return self:GetRole() = ROLE_DOCTOR end
+
 function plymeta:GetHypnotist() return self:GetRole() == ROLE_HYPNOTIST end
 
 function plymeta:GetGlitch() return self:GetRole() == ROLE_GLITCH end
@@ -48,6 +50,7 @@ plymeta.IsVampire = plymeta.GetVampire
 plymeta.IsSwapper = plymeta.GetSwapper
 plymeta.IsAssassin = plymeta.GetAssassin
 plymeta.IsKiller = plymeta.GetKiller
+plymeta.IsDoctor = plymeta.GetDoctor
 
 function plymeta:IsSpecial() return self:GetRole() ~= ROLE_INNOCENT end
 
@@ -66,6 +69,8 @@ function plymeta:IsActiveTraitor() return self:IsActiveRole(ROLE_TRAITOR) end
 function plymeta:IsActiveDetective() return self:IsActiveRole(ROLE_DETECTIVE) end
 
 function plymeta:IsActiveMercenary() return self:IsActiveRole(ROLE_MERCENARY) end
+
+function plymeta:IsActiveDoctor() return self:IsActiveRole(ROLE_DOCTOR) end
 
 function plymeta:IsActiveHypnotist() return self:IsActiveRole(ROLE_HYPNOTIST) end
 
@@ -100,7 +105,8 @@ local role_strings = {
 	[ROLE_VAMPIRE] = "vampire",
 	[ROLE_SWAPPER] = "swapper",
 	[ROLE_ASSASSIN] = "assassin",
-	[ROLE_KILLER] = "killer"
+	[ROLE_KILLER] = "killer",
+	[ROLE_DOCTOR] = "doctor"
 };
 
 local GetRTranslation = CLIENT and LANG.GetRawTranslation or util.passthrough

@@ -97,6 +97,7 @@ function SCORE:HandleSelection()
 	local traitors = {}
 	local detectives = {}
 	local mercenaries = {}
+	local doctors = {}
 	local hypnotists = {}
 	local glitches = {}
 	local jesters = {}
@@ -113,6 +114,8 @@ function SCORE:HandleSelection()
 			table.insert(detectives, ply:SteamID())
 		elseif ply:GetMercenary() then
 			table.insert(mercenaries, ply:SteamID())
+		elseif ply:GetDoctor() then
+			table.insert(doctors, ply:SteamID())
 		elseif ply:GetHypnotist() then
 			table.insert(hypnotists, ply:SteamID())
 		elseif ply:GetGlitch() then
@@ -134,7 +137,7 @@ function SCORE:HandleSelection()
 		end
 	end
 	
-	self:AddEvent({ id = EVENT_SELECTED, traitor_ids = traitors, detective_ids = detectives, hypnotist_ids = hypnotists, mercenary_ids = mercenaries, jester_ids = jesters, phantom_ids = phantoms, glitch_ids = glitches, zombie_ids = zombies, vampire_ids = vampires, swapper_ids = swappers, assassin_ids = assassins, killer_ids = killers })
+	self:AddEvent({ id = EVENT_SELECTED, traitor_ids = traitors, detective_ids = detectives, hypnotist_ids = hypnotists, mercenary_ids = mercenaries, jester_ids = jesters, phantom_ids = phantoms, glitch_ids = glitches, zombie_ids = zombies, vampire_ids = vampires, swapper_ids = swappers, assassin_ids = assassins, killer_ids = killers, doctor_ids = doctors })
 end
 
 function SCORE:HandleBodyFound(finder, found)
@@ -177,6 +180,7 @@ function SCORE:ApplyEventLogScores(wintype)
 	local traitors = {}
 	local detectives = {}
 	local mercenaries = {}
+	local doctors = {}
 	local hypnotists = {}
 	local glitches = {}
 	local jesters = {}
@@ -195,6 +199,8 @@ function SCORE:ApplyEventLogScores(wintype)
 			table.insert(detectives, ply:SteamID())
 		elseif ply:GetMercenary() then
 			table.insert(mercenaries, ply:SteamID())
+		elseif ply:GetDoctor() then
+			table.insert(doctors, ply:SteamID())
 		elseif ply:GetHypnotist() then
 			table.insert(hypnotists, ply:SteamID())
 		elseif ply:GetGlitch() then
@@ -219,7 +225,7 @@ function SCORE:ApplyEventLogScores(wintype)
 	-- individual scores, and count those left alive
 	local alive = { traitors = 0, innos = 0 }
 	local dead = { traitors = 0, innos = 0 }
-	local scored_log = ScoreEventLog(self.Events, scores, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers)
+	local scored_log = ScoreEventLog(self.Events, scores, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers, doctors)
 	local ply = nil
 	for sid, s in pairs(scored_log) do
 		ply = player.GetBySteamID(sid)

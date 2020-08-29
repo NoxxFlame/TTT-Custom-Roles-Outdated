@@ -57,6 +57,8 @@ function SendDetectiveList(ply_or_rf) SendRoleList(ROLE_DETECTIVE, ply_or_rf) en
 
 function SendMercenaryList(ply_or_rf) SendRoleList(ROLE_MERCENARY, ply_or_rf) end
 
+function SendDoctorList(ply_or_rf) SendRoleList(ROLD_DOCTOR, ply_or_rf) end
+
 function SendHypnotistList(ply_or_rf) SendRoleList(ROLE_HYPNOTIST, ply_or_rf) end
 
 function SendGlitchList(ply_or_rf) SendRoleList(ROLE_GLITCH, ply_or_rf) end
@@ -87,6 +89,7 @@ function SendFullStateUpdate()
 	SendTraitorList()
 	SendDetectiveList()
 	SendMercenaryList()
+	SendDoctorList()
 	SendHypnotistList()
 	SendGlitchList()
 	SendJesterList()
@@ -124,6 +127,7 @@ local function request_rolelist(ply)
 		SendRoleReset(ply)
 		SendDetectiveList(ply)
 		SendMercenaryList(ply)
+		SendDoctorList(ply)
 		SendHypnotistList(ply)
 		SendGlitchList(ply)
 		SendJesterList(ply)
@@ -222,6 +226,24 @@ local function force_mercenary(ply)
 end
 
 concommand.Add("ttt_force_mercenary", force_mercenary, nil, nil, FCVAR_CHEAT)
+
+local function force_doctor(ply)
+	ply:SetRole(ROLE_DOCTOR)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
+	if ply:HasWeapon("weapon_hyp_brainwash") then
+		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_vam_fangs") then
+		ply:StripWeapon("weapon_vam_fangs")
+	end
+	
+	--TODO: need to strip Defib from other roles if forced
+
+	SendFullStateUpdate()
+end
+
+concommand.Add("ttt_force_doctor", force_doctor, nil, nil, FCVAR_CHEAT)
 
 local function force_hypnotist(ply)
 	ply:SetRole(ROLE_HYPNOTIST)

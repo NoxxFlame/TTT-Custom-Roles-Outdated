@@ -192,7 +192,8 @@ local color_slot = {
 	[ROLE_HYPNOTIST] = Color(255, 80, 235, 255),
 	[ROLE_VAMPIRE] = Color(45, 45, 45, 255),
 	[ROLE_ASSASSIN] = Color(112, 50, 0, 255),
-	[ROLE_KILLER] = Color(50, 0, 70, 255)
+	[ROLE_KILLER] = Color(50, 0, 70, 255),
+	[ROLE_DOCTOR] = Color(7, 183, 160, 255)
 };
 
 local eqframe = nil
@@ -584,7 +585,7 @@ concommand.Add("ttt_cl_traitorpopup_close", ForceCloseTraitorMenu)
 
 function GM:OnContextMenuOpen()
 	local r = GetRoundState()
-	if r == ROUND_ACTIVE and not (LocalPlayer():GetTraitor() or LocalPlayer():GetDetective() or LocalPlayer():GetMercenary() or LocalPlayer():GetZombie() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetAssassin() or LocalPlayer():GetKiller()) then
+	if r == ROUND_ACTIVE and not (LocalPlayer():GetTraitor() or LocalPlayer():GetDetective() or LocalPlayer():GetMercenary() or LocalPlayer():GetZombie() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetAssassin() or LocalPlayer():GetKiller() or LocalPlayer():GetDoctor()) then
 		return
 	elseif r == ROUND_POST or r == ROUND_PREP then
 		CLSCORE:Reopen()

@@ -90,6 +90,7 @@ CreateConVar("ttt_vampire_enabled", "1")
 CreateConVar("ttt_swapper_enabled", "1")
 CreateConVar("ttt_assassin_enabled", "1")
 CreateConVar("ttt_killer_enabled", "1")
+CreateConVar("ttt_doctor_enabled", "1")
 
 CreateConVar("ttt_zombie_chance", "0.1")
 CreateConVar("ttt_hypnotist_chance", "0.2")
@@ -101,6 +102,7 @@ CreateConVar("ttt_mercenary_chance", "0.25")
 CreateConVar("ttt_jester_chance", "0.25")
 CreateConVar("ttt_swapper_chance", "0.25")
 CreateConVar("ttt_killer_chance", "0.25")
+CreateConVar("ttt_doctor_chance", "0.25")
 
 CreateConVar("ttt_mercenary_required_innos", "2")
 CreateConVar("ttt_hypnotist_required_traitors", "2")
@@ -111,6 +113,7 @@ CreateConVar("ttt_vampire_required_traitors", "2")
 CreateConVar("ttt_swapper_required_innos", "2")
 CreateConVar("ttt_assassin_required_traitors", "2")
 CreateConVar("ttt_killer_required_innos", "3")
+CreateConVar("ttt_doctor_required_innos", "2")
 
 CreateConVar("ttt_zombie_pct", "0.33")
 
@@ -130,6 +133,7 @@ CreateConVar("ttt_det_credits_traitordead", "1")
 
 CreateConVar("ttt_mer_credits_starting", "1")
 CreateConVar("ttt_kil_credits_starting", "2")
+CreateConVar("ttt_doc_credits_starting", "1")
 
 CreateConVar("ttt_detective_search_only", "1", FCVAR_REPLICATED)
 
@@ -787,7 +791,7 @@ function BeginRound()
 			local detectives = {}
 			for i, p in pairs(player.GetAll()) do
 				if p:Alive() and not p:IsSpec() then
-					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER then
+					if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_DOCTOR or p:GetRole() == ROLE_KILLER then
 						table.insert(innocents, p:Nick())
 					elseif p:GetRole() == ROLE_DETECTIVE then
 						table.insert(detectives, p:Nick())
@@ -927,7 +931,7 @@ function LogScore(type)
 	end
 	
 	local roundRoles = { false, false, false, false, false, false, false, false, false, false, false, false }
-	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer" }
+	local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer", "Doctor" }
 	
 	for k, v in pairs(player.GetAll()) do
 		local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and (v:GetRole() == ROLE_INNOCENT or v:GetRole() == ROLE_DETECTIVE or v:GetRole() == ROLE_GLITCH or v:GetRole() == ROLE_MERCENARY or v:GetRole() == ROLE_PHANTOM)) or (type == WIN_TRAITOR and (v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_ASSASSIN or v:GetRole() == ROLE_HYPNOTIST or v:GetRole() == ROLE_VAMPIRE or v:GetRole() == ROLE_ZOMBIE)) or (type == WIN_JESTER and (v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER))
@@ -1110,7 +1114,8 @@ function SelectRoles()
 		[ROLE_VAMPIRE] = {},
 		[ROLE_SWAPPER] = {},
 		[ROLE_ASSASSIN] = {},
-		[ROLE_KILLER] = {}
+		[ROLE_KILLER] = {},
+		[ROLE_DOCTOR] = {}
 	};
 	
 	if not GAMEMODE.LastRole then GAMEMODE.LastRole = {} end
@@ -1165,6 +1170,9 @@ function SelectRoles()
 	
 	local mercenary_chance = GetConVar("ttt_mercenary_chance"):GetFloat()
 	local real_mercenary_chance = mercenary_chance
+
+	local doctor_chance = GetConVar("ttt_doctor_chance"):GetFloat()
+	local real_doctor_chance = doctor_chance
 	
 	if choice_count == 0 then return end
 	
@@ -1181,6 +1189,7 @@ function SelectRoles()
 	local hasSpecial = false
 	local hasJester = false
 	local hasMercenary = false
+	local hasDoctor = false
 	local hasPhantom = false
 	local hasGlitch = false
 	local hasDetective = false
@@ -1248,6 +1257,9 @@ function SelectRoles()
 				elseif role == ROLE_GLITCH then
 					hasGlitch = true
 					print(v:Nick() .. " (" .. v:SteamID() .. ") - Glitch")
+				elseif role = ROLE_DOCTOR then
+					hasDoctor = true
+					print(v:Nick() .. " (" .. v:SteamID() .. ") - Doctor")
 				end
 			end
 		end
@@ -1402,6 +1414,16 @@ function SelectRoles()
 			pply:SetRole(ROLE_GLITCH)
 			table.remove(choices, pick)
 			hasGlitch = true
+		end
+	end
+	if GetConVar("ttt_doctor_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_doctor_required_innos"):GetInt() and math.random() <= real_doctor_chance and not hasDoctor then
+		local pick = math.random(1, #choices)
+		local pply = choices[pick]
+		if IsValid(pply) then
+			print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Doctor")
+			pply:SetRole(ROLE_DOCTOR)
+			table.remove(choices, pick)
+			hasDoctor = true
 		end
 	end
 	for k, v in pairs(choices) do

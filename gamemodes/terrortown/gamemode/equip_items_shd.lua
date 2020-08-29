@@ -90,6 +90,17 @@ EquipmentItems = {
 			desc = "item_radar_desc"
 		}
 	};
+
+	[ROLE_DOCTOR] = {
+		-- passive regen
+		{
+			id = EQUIP_REGEN,
+			type = "item_passive",
+			material = mat_dir .. "icon_regen",
+			name = "item_regen",
+			desc = "item_regen_desc"
+		}
+	}
 	
 	[ROLE_HYPNOTIST] = {
 		-- body armor
