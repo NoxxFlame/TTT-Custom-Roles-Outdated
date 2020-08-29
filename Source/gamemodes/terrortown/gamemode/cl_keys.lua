@@ -36,7 +36,7 @@ function GM:PlayerBindPress(ply, bind, pressed)
             end
             return true
         end
-    elseif bind == "+speed" then
+    elseif bind == "+sprint" then
         -- set voice type here just in case shift is no longer down when the
         -- PlayerStartVoice hook runs, which might be the case when switching to
         -- steam overlay
