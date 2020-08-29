@@ -15,6 +15,7 @@ if (CLIENT) then
 		local SwapperColor = Color(111, 0, 255)
 		local AssassinColor = Color(112, 50, 0)
 		local KillerColor = Color(50, 0, 70)
+		local DoctorColor = Color(7, 183, 160)
 		
 		local NameColor = Color(142, 68, 173)
 		local UnknownColor = Color(152, 48, 196)
@@ -40,6 +41,9 @@ if (CLIENT) then
 		elseif role == ROLE_MERCENARY then
 			col = MercenaryColor
 			role = "a mercenary"
+		elseif role == ROLE_DOCTOR then
+			col = DoctorColor
+			role = "a doctor"
 		elseif role == ROLE_JESTER then
 			col = JesterColor
 			role = "a jester"
