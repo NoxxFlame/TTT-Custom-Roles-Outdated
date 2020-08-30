@@ -31,6 +31,10 @@ Spawn in pairs
 Can see other Soulmate
 If one dies, so does the other
 
+Soulmate (Alt) -- Innocent:
+Soulmates have a shared health pool (200 hp)
+Cannot see other soulmates
+
 Cursed -- Traitor:
 When killed, reduce killer's HP to 1
 
