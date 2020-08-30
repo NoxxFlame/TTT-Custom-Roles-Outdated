@@ -41,6 +41,16 @@ Can buy health station/regen
 Seer -- Innocent:
 Secretly learns the role of a random non-detective player at the start of the game
 
+Seer (Alt) -- Innocent:
+Gets a list of all roles in play at the beginning of round. 
+Does not know which player has which role.
+
+Bond -- Innocent:
+Has one weapon -- the golden gun
+	-Golden gun is like the golden deagle, but has to be reloaded between every shot
+	-Golden gun has unlimited ammo
+Cannot pick up other weapons
+
 Deputy -- Innocent:
 Becomes a detective if alive and all detectives are dead
 
