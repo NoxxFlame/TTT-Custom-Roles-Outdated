@@ -22,7 +22,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.Kind = WEAPON_EQUIP
 SWEP.WeaponID = AMMO_STUN
-SWEP.CanBuy = { ROLE_DETECTIVE }
+SWEP.CanBuy = { ROLE_DETECTIVE, ROLE_DETRAITOR }
 SWEP.LimitedStock = false
 
 SWEP.Primary.Damage = 8

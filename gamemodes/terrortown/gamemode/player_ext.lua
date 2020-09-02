@@ -76,6 +76,8 @@ function plymeta:SetDefaultCredits()
 		self:SetCredits(math.ceil(GetConVarNumber("ttt_mer_credits_starting")))
 	elseif self:GetDoctor() then
 		self:SetCredits(math.ceil(GetConVarNumber("ttt_doc_credits_starting")))
+	elseif self:GetDetraitor() then
+		self:Setcredits(math.ceil(GetConVarNumber("ttt_det_credits_starting")))
 	elseif self:GetKiller() then
 		self:SetCredits(math.ceil(GetConVarNumber("ttt_kil_credits_starting")))
 	else

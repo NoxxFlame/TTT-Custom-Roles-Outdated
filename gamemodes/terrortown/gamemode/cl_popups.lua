@@ -19,6 +19,32 @@ local function GetTextForRole(role)
 	elseif role == ROLE_DOCTOR then
 		return GetPTranslation("info_popup_doctor", { menukey = Key("+menu_context", "c") })
 	
+	elseif role == ROLE_DETRAITOR then
+		local traitors = {}
+		for _, ply in pairs(player.GetAll()) do
+			if ply:IsTraitor() then
+				table.insert(traitors, ply)
+			end
+		end
+		
+		local text
+		if #traitors > 0 then
+			local traitorlist = ""
+			
+			for k, ply in pairs(traitors) do
+				if ply ~= LocalPlayer() then
+					traitorlist = traitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
+				end
+			end
+			
+			text = GetPTranslation("info_popup_detraitor",
+				{ menukey = menukey, traitorlist = traitorlist })
+		else
+			text = GetPTranslation("info_popup_detraitor_alone", { menukey = menukey })
+		end
+		
+		return text
+
 	elseif role == ROLE_HYPNOTIST then
 		local traitors = {}
 		for _, ply in pairs(player.GetAll()) do

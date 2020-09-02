@@ -2,6 +2,7 @@
   "title": "Custom Roles for TTT",
   "type": "ServerContent",
   "ignore": [
+    "TTT role ideas.txt",
     ".git*",
     "*.iml",
     ".idea*",

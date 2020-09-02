@@ -107,6 +107,7 @@ function SCORE:HandleSelection()
 	local swappers = {}
 	local assassins = {}
 	local killers = {}
+	local detraitors = {}
 	for k, ply in pairs(player.GetAll()) do
 		if ply:GetTraitor() then
 			table.insert(traitors, ply:SteamID())
@@ -134,6 +135,8 @@ function SCORE:HandleSelection()
 			table.insert(assassins, ply:SteamID())
 		elseif ply:GetKiller() then
 			table.insert(killers, ply:SteamID())
+		elseif ply:GetDetraitor() then
+			table.insert(detraitors, ply:SteamID())
 		end
 	end
 	
@@ -225,7 +228,7 @@ function SCORE:ApplyEventLogScores(wintype)
 	-- individual scores, and count those left alive
 	local alive = { traitors = 0, innos = 0 }
 	local dead = { traitors = 0, innos = 0 }
-	local scored_log = ScoreEventLog(self.Events, scores, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers, doctors)
+	local scored_log = ScoreEventLog(self.Events, scores, traitors, detectives, hypnotists, mercenaries, jesters, phantoms, glitches, zombies, vampires, swappers, assassins, killers, doctors, detraitors)
 	local ply = nil
 	for sid, s in pairs(scored_log) do
 		ply = player.GetBySteamID(sid)

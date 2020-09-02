@@ -102,7 +102,8 @@ local rolecolor = {
 	swapper = Color(111, 0, 255, 30),
 	assassin = Color(112, 50, 0, 30),
 	killer = Color(60, 0, 80, 30),
-	doctor = Color(7, 183, 160, 30)
+	doctor = Color(7, 183, 160, 30),
+	detraitor = Color(205, 196, 75)
 }
 
 function GM:TTTScoreboardColorForPlayer(ply)
@@ -119,7 +120,7 @@ end
 function GM:TTTScoreboardRowColorForPlayer(ply)
 	if not IsValid(ply) or GetRoundState() == ROUND_WAIT or GetRoundState() == ROUND_PREP then return rolecolor.default end
 	
-	if (ScoreGroup(ply) == GROUP_SEARCHED and ply.search_result) or ply == LocalPlayer() or (ply:GetNWBool('RoleRevealed', false) and LocalPlayer():IsRole(ROLE_DETECTIVE)) then
+	if (ScoreGroup(ply) == GROUP_SEARCHED and ply.search_result) or ply == LocalPlayer() or (ply:GetNWBool('RoleRevealed', false) and (LocalPlayer():IsRole(ROLE_DETECTIVE) or LocalPlayer():IsRole(ROLE_DETRAITOR))) then
 		if ply:IsTraitor() then
 			return rolecolor.traitor
 		elseif ply:IsDetective() then
@@ -146,6 +147,8 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
 			return rolecolor.phantom
 		elseif ply:IsKiller() then
 			return rolecolor.killer
+		elseif ply:IsDetraitor() then
+			return rolecolor.detraitor
 		else
 			return rolecolor.innocent
 		end
@@ -155,7 +158,7 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
 		return rolecolor.detective
 	end
 	
-	if LocalPlayer():IsTraitor() or LocalPlayer():IsHypnotist() or LocalPlayer():IsVampire() or LocalPlayer():IsAssassin() then
+	if LocalPlayer():IsTraitor() or LocalPlayer():IsHypnotist() or LocalPlayer():IsVampire() or LocalPlayer():IsAssassin() or LocalPlayer():IsDetraitor() then
 		if ply:IsTraitor() or ply:IsGlitch() then
 			return rolecolor.traitor
 		elseif ply:IsHypnotist() then
@@ -168,6 +171,8 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
 			return rolecolor.vampire
 		elseif ply:IsAssassin() then
 			return rolecolor.assassin
+		elseif ply:IsDetraitor() then
+			return rolecolor.detraitor
 		end
 	elseif LocalPlayer():IsZombie() then
 		if ply:IsZombie() or ply:IsGlitch() then
@@ -238,6 +243,8 @@ function PANEL:Paint(width, height)
 		rolestr = "swa"
 	elseif c == rolecolor.killer then
 		rolestr = "kil"
+	elseif c == rolecolor.detraitor then
+		rolestr = "der"
 	end
 	
 	if rolestr ~= "" then

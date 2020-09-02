@@ -70,6 +70,26 @@ EquipmentItems = {
 		--         desc     = "Reduces bullet damage by 30% when\nyou get hit."
 		--      },
 	};
+
+	[ROLE_DETRAITOR] = {
+		-- body armor
+		{
+			id = EQUIP_ARMOR,
+			type = "item_passive",
+			material = mat_dir .. "icon_armor",
+			name = "item_armor",
+			desc = "item_armor_desc"
+		},
+		
+		-- radar
+		{
+			id = EQUIP_RADAR,
+			type = "item_active",
+			material = mat_dir .. "icon_radar",
+			name = "item_radar",
+			desc = "item_radar_desc"
+		}
+	};
 	
 	[ROLE_MERCENARY] = {
 		-- body armor

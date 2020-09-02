@@ -77,6 +77,8 @@ function SendAssassinList(ply_or_rf) SendRoleList(ROLE_ASSASSIN, ply_or_rf) end
 
 function SendKillerList(ply_or_rf) SendRoleList(ROLE_KILLER, ply_or_rf) end
 
+function SendDetraitorList(ply_or_rf) SendRoleList(ROLE_DETRAITOR, ply_or_rf) end
+
 function SendInnocentList(ply_or_rf) SendRoleList(ROLE_INNOCENT, ply_or_rf) end
 
 function SendConfirmedTraitors(ply_or_rf)
@@ -451,6 +453,25 @@ local function force_spectate(ply, cmd, arg)
 		end
 	end
 end
+
+local function force_detraitor(ply)
+	ply:SetRole(ROLE_DETRAITOR)
+	ply:SetMaxHealth(100)
+	ply:SetHealth(100)
+	if ply:HasWeapon("weapon_hyp_brainwash") then
+		ply:StripWeapon("weapon_hyp_brainwash")
+	end
+	if ply:HasWeapon("weapon_doc_defib") then
+		ply:StripWeapon("weapon_doc_defib")
+	end
+	if ply:HasWeapon("weapon_vam_fangs") then
+		ply:StripWeapon("weapon_vam_fangs")
+	end
+	
+	SendFullStateUpdate()
+end
+
+concommand.Add("ttt_force_detraitor", force_detraitor, nil, nil, FCVAR_CHEAT)
 
 concommand.Add("ttt_spectate", force_spectate)
 net.Receive("TTT_Spectate", function(l, pl)

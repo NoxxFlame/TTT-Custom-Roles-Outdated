@@ -16,6 +16,7 @@ L.swapper = "Swapper"
 L.assassin = "Assassin"
 L.killer = "Killer"
 L.doctor = "Doctor"
+L.detraitor = "Detraitor"
 L.innocent = "Innocent"
 L.hidden = "Hidden"
 L.last_words = "Last Words"
@@ -74,6 +75,7 @@ L.body_found_s = "They were a Swapper."
 L.body_found_a = "They were an Assassin."
 L.body_found_k = "They were a Killer."
 L.body_found_doc = "They were a Doctor."
+L.body_found_der = "They were a Detraitor."
 L.body_found_i = "They were Innocent."
 
 L.body_confirm = "{finder} confirmed the death of {victim}."
@@ -211,6 +213,7 @@ L.search_role_s = "This person was a Swapper"
 L.search_role_a = "This person was an Assassin"
 L.search_role_k = "This person was a Killer"
 L.search_role_doc = "This person was a Doctor"
+L.search_role_der = "This person was a Detraitor"
 L.search_role_i = "This person was Innocent."
 
 L.search_words = "Something tells you some of this person's last words were: '{lastwords}'"
@@ -651,6 +654,7 @@ L.target_jester = "JESTER"
 L.target_swapper = "SWAPPER"
 L.target_killer = "KILLER"
 L.target_doctor = "DOCTOR"
+L.target_detraitor = "DETRAITOR"
 L.target_fellow_traitor = "FELLOW TRAITOR"
 L.target_fellow_zombie = "FELLOW ZOMBIE"
 L.target_current_target = "CURRENT TARGET"
@@ -798,6 +802,27 @@ L.info_popup_killer = [[You are a Killer! Try to kill everyone and be the last o
 
 Press {menukey} to receive your equipment!]]
 
+L.info_popup_detraitor = [[You are a Detraitor! Work with fellow traitors to kill all others.
+
+These are your comrades:
+{traitorlist}
+
+You appear as a detective to innocents and have detective
+abilities. Use this to your advantage to deceive other
+players.
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_detraitor_alone = [[You are a Detraitor! You have no fellow traitors this round.
+
+Kill all others to win!
+
+You appear as a detective to innocents and have detective
+abilities. Use this to your advantage to deceive other
+players.
+
+Press {menukey} to receive your special equipment!]]
+
 L.info_popup_traitor_alone = [[You are a TRAITOR! You have no fellow traitors this round.
 
 Kill all others to win!
@@ -839,6 +864,16 @@ These are your comrades:
 {traitorlist}
 The following comrade is an assassin:
 {assassinlist}
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_traitor_detraitor = [[You are a TRAITOR! Work with fellow traitors to kill all others.
+But take care, or your treason may be discovered...
+
+These are your comrades:
+{traitorlist}
+The following comrade is an Detraitor:
+{detraitorlist}
 
 Press {menukey} to receive your special equipment!]]
 

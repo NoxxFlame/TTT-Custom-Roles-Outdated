@@ -26,6 +26,7 @@ ROLE_SWAPPER = 10
 ROLE_ASSASSIN = 11
 ROLE_KILLER = 12
 ROLE_DOCTOR = 13
+ROLE_DETRAITOR = 15
 ROLE_NONE = ROLE_INNOCENT
 
 -- Game event log defs
@@ -282,6 +283,16 @@ DefaultEquipment = {
 	[ROLE_DOCTOR] = {
 		"weapon_ttt_health_station",
 		EQUIP_REGEN
+	},
+	[ROLE_DETRAITOR] = {
+		"weapon_ttt_binoculars",
+		"weapon_ttt_defuser",
+		"weapon_ttt_health_station",
+		"weapon_ttt_stungun",
+		"weapon_ttt_cse",
+		"weapon_ttt_teleport",
+		EQUIP_ARMOR,
+		EQUIP_RADAR
 	},
 	-- non-buyable
 	[ROLE_NONE] = {

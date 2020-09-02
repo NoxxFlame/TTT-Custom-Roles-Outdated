@@ -10,7 +10,7 @@ local function LastWordsRecv()
 	local sender = net.ReadEntity()
 	local words = net.ReadString()
 	
-	local was_detective = IsValid(sender) and sender:IsDetective()
+	local was_detective = IsValid(sender) and (sender:IsDetective() or sender:IsDetraitor())
 	local nick = IsValid(sender) and sender:Nick() or "<Unknown>"
 	
 	chat.AddText(Color(150, 150, 150),
@@ -75,6 +75,14 @@ local function RoleChatRecv()
 		chat.AddText(Color(0, 0, 255),
 			Format("(%s) ", string.upper(GetTranslation("detective"))),
 			Color(100, 100, 255),
+			sender:Nick(),
+			Color(255, 255, 255),
+			": " .. text)
+
+	elseif role == ROLE_DETRAITOR then
+		chat.AddText(Color(70, 70, 20),
+			Format("(%s) ", string.upper(GetTranslation("detraitor"))),
+			Color(205, 196, 75),
 			sender:Nick(),
 			Color(255, 255, 255),
 			": " .. text)
@@ -429,7 +437,7 @@ local function RadioMsgRecv()
 		text = util.Capitalize(text)
 	end
 	
-	if sender:IsDetective() then
+	if sender:IsDetective() or sender:IsDetraitor() then
 		AddDetectiveText(sender, text)
 	else
 		chat.AddText(sender,
@@ -532,7 +540,7 @@ function GM:PlayerStartVoice(ply)
 		end
 	end
 	
-	if ply:IsActiveDetective() then
+	if ply:IsActiveDetective() or ply:IsActiveDetraitor() then
 		pnl.Color = Color(20, 20, 200, 255)
 	end
 	
@@ -656,7 +664,7 @@ local function GetDrainRate()
 	local ply = LocalPlayer()
 	if (not IsValid(ply)) or ply:IsSpec() then return 0 end
 	
-	if ply:IsAdmin() or ply:IsDetective() then
+	if ply:IsAdmin() or ply:IsDetective() or ply:IsDetraitor() then
 		return GetGlobalFloat("ttt_voice_drain_admin", 0)
 	else
 		return GetGlobalFloat("ttt_voice_drain_normal", 0)
