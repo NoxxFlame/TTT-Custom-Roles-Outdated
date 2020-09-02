@@ -307,9 +307,12 @@ local function DrawSelectedEquipment(pnl)
 end
 
 function PANEL:SelectPanel(pnl)
-    self.BaseClass.SelectPanel(self, pnl)
     if pnl then
+        self.BaseClass.SelectPanel(self, pnl)
         pnl.PaintOver = DrawSelectedEquipment
+    else
+        self:OnActivePanelChanged(self.SelectedPanel, pnl)
+        self.SelectedPanel = nil
     end
 end
 
@@ -415,6 +418,46 @@ local function TraitorMenuPopup()
     dlist:EnableVerticalScrollbar(true)
     dlist:EnableHorizontal(true)
 
+    local bw, bh = 100, 25
+
+    -- Whole right column
+    local dih = h - bh - m * 5
+    -- local diw = w - dlistw - m*6 - 2
+    local dinfobg = vgui.Create("DPanel", dequip)
+    dinfobg:SetPaintBackground(false)
+    dinfobg:SetSize(diw - m, dih)
+    dinfobg:SetPos(dlistw + m, 0)
+
+    -- item info pane
+    local dinfo = vgui.Create("ColoredBox", dinfobg)
+    dinfo:SetColor(Color(90, 90, 95))
+    dinfo:SetPos(0, 0)
+    dinfo:StretchToParent(0, 0, m * 2, 105)
+
+    local dfields = {}
+    for _, k in pairs({ "name", "type", "desc" }) do
+        dfields[k] = vgui.Create("DLabel", dinfo)
+        dfields[k]:SetTooltip(GetTranslation("equip_spec_" .. k))
+        dfields[k]:SetPos(m * 3, m * 2)
+        dfields[k]:SetWidth(diw - m * 6)
+    end
+
+    dfields.name:SetFont("TabLarge")
+
+    dfields.type:SetFont("DermaDefault")
+    dfields.type:MoveBelow(dfields.name)
+
+    dfields.desc:SetFont("DermaDefaultBold")
+    dfields.desc:SetContentAlignment(7)
+    dfields.desc:MoveBelow(dfields.type, 1)
+
+    local dhelp = vgui.Create("DPanel", dinfobg)
+    dhelp:SetPaintBackground(false)
+    dhelp:SetSize(diw, 64)
+    dhelp:MoveBelow(dinfo, m)
+
+    local update_preqs = PreqLabels(dhelp, m * 7, m * 2)
+
     local function FillEquipmentList(itemlist)
         dlist:Clear()
 
@@ -475,7 +518,7 @@ local function TraitorMenuPopup()
                 if ItemIsWeapon(item) and showSlotVar:GetBool() then
                     local slot = vgui.Create("SimpleIconLabelled")
                     slot:SetIcon("vgui/ttt/sprite_slot_cap")
-                    slot:SetIconColor(ROLE_COLORS[ply:GetRole()] or COLOR_GREY)
+                    slot:SetIconColor(ROLE_COLORS[ply:GetRole()] or COLOR_GRAY)
                     slot:SetIconSize(16)
 
                     slot:SetIconText(item.slot)
@@ -510,13 +553,13 @@ local function TraitorMenuPopup()
             end
 
             ic.item = item
-            ic.name = item.name
 
             local tip = SafeTranslate(item.name) .. " (" .. SafeTranslate(item.type) .. ")"
             ic:SetTooltip(tip)
 
             -- If we cannot order this item, darken it
-            if ((not can_order) or
+            local orderable = update_preqs(item)
+            if ((not orderable) or
                     -- already owned
                     table.HasValue(owned_ids, item.id) or
                     (tonumber(item.id) and ply:HasEquipmentItem(tonumber(item.id))) or
@@ -524,7 +567,6 @@ local function TraitorMenuPopup()
                     (ItemIsWeapon(item) and (not CanCarryWeapon(item))) or
                     -- already bought the item before
                     (item.limited and ply:HasBought(tostring(item.id)))) then
-
                 ic:SetIconColor(color_darkened)
             end
 
@@ -561,52 +603,6 @@ local function TraitorMenuPopup()
         end
         FillEquipmentList(filtered)
     end
-
-    local items = GetEquipmentForRole(ply:GetRole())
-
-    FillEquipmentList(items)
-
-    local bw, bh = 100, 25
-
-    -- Whole right column
-    local dih = h - bh - m * 5
-    -- local diw = w - dlistw - m*6 - 2
-    local dinfobg = vgui.Create("DPanel", dequip)
-    dinfobg:SetPaintBackground(false)
-    dinfobg:SetSize(diw - m, dih)
-    dinfobg:SetPos(dlistw + m, 0)
-
-    -- item info pane
-    local dinfo = vgui.Create("ColoredBox", dinfobg)
-    dinfo:SetColor(Color(90, 90, 95))
-    dinfo:SetPos(0, 0)
-    dinfo:StretchToParent(0, 0, m * 2, 105)
-
-    local dfields = {}
-    for _, k in pairs({ "name", "type", "desc" }) do
-        dfields[k] = vgui.Create("DLabel", dinfo)
-        dfields[k]:SetTooltip(GetTranslation("equip_spec_" .. k))
-        dfields[k]:SetPos(m * 3, m * 2)
-        dfields[k]:SetWidth(diw - m * 6)
-    end
-
-    dfields.name:SetFont("TabLarge")
-
-    dfields.type:SetFont("DermaDefault")
-    dfields.type:MoveBelow(dfields.name)
-
-    dfields.desc:SetFont("DermaDefaultBold")
-    dfields.desc:SetContentAlignment(7)
-    dfields.desc:MoveBelow(dfields.type, 1)
-
-    local iw, ih = dinfo:GetSize()
-
-    local dhelp = vgui.Create("DPanel", dinfobg)
-    dhelp:SetPaintBackground(false)
-    dhelp:SetSize(diw, 64)
-    dhelp:MoveBelow(dinfo, m)
-
-    local update_preqs = PreqLabels(dhelp, m * 7, m * 2)
 
     dhelp:SizeToContents()
 
@@ -645,20 +641,31 @@ local function TraitorMenuPopup()
 
     -- couple panelselect with info
     dlist.OnActivePanelChanged = function(self, _, new)
-        for k, v in pairs(new.item) do
-            if dfields[k] then
-                dfields[k]:SetText(SafeTranslate(v))
-                dfields[k]:SetAutoStretchVertical(true)
-                dfields[k]:SetWrap(true)
+        can_order = false
+        if new and new.item then
+            for k, v in pairs(new.item) do
+                if dfields[k] then
+                    dfields[k]:SetText(SafeTranslate(v))
+                    dfields[k]:SetAutoStretchVertical(true)
+                    dfields[k]:SetWrap(true)
+                end
+            end
+
+            -- Trying to force everything to update to
+            -- the right size is a giant pain, so just
+            -- force a good size.
+            dfields.desc:SetTall(70)
+
+            can_order = update_preqs(new.item)
+        else
+            for _, v in pairs(dfields) do
+                if v then
+                    v:SetText("---")
+                    v:SetAutoStretchVertical(true)
+                    v:SetWrap(true)
+                end
             end
         end
-
-        -- Trying to force everything to update to
-        -- the right size is a giant pain, so just
-        -- force a good size.
-        dfields.desc:SetTall(70)
-
-        can_order = update_preqs(new.item)
 
         dconfirm:SetDisabled(not can_order)
     end
@@ -702,7 +709,7 @@ local function TraitorMenuPopup()
     end
 
     --add as favorite button
-    dfav = vgui.Create("DButton", dinfobg)
+    local dfav = vgui.Create("DButton", dinfobg)
     dfav:SetPos(0, dih - bh * 2)
     dfav:MoveRightOf(dconfirm)
     dfav:SetSize(bh, bh)
@@ -724,6 +731,8 @@ local function TraitorMenuPopup()
             AddFavorite(guid, role, weapon)
         end
     end
+
+    FillEquipmentList(GetEquipmentForRole(ply:GetRole()))
 
     dframe:MakePopup()
     dframe:SetKeyboardInputEnabled(false)
