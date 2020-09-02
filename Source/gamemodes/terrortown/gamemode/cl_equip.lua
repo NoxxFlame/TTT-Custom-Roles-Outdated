@@ -547,6 +547,9 @@ local function TraitorMenuPopup()
                 dlist:AddPanel(panel)
             end
         end
+
+        -- select first
+        dlist:SelectPanel(dlist:GetItems()[1])
     end
     dsearch.OnValueChange = function(box, value)
         local roleitems = GetEquipmentForRole(ply:GetRole())
@@ -560,8 +563,6 @@ local function TraitorMenuPopup()
     end
 
     local items = GetEquipmentForRole(ply:GetRole())
-
-    local to_select = nil
 
     FillEquipmentList(items)
 
@@ -661,9 +662,6 @@ local function TraitorMenuPopup()
 
         dconfirm:SetDisabled(not can_order)
     end
-
-    -- select first
-    dlist:SelectPanel(to_select or dlist:GetItems()[1])
 
     -- prep confirm action
     dconfirm.DoClick = function()
