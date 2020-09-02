@@ -140,7 +140,7 @@ function SCORE:HandleSelection()
 		end
 	end
 	
-	self:AddEvent({ id = EVENT_SELECTED, traitor_ids = traitors, detective_ids = detectives, hypnotist_ids = hypnotists, mercenary_ids = mercenaries, jester_ids = jesters, phantom_ids = phantoms, glitch_ids = glitches, zombie_ids = zombies, vampire_ids = vampires, swapper_ids = swappers, assassin_ids = assassins, killer_ids = killers, doctor_ids = doctors })
+	self:AddEvent({ id = EVENT_SELECTED, traitor_ids = traitors, detective_ids = detectives, hypnotist_ids = hypnotists, mercenary_ids = mercenaries, jester_ids = jesters, phantom_ids = phantoms, glitch_ids = glitches, zombie_ids = zombies, vampire_ids = vampires, swapper_ids = swappers, assassin_ids = assassins, killer_ids = killers, doctor_ids = doctors, detraitor_ids = detraitors })
 end
 
 function SCORE:HandleBodyFound(finder, found)
@@ -193,6 +193,7 @@ function SCORE:ApplyEventLogScores(wintype)
 	local swappers = {}
 	local assassins = {}
 	local killers = {}
+	local detraitors = {}
 	for k, ply in pairs(player.GetAll()) do
 		scores[ply:SteamID()] = {}
 		
@@ -222,6 +223,8 @@ function SCORE:ApplyEventLogScores(wintype)
 			table.insert(assassins, ply:SteamID())
 		elseif ply:GetKiller() then
 			table.insert(killers, ply:SteamID())
+		elseif ply:GetDetraitors() then
+			table.insert(detraitors, ply:SteamID())
 		end
 	end
 	

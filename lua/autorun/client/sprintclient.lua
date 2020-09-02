@@ -146,7 +146,7 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 			end
 			
 			if GetRoundState() ~= ROUND_WAIT then
-				if IsValid(client) and client:IsPlayer() and client:GetTraitor() or client:GetAssassin() or client:GetHypnotist() or client:GetVampire() or client:GetZombie() or client:GetKiller() then
+				if IsValid(client) and client:IsPlayer() and client:GetTraitor() or client:GetAssassin() or client:GetHypnotist() or client:GetVampire() or client:GetZombie() or client:GetDetraitor() or client:GetKiller() then
 					realProzent = realProzent + (CurTime() - TimerReg) * (math.min(math.max(RegenerateT, 0.01), 2) * 250)
 				else
 					realProzent = realProzent + (CurTime() - TimerReg) * (math.min(math.max(RegenerateI, 0.01), 2) * 250)

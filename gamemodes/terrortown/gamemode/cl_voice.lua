@@ -135,7 +135,7 @@ function GM:OnPlayerChat(ply, text, teamchat, dead)
 		dead = true
 	end
 	
-	if teamchat and (not team and not (ply:IsTraitor() or ply:IsZombie() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsDetective()) or team) then
+	if teamchat and (not team and not (ply:IsTraitor() or ply:IsZombie() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsDetective() or ply:IsDetraitor()) or team) then
 		teamchat = false
 	end
 	

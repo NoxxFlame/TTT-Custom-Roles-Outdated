@@ -168,6 +168,7 @@ local function GetTextForRole(role)
 		local vampires = {}
 		local assassins = {}
 		local glitches = {}
+		local detraitors = {}
 		for _, ply in pairs(player.GetAll()) do
 			if ply:IsTraitor() then
 				table.insert(traitors, ply)
@@ -183,6 +184,9 @@ local function GetTextForRole(role)
 			elseif ply:IsGlitch() then
 				table.insert(traitors, ply)
 				table.insert(glitches, ply)
+			elseif ply:IsDetraitor() then
+				table.insert(traitors, ply)
+				table.inser(detraitors, ply)
 			end
 		end
 		
@@ -223,6 +227,14 @@ local function GetTextForRole(role)
 					end
 				end
 				text = GetPTranslation("info_popup_traitor_assassin", { menukey = menukey, traitorlist = traitorlist, assassinlist = assassinlist })
+			elseif #detraitors > 0 then
+				local detraitorlist = ""
+
+				for k, ply in pairs(detraitors) do
+					if ply ~= LocalPlayer() then
+						detraitorlist = detraitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
+					end
+				end
 			elseif #glitches > 0 then
 				text = GetPTranslation("info_popup_traitor_glitch", { menukey = menukey, traitorlist = traitorlist })
 			else

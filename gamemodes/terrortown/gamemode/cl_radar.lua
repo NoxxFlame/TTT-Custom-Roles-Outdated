@@ -119,7 +119,7 @@ function RADAR:Draw(client)
 	surface.SetFont("HudSelectionText")
 	
 	-- C4 warnings
-	if self.bombs_count ~= 0 and (client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveVampire() or client:IsActiveAssassin()) then
+	if self.bombs_count ~= 0 and (client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveVampire() or client:IsActiveAssassin() or client:IsActiveDetraitor()) then
 		surface.SetTexture(c4warn)
 		surface.SetTextColor(200, 55, 55, 220)
 		surface.SetDrawColor(255, 255, 255, 200)
@@ -130,7 +130,7 @@ function RADAR:Draw(client)
 	end
 	
 	-- Corpse calls
-	if client:IsActiveDetective() and #self.called_corpses then
+	if (client:IsActiveDetective() or client:IsActiveDetraitor) and #self.called_corpses then
 		surface.SetTexture(det_beacon)
 		surface.SetTextColor(255, 255, 255, 240)
 		surface.SetDrawColor(255, 255, 255, 230)

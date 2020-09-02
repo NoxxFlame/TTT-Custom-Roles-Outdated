@@ -36,7 +36,7 @@ local config = KARMA.cv
 local function IsDebug() return config.debug:GetBool() end
 
 local function isTraitorTeam(ply)
-	return ply:GetTraitor() or ply:GetHypnotist() or ply:GetVampire() or ply:GetAssassin() or ply:GetZombie()
+	return ply:GetTraitor() or ply:GetHypnotist() or ply:GetVampire() or ply:GetAssassin() or ply:GetZombie() or ply:GetDetraitor()
 end
 
 local function isJesterTeam(ply)

@@ -83,7 +83,7 @@ function ScoreGroup(p)
 				local client = LocalPlayer()
 				-- To terrorists, missing players show as alive
 				if client:IsSpec() or
-						client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveVampire() or client:IsActiveAssassin() or client:IsActiveZombie() or
+						client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveVampire() or client:IsActiveAssassin() or client:IsActiveZombie() or client:IsActiveDetraitor() or
 						((GAMEMODE.round_state ~= ROUND_ACTIVE) and client:IsTerror()) then
 					return GROUP_NOTFOUND
 				else

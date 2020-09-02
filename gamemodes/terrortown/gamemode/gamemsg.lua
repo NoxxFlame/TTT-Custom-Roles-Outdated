@@ -136,15 +136,15 @@ function GetDetraitorFilter(alive_only)
 end
 
 function GetInnocentFilter(alive_only)
-	return GetPlayerFilter(function(p) return (not (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin())) and (not alive_only or p:IsTerror()) end)
+	return GetPlayerFilter(function(p) return (not (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin() or p:IsDetraitor())) and (not alive_only or p:IsTerror()) end)
 end
 
 function GetTraitorsFilter(alive_only)
-	return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin()) and (not alive_only or p:IsTerror()) end)
+	return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin() or p:IsDetraitor()) and (not alive_only or p:IsTerror()) end)
 end
 
 function GetTraitorsAndJestersFilter(alive_only)
-	return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin() or p:IsJester() or p:IsSwapper()) and (not alive_only or p:IsTerror()) end)
+	return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsZombie() or p:IsHypnotist() or p:IsVampire() or p:IsAssassin() or p:IsDetraitor() or p:IsJester() or p:IsSwapper()) and (not alive_only or p:IsTerror()) end)
 end
 
 function GetRoleFilter(role, alive_only)
