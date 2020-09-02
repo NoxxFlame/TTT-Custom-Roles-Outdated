@@ -218,7 +218,6 @@ local function ItemIsWeapon(item) return not tonumber(item.id) end
 local function CanCarryWeapon(item) return LocalPlayer():CanCarryType(item.kind) end
 
 local color_bad = Color(244, 67, 54, 255)
-local color_good = Color(76, 175, 80, 255)
 
 -- Creates tabel of labels showing the status of ordering prerequisites
 local function PreqLabels(parent, x, y)
@@ -280,13 +279,13 @@ local function PreqLabels(parent, x, y)
         end
     end
 
-    for k, pnl in pairs(tbl) do
+    for _, pnl in pairs(tbl) do
         pnl:SetFont("DermaLarge")
     end
 
     return function(selected)
         local allow = true
-        for k, pnl in pairs(tbl) do
+        for _, pnl in pairs(tbl) do
             local result, text, tooltip = pnl:Check(selected)
             pnl:SetTextColor(result and COLOR_WHITE or color_bad)
             pnl:SetText(text)
@@ -397,147 +396,174 @@ local function TraitorMenuPopup()
         owned_ids = nil
     end
 
+    local dsearchheight = 25
+    local dsearchpadding = 5
+    local dsearch = vgui.Create("DTextEntry", dequip)
+    dsearch:SetPos(0, 0)
+    dsearch:SetSize(dlistw, dsearchheight)
+    dsearch:SetPlaceholderText("Search...")
+    dsearch:SetUpdateOnType(true)
+    dsearch.OnGetFocus = function() dframe:SetKeyboardInputEnabled(true) end
+    dsearch.OnLoseFocus = function() dframe:SetKeyboardInputEnabled(false) end
+
     --- Construct icon listing
     --- icon size = 64 x 64
     local dlist = vgui.Create("EquipSelect", dequip)
     -- local dlistw = 288
-    dlist:SetPos(0, 0)
-    dlist:SetSize(dlistw, dlisth)
+    dlist:SetPos(0, dsearchheight + dsearchpadding)
+    dlist:SetSize(dlistw, dlisth - dsearchheight - dsearchpadding)
     dlist:EnableVerticalScrollbar(true)
     dlist:EnableHorizontal(true)
+
+    local function FillEquipmentList(itemlist)
+        dlist:Clear()
+
+        -- temp table for sorting
+        local paneltablefav = {}
+        local paneltable = {}
+        for i = 1, 9 do
+            paneltablefav[i] = {}
+            paneltable[i] = {}
+        end
+
+        for k, item in pairs(itemlist) do
+            local ic = nil
+
+            -- Create icon panel
+            if item.material then
+                ic = vgui.Create("LayeredIcon", dlist)
+
+                if item.custom and showCustomVar:GetBool() then
+                    -- Custom marker icon
+                    local marker = vgui.Create("DImage")
+                    marker:SetImage("vgui/ttt/custom_marker")
+                    marker.PerformLayout = function(s)
+                        s:AlignBottom(2)
+                        s:AlignRight(2)
+                        s:SetSize(16, 16)
+                    end
+                    marker:SetTooltip(GetTranslation("equip_custom"))
+
+                    ic:AddLayer(marker)
+
+                    ic:EnableMousePassthrough(marker)
+                end
+
+                -- Favorites marker icon
+                ic.favorite = false
+                local favorites = GetFavorites(ply:SteamID(), ply:GetRole())
+                if favorites then
+                    if IsFavorite(favorites, item.id) then
+                        ic.favorite = true
+                        if showFavoriteVar:GetBool() then
+                            local star = vgui.Create("DImage")
+                            star:SetImage("icon16/star.png")
+                            star.PerformLayout = function(s)
+                                s:AlignTop(2)
+                                s:AlignRight(2)
+                                s:SetSize(12, 12)
+                            end
+                            star:SetTooltip("Favorite")
+                            ic:AddLayer(star)
+                            ic:EnableMousePassthrough(star)
+                        end
+                    end
+                end
+
+                -- Slot marker icon
+                ic.slot = 1
+                if ItemIsWeapon(item) and showSlotVar:GetBool() then
+                    local slot = vgui.Create("SimpleIconLabelled")
+                    slot:SetIcon("vgui/ttt/sprite_slot_cap")
+                    slot:SetIconColor(ROLE_COLORS[ply:GetRole()] or COLOR_GREY)
+                    slot:SetIconSize(16)
+
+                    slot:SetIconText(item.slot)
+                    ic.slot = item.slot
+
+                    -- Credit to @Angela on the Lonely Yogs Discord for the fix!
+                    -- Clamp the item slot within the correct limits
+                    if ic.slot ~= nil then
+                        if ic.slot > #paneltable then
+                            ic.slot = #paneltable
+                        elseif ic.slot < 1 then
+                            ic.slot = 1
+                        end
+                    end
+
+                    slot:SetIconProperties(COLOR_WHITE,
+                        "DefaultBold",
+                        { opacity = 220, offset = 1 },
+                        { 9, 8 })
+
+                    ic:AddLayer(slot)
+                    ic:EnableMousePassthrough(slot)
+                end
+
+                ic:SetIconSize(itemSize)
+                ic:SetIcon(item.material)
+            elseif item.model then
+                ic = vgui.Create("SpawnIcon", dlist)
+                ic:SetModel(item.model)
+            else
+                ErrorNoHalt("Equipment item does not have model or material specified: " .. tostring(item) .. "\n")
+            end
+
+            ic.item = item
+            ic.name = item.name
+
+            local tip = SafeTranslate(item.name) .. " (" .. SafeTranslate(item.type) .. ")"
+            ic:SetTooltip(tip)
+
+            -- If we cannot order this item, darken it
+            if ((not can_order) or
+                    -- already owned
+                    table.HasValue(owned_ids, item.id) or
+                    (tonumber(item.id) and ply:HasEquipmentItem(tonumber(item.id))) or
+                    -- already carrying a weapon for this slot
+                    (ItemIsWeapon(item) and (not CanCarryWeapon(item))) or
+                    -- already bought the item before
+                    (item.limited and ply:HasBought(tostring(item.id)))) then
+
+                ic:SetIconColor(color_darkened)
+            end
+
+            if ic.favorite then
+                paneltablefav[ic.slot or 1][k] = ic
+            else
+                paneltable[ic.slot or 1][k] = ic
+            end
+        end
+
+        -- add favorites first
+        for i = 1, 9 do
+            for _, panel in pairs(paneltablefav[i]) do
+                dlist:AddPanel(panel)
+            end
+        end
+        -- non favorites second
+        for i = 1, 9 do
+            for _, panel in pairs(paneltable[i]) do
+                dlist:AddPanel(panel)
+            end
+        end
+    end
+    dsearch.OnValueChange = function(box, value)
+        local roleitems = GetEquipmentForRole(ply:GetRole())
+        local filtered = {}
+        for _, v in pairs(roleitems) do
+            if v and v["name"] and string.find(SafeTranslate(v["name"]):lower(), value:lower()) then
+                table.insert(filtered, v)
+            end
+        end
+        FillEquipmentList(filtered)
+    end
 
     local items = GetEquipmentForRole(ply:GetRole())
 
     local to_select = nil
 
-    -- temp table for sorting
-    local paneltablefav = {}
-    local paneltable = {}
-    for i = 1, 9 do
-        paneltablefav[i] = {}
-        paneltable[i] = {}
-    end
-
-    for k, item in pairs(items) do
-        local ic = nil
-
-        -- Create icon panel
-        if item.material then
-            ic = vgui.Create("LayeredIcon", dlist)
-
-            if item.custom and showCustomVar:GetBool() then
-                -- Custom marker icon
-                local marker = vgui.Create("DImage")
-                marker:SetImage("vgui/ttt/custom_marker")
-                marker.PerformLayout = function(s)
-                    s:AlignBottom(2)
-                    s:AlignRight(2)
-                    s:SetSize(16, 16)
-                end
-                marker:SetTooltip(GetTranslation("equip_custom"))
-
-                ic:AddLayer(marker)
-
-                ic:EnableMousePassthrough(marker)
-            end
-
-            -- Favorites marker icon
-            ic.favorite = false
-            local favorites = GetFavorites(ply:SteamID(), ply:GetRole())
-            if favorites then
-                if IsFavorite(favorites, item.id) then
-                    ic.favorite = true
-                    if showFavoriteVar:GetBool() then
-                        local star = vgui.Create("DImage")
-                        star:SetImage("icon16/star.png")
-                        star.PerformLayout = function(s)
-                            s:AlignTop(2)
-                            s:AlignRight(2)
-                            s:SetSize(12, 12)
-                        end
-                        star:SetTooltip("Favorite")
-                        ic:AddLayer(star)
-                        ic:EnableMousePassthrough(star)
-                    end
-                end
-            end
-
-            -- Slot marker icon
-            ic.slot = 1
-            if ItemIsWeapon(item) and showSlotVar:GetBool() then
-                local slot = vgui.Create("SimpleIconLabelled")
-                slot:SetIcon("vgui/ttt/sprite_slot_cap")
-                slot:SetIconColor(ROLE_COLORS[ply:GetRole()] or COLOR_GREY)
-                slot:SetIconSize(16)
-
-                slot:SetIconText(item.slot)
-                ic.slot = item.slot
-
-                -- Credit to @Angela on the Lonely Yogs Discord for the fix!
-                -- Clamp the item slot within the correct limits
-                if ic.slot ~= nil then
-                    if ic.slot > #paneltable then
-                        ic.slot = #paneltable
-                    elseif ic.slot < 1 then
-                        ic.slot = 1
-                    end
-                end
-
-                slot:SetIconProperties(COLOR_WHITE,
-                    "DefaultBold",
-                    { opacity = 220, offset = 1 },
-                    { 9, 8 })
-
-                ic:AddLayer(slot)
-                ic:EnableMousePassthrough(slot)
-            end
-
-            ic:SetIconSize(itemSize)
-            ic:SetIcon(item.material)
-        elseif item.model then
-            ic = vgui.Create("SpawnIcon", dlist)
-            ic:SetModel(item.model)
-        else
-            ErrorNoHalt("Equipment item does not have model or material specified: " .. tostring(item) .. "\n")
-        end
-
-        ic.item = item
-
-        local tip = SafeTranslate(item.name) .. " (" .. SafeTranslate(item.type) .. ")"
-        ic:SetTooltip(tip)
-
-        -- If we cannot order this item, darken it
-        if ((not can_order) or
-                -- already owned
-                table.HasValue(owned_ids, item.id) or
-                (tonumber(item.id) and ply:HasEquipmentItem(tonumber(item.id))) or
-                -- already carrying a weapon for this slot
-                (ItemIsWeapon(item) and (not CanCarryWeapon(item))) or
-                -- already bought the item before
-                (item.limited and ply:HasBought(tostring(item.id)))) then
-
-            ic:SetIconColor(color_darkened)
-        end
-
-        if ic.favorite then
-            paneltablefav[ic.slot or 1][k] = ic
-        else
-            paneltable[ic.slot or 1][k] = ic
-        end
-    end
-
-    -- add favorites first
-    for i = 1, 9 do
-        for _, panel in pairs(paneltablefav[i]) do
-            dlist:AddPanel(panel)
-        end
-    end
-    -- non favorites second
-    for i = 1, 9 do
-        for _, panel in pairs(paneltable[i]) do
-            dlist:AddPanel(panel)
-        end
-    end
+    FillEquipmentList(items)
 
     local bw, bh = 100, 25
 
@@ -722,13 +748,13 @@ function GM:OnContextMenuOpen()
     if r == ROUND_ACTIVE and not (LocalPlayer():GetTraitor() or LocalPlayer():GetDetective() or LocalPlayer():GetMercenary() or LocalPlayer():GetZombie() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetAssassin() or LocalPlayer():GetKiller()) then
         return
     elseif r == ROUND_POST or r == ROUND_PREP then
-        CLSCORE:Reopen()
+        CLSCORE:Toggle()
         return
     end
     if eqframe and IsValid(eqframe) then
-        ForceCloseTraitorMenu(LocalPlayer())
+        ForceCloseTraitorMenu()
     else
-        RunConsoleCommand("ttt_cl_traitorpopup")
+        TraitorMenuPopup()
     end
 end
 
