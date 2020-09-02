@@ -1181,6 +1181,7 @@ end
 function SelectRoles()
     local choices = {}
     local prev_roles = {
+        [ROLE_NONE] = {},
         [ROLE_INNOCENT] = {},
         [ROLE_TRAITOR] = {},
         [ROLE_DETECTIVE] = {},
