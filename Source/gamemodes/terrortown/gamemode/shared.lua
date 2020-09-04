@@ -298,6 +298,7 @@ DefaultEquipment = {
 	[ROLE_HYPNOTIST] = {
 		EQUIP_ARMOR,
 		EQUIP_RADAR,
+		EQUIP_DISGUISE,
 		"weapon_ttt_health_station"
 	},
 	[ROLE_VAMPIRE] = {
@@ -307,6 +308,7 @@ DefaultEquipment = {
 	[ROLE_ASSASSIN] = {
 		EQUIP_ARMOR,
 		EQUIP_RADAR,
+		EQUIP_DISGUISE,
 		"weapon_ttt_health_station"
 	},
 	[ROLE_ZOMBIE] = {
@@ -329,7 +331,8 @@ DefaultEquipment = {
 		"weapon_zm_sledge",
 		"weapon_ttt_glock",
 		EQUIP_ARMOR,
-		EQUIP_RADAR
+		EQUIP_RADAR,
+		EQUIP_DISGUISE
 	},
 	-- non-buyable
 	[ROLE_NONE] = {

@@ -108,7 +108,15 @@ EquipmentItems = {
 			material = mat_dir .. "icon_radar",
 			name = "item_radar",
 			desc = "item_radar_desc"
-		}
+		},
+
+        -- disguiser
+        {  id       = EQUIP_DISGUISE,
+           type     = "item_active",
+           material = mat_dir .. "icon_disguise",
+           name     = "item_disg",
+           desc     = "item_disg_desc"
+        }
 	};
 
 	[ROLE_VAMPIRE] = {
@@ -139,7 +147,15 @@ EquipmentItems = {
 			material = mat_dir .. "icon_radar",
 			name = "item_radar",
 			desc = "item_radar_desc"
-		}
+		},
+
+        -- disguiser
+        {  id       = EQUIP_DISGUISE,
+           type     = "item_active",
+           material = mat_dir .. "icon_disguise",
+           name     = "item_disg",
+           desc     = "item_disg_desc"
+        }
 	};
 
 	[ROLE_KILLER] = {
@@ -159,7 +175,15 @@ EquipmentItems = {
 			material = mat_dir .. "icon_radar",
 			name = "item_radar",
 			desc = "item_radar_desc"
-		}
+		},
+
+        -- disguiser
+        {  id       = EQUIP_DISGUISE,
+           type     = "item_active",
+           material = mat_dir .. "icon_disguise",
+           name     = "item_disg",
+           desc     = "item_disg_desc"
+        }
 	};
 
 	[ROLE_ZOMBIE] = {
@@ -209,6 +233,14 @@ EquipmentItems = {
 			name = "item_radar",
 			desc = "item_radar_desc"
 		},
+
+        -- disguiser
+        {  id       = EQUIP_DISGUISE,
+           type     = "item_active",
+           material = mat_dir .. "icon_disguise",
+           name     = "item_disg",
+           desc     = "item_disg_desc"
+        }
 	};
 };
 
