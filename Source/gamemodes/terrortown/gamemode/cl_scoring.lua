@@ -108,6 +108,30 @@ local function InsertRevivedPlayer(name)
     table.insert(revived, name)
 end
 
+local function RemoveZombification(name)
+    -- Remove any record of this player being zombified
+    local zomIndex = FindTableIndex(zombified, name)
+    if zomIndex > 0 then
+        table.remove(zombified, zomIndex)
+    end
+end
+
+local function RemoveVampificiation(name)
+    -- Remove any record of this player being vampified
+    local vamIndex = FindTableIndex(vampified, name)
+    if vamIndex > 0 then
+        table.remove(vampified, vamIndex)
+    end
+end
+
+local function RemoveHypnotization(name)
+    -- Remove any record of this player being hypnotized
+    local hypIndex = FindTableIndex(hypnotised, name)
+    if hypIndex > 0 then
+        table.remove(hypnotised, hypIndex)
+    end
+end
+
 net.Receive("TTT_JesterKiller", function(len)
     jesterkiller = net.ReadString()
     jestervictim = net.ReadString()
@@ -121,17 +145,8 @@ net.Receive("TTT_Hypnotised", function(len)
     local name = net.ReadString()
     InsertPlayerToTable(hypnotised, name)
 
-    -- Remove any record of this player being zombified
-    local zomIndex = FindTableIndex(zombified, name)
-    if zomIndex > 0 then
-        table.remove(zombified, zomIndex)
-    end
-
-    -- Remove any record of this player being vampified
-    local vamIndex = FindTableIndex(vampified, name)
-    if vamIndex > 0 then
-        table.remove(vampified, vamIndex)
-    end
+    RemoveZombification(name)
+    RemoveVampificiation(name)
 
     AddEvent({
         id = EVENT_HYPNOTISED,
@@ -152,11 +167,8 @@ net.Receive("TTT_Zombified", function(len)
     local name = net.ReadString()
     InsertPlayerToTable(zombified, name)
 
-    -- Remove any record of this player being hypnotized
-    local hypIndex = FindTableIndex(hypnotised, name)
-    if hypIndex > 0 then
-        table.remove(hypnotised, hypIndex)
-    end
+    RemoveHypnotization(name)
+
     AddEvent({
         id = EVENT_ZOMBIFIED,
         vic = name
@@ -167,11 +179,8 @@ net.Receive("TTT_Vampified", function(len)
     local name = net.ReadString()
     InsertPlayerToTable(vampified, name)
 
-    -- Remove any record of this player being hypnotized
-    local hypIndex = FindTableIndex(hypnotised, name)
-    if hypIndex > 0 then
-        table.remove(hypnotised, hypIndex)
-    end
+    RemoveHypnotization(name)
+
     AddEvent({
         id = EVENT_VAMPIFIED,
         vic = name
@@ -218,6 +227,9 @@ net.Receive("TTT_RoleChanged", function(len)
     local name = "UNKNOWN"
     if IsValid(ply) then
         name = ply:Nick()
+        RemoveZombification(name)
+        RemoveVampificiation(name)
+        RemoveHypnotization(name)
     end
 
     AddEvent({
