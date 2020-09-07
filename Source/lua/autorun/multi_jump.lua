@@ -29,6 +29,8 @@ local function GetMoveVector(mv)
 end
 
 hook.Add("SetupMove", "Multi Jump", function(ply, mv)
+    if gmod.GetGamemode().Name ~= "Trouble in Terrorist Town" then return end
+
     -- Let the engine handle movement from the ground
     -- Only set the 'jumped' flag if that functionality is enabled
     if ply:OnGround() and mv:KeyPressed(IN_JUMP) and ply:GetJumped() ~= -1 then
