@@ -302,7 +302,12 @@ end
 -- Preps a player for a new round, spawning them if they should. If dead_only is
 -- true, only spawns if player is dead, else just makes sure he is healed.
 function plymeta:SpawnForRound(dead_only, round_start)
-	hook.Call("PlayerSetModel", GAMEMODE, self)
+    local max_rounds = GetConVar("ttt_round_limit"):GetInt()
+    local rounds_left = GetGlobalInt("ttt_rounds_left", max_rounds)
+    local round_number = max_rounds - rounds_left
+    if round_start and ((round_number == 0 and GetConVar("ttt_player_set_model_on_initial_spawn"):GetBool()) or GetConVar("ttt_player_set_model_on_new_round"):GetBool()) then
+        hook.Call("PlayerSetModel", GAMEMODE, self)
+    end
 	hook.Call("TTTPlayerSetColor", GAMEMODE, self)
 
 	-- wrong alive status and not a willing spec who unforced after prep started

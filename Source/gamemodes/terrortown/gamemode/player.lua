@@ -8,10 +8,14 @@ local pairs = pairs
 local deadPhantom = nil
 
 CreateConVar("ttt_bots_are_spectators", "0", FCVAR_ARCHIVE)
-CreateConVar("ttt_dyingshot", "0")
+CreateConVar("ttt_dyingshot", "0", FCVAR_ARCHIVE)
 
-CreateConVar("ttt_killer_dna_range", "550")
-CreateConVar("ttt_killer_dna_basetime", "100")
+CreateConVar("ttt_player_set_model_on_new_round", "1", FCVAR_ARCHIVE)
+CreateConVar("ttt_player_set_model_on_initial_spawn", "1", FCVAR_ARCHIVE)
+CreateConVar("ttt_player_set_model_on_respawn", "1", FCVAR_ARCHIVE)
+
+CreateConVar("ttt_killer_dna_range", "550", FCVAR_ARCHIVE)
+CreateConVar("ttt_killer_dna_basetime", "100", FCVAR_ARCHIVE)
 
 CreateConVar("ttt_killer_vision_enable", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_zombie_vision_enable", "1", FCVAR_ARCHIVE)
@@ -120,7 +124,9 @@ function GM:PlayerSpawn(ply)
 
     -- ye olde hooks
     hook.Call("PlayerLoadout", GAMEMODE, ply)
-    hook.Call("PlayerSetModel", GAMEMODE, ply)
+    if GetRoundState() == ROUND_ACTIVE and GetConVar("ttt_player_set_model_on_respawn"):GetBool() then
+        hook.Call("PlayerSetModel", GAMEMODE, ply)
+    end
     hook.Call("TTTPlayerSetColor", GAMEMODE, ply)
 
     ply:SetupHands()
