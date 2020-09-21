@@ -73,7 +73,9 @@ function ScoreGroup(p)
 		return group
 	end
 
-	if DetectiveMode() then
+    if DetectiveMode() then
+        -- Show players who used the Dead Ringer as "Missing in Action"
+        if p.IsFakeDead and p:IsFakeDead() then return GROUP_NOTFOUND end
 		if p:IsSpec() and (not p:Alive()) then
 			if p:GetNWBool("body_searched", false) then
 				return GROUP_SEARCHED
@@ -411,7 +413,7 @@ function PANEL:UpdateScoreboard(force)
 
 	-- Put players where they belong. Groups will dump them as soon as they don't
 	-- anymore.
-	for k, p in pairs(player.GetAll()) do
+	for _, p in pairs(player.GetAll()) do
 		if IsValid(p) then
 			local group = ScoreGroup(p)
 			if self.ply_groups[group] and not self.ply_groups[group]:HasPlayerRow(p) then
@@ -421,7 +423,7 @@ function PANEL:UpdateScoreboard(force)
 		end
 	end
 
-	for k, group in pairs(self.ply_groups) do
+	for _, group in pairs(self.ply_groups) do
 		if IsValid(group) then
 			group:SetVisible(group:HasRows())
 			group:UpdatePlayerData()
