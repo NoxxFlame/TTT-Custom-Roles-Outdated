@@ -45,6 +45,8 @@ function plymeta:GetInnocentTeam() return self:GetDetective() or self:GetInnocen
 
 function plymeta:GetMonsterTeam() return self:GetZombie() or self:GetVampire() end
 
+function plymeta:GetMonsterAlly() return self:GetMonsterTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and self:GetTraitorTeam()) end
+
 function plymeta:GetJesterTeam() return self:GetJester() or self:GetSwapper() end
 
 plymeta.IsInnocent = plymeta.GetInnocent
@@ -65,6 +67,7 @@ plymeta.IsTraitorTeam = plymeta.GetTraitorTeam
 plymeta.IsInnocentTeam = plymeta.GetInnocentTeam
 plymeta.IsMonsterTeam = plymeta.GetMonsterTeam
 plymeta.IsJesterTeam = plymeta.GetJesterTeam
+plymeta.IsMonsterAlly = plymeta.GetMonsterAlly
 
 function plymeta:IsSpecial() return self:GetRole() ~= ROLE_INNOCENT end
 
