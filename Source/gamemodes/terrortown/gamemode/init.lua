@@ -1356,7 +1356,7 @@ function SelectRoles()
                     pply:SetRole(ROLE_HYPNOTIST)
                     hasSpecial = true
                 -- Include Vampires only if Monsters are considered traitors
-				elseif GetConVar("ttt_monsters_are_traitors"):GetBool() && ts >= GetConVar("ttt_vampire_required_traitors"):GetInt() and GetConVar("ttt_vampire_enabled"):GetBool() and math.random() <= vampire_chance and not hasSpecial then
+				elseif GetConVar("ttt_monsters_are_traitors"):GetBool() and ts >= GetConVar("ttt_vampire_required_traitors"):GetInt() and GetConVar("ttt_vampire_enabled"):GetBool() and math.random() <= vampire_chance and not hasSpecial then
 					print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Vampire")
 					pply:SetRole(ROLE_VAMPIRE)
 					hasSpecial = true
