@@ -107,9 +107,9 @@ function SWEP:PrimaryAttack()
 
             self:Eat(tr.Entity)
         elseif ent:IsPlayer() then
-            if ent:GetJester() or ent:GetSwapper() then
+            if ent:IsJesterTeam() then
                 self:Error("TARGET IS A JESTER")
-            elseif ent:GetZombie() or ent:GetVampire() then
+            elseif ent:IsMonsterAlly() then
                 self:Error("TARGET IS AN ALLY")
             else
                 self:Drain(ent)
