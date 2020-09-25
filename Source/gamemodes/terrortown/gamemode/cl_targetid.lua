@@ -58,6 +58,19 @@ local indicator_col = Color(255, 255, 255, 130)
 
 local propspec_outline = Material("models/props_combine/portalball001_sheet")
 
+local function ShowTraitorIcon(ply, pos, dir)
+    if ply:IsTraitor() or ply:IsGlitch() then
+        render.SetMaterial(indicator_mattra_noz)
+        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+    elseif ply:IsHypnotist() then
+        render.SetMaterial(indicator_mathyp_noz)
+        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+    elseif ply:IsAssassin() then
+        render.SetMaterial(indicator_matass_noz)
+        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+    end
+end
+
 -- using this hook instead of pre/postplayerdraw because playerdraw seems to
 -- happen before certain entities are drawn, which then clip over the sprite
 function GM:PostDrawTranslucentRenderables()
@@ -140,89 +153,94 @@ function GM:PostDrawTranslucentRenderables()
             pos.z = pos.z + 74
             local revealed = v:GetNWBool('RoleRevealed', false)
             -- Only show the "KILL" target if the setting is enabled
-            local showkillicon = (client:GetRole() == ROLE_ZOMBIE and GetGlobalBool("ttt_zombie_show_target_icon")) or
-                (client:GetRole() == ROLE_VAMPIRE and GetGlobalBool("ttt_vampire_show_target_icon")) or
-                (client:GetRole() == ROLE_KILLER and GetGlobalBool("ttt_killer_show_target_icon")) or
-                (client:GetRole() == ROLE_ASSASSIN and GetGlobalBool("ttt_assassin_show_target_icon") and client:GetNWString("AssassinTarget") == v:GetName())
+            local showkillicon = (client:IsZombie() and GetGlobalBool("ttt_zombie_show_target_icon")) or
+                (client:IsVampire() and GetGlobalBool("ttt_vampire_show_target_icon")) or
+                (client:IsKiller() and GetGlobalBool("ttt_killer_show_target_icon")) or
+                (client:IsAssassin() and GetGlobalBool("ttt_assassin_show_target_icon") and client:GetNWString("AssassinTarget") == v:GetName())
 
             -- Don't show the detective icon for the roles that have "KILL" above everyone's head
-            if v:GetRole() == ROLE_DETECTIVE and not showkillicon then
+            if v:IsDetective() and not showkillicon then
                 render.SetMaterial(indicator_matdet)
                 render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
             end
-            if revealed and client:GetRole() == ROLE_DETECTIVE then
-                if v:GetRole() == ROLE_INNOCENT then
+            if revealed and client:IsDetective() then
+                if v:IsInnocent() then
                     render.SetMaterial(indicator_matinn)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_GLITCH then
+                elseif v:IsGlitch() then
                     render.SetMaterial(indicator_matgli)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_MERCENARY then
+                elseif v:IsMercenary() then
                     render.SetMaterial(indicator_matmer)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_PHANTOM then
+                elseif v:IsPhantom() then
                     render.SetMaterial(indicator_matpha)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_TRAITOR then
+                elseif v:IsTraitor() then
                     render.SetMaterial(indicator_mattra)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_ASSASSIN then
+                elseif v:IsAssassin() then
                     render.SetMaterial(indicator_matass)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_HYPNOTIST then
+                elseif v:IsHypnotist() then
                     render.SetMaterial(indicator_mathyp)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_VAMPIRE then
+                elseif v:IsVampire() then
                     render.SetMaterial(indicator_matvam)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_ZOMBIE then
+                elseif v:IsZombie() then
                     render.SetMaterial(indicator_matzom)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_JESTER then
+                elseif v:IsJester() then
                     render.SetMaterial(indicator_matjes)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_SWAPPER then
+                elseif v:IsSwapper() then
                     render.SetMaterial(indicator_matswa)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                elseif v:GetRole() == ROLE_KILLER then
+                elseif v:IsKiller() then
                     render.SetMaterial(indicator_matkil)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                 end
             end
             if not hide_roles then
                 if client:IsTraitorTeam() then
-                    if v:GetRole() == ROLE_TRAITOR or v:GetRole() == ROLE_GLITCH then
-                        render.SetMaterial(indicator_mattra_noz)
-                        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    elseif v:GetRole() == ROLE_HYPNOTIST then
-                        render.SetMaterial(indicator_mathyp_noz)
-                        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    elseif v:GetRole() == ROLE_ASSASSIN then
-                        render.SetMaterial(indicator_matass_noz)
-                        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    elseif v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
+                    if v:IsTraitorTeam() or v:IsGlitch() then
+                        ShowTraitorIcon(v, pos, dir)
+                    elseif v:IsJesterTeam() then
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                    -- If Monsters-as-Traitors is enabled and the target is a Monster, show icons
+                    elseif client:IsMonsterAlly() and v:IsMonsterTeam() then
+                        if v:IsZombie() then
+                            render.SetMaterial(indicator_matzom_noz)
+                            render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                        elseif v:IsVampire() then
+                            render.SetMaterial(indicator_matvam_noz)
+                            render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                        end
                     elseif showkillicon then
                         render.SetMaterial(indicator_mat_target)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
                 elseif client:IsMonsterTeam() then
-                    if v:GetRole() == ROLE_ZOMBIE then
+                    if v:IsZombie() then
                         render.SetMaterial(indicator_matzom_noz)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    elseif v:GetRole() == ROLE_VAMPIRE then
+                    elseif v:IsVampire() then
                         render.SetMaterial(indicator_matvam_noz)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    elseif v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
+                    elseif v:IsJesterTeam() then
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                    -- Since Zombie and Vampire were already handled above, this will only cover the traitor team and only if Monsters-as-Traitors is enabled
+                    elseif v:IsMonsterAlly() then
+                        ShowTraitorIcon(v, pos, dir)
                     elseif showkillicon then
                         render.SetMaterial(indicator_mat_target)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
-                elseif client:GetRole() == ROLE_KILLER then
-                    if v:IsJesterTeam() then
+                elseif client:IsKiller() then
+                    if v:Is1JesterTeam() then
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     elseif showkillicon then
@@ -392,44 +410,58 @@ function GM:HUDDrawTargetID()
             _, color = util.HealthToString(ent:Health(), ent:GetMaxHealth())
         end
         local revealed = ent:GetNWBool('RoleRevealed', false)
-        if GetRoundState() == ROUND_ACTIVE and client:GetRole() == ROLE_DETECTIVE and revealed then
-            target_innocent = ent:IsRole(ROLE_INNOCENT)
-            target_glitch = ent:IsRole(ROLE_GLITCH)
-            target_mercenary = ent:IsRole(ROLE_MERCENARY)
-            target_phantom = ent:IsRole(ROLE_PHANTOM)
-            target_traitor = ent:IsRole(ROLE_TRAITOR)
-            target_assassin = ent:IsRole(ROLE_ASSASSIN)
-            target_hypnotist = ent:IsRole(ROLE_HYPNOTIST)
-            target_vampire = ent:IsRole(ROLE_VAMPIRE)
-            target_zombie = ent:IsRole(ROLE_ZOMBIE)
-            target_jester = ent:IsRole(ROLE_JESTER)
-            target_swapper = ent:IsRole(ROLE_SWAPPER)
-            target_killer = ent:IsRole(ROLE_KILLER)
+        if GetRoundState() == ROUND_ACTIVE and client:IsDetective() and revealed then
+            target_innocent = ent:IsInnocent()
+            target_glitch = ent:IsGlitch()
+            target_mercenary = ent:IsMercenary()
+            target_phantom = ent:IsPhantom()
+            target_traitor = ent:IsTraitor()
+            target_assassin = ent:IsAssassin()
+            target_hypnotist = ent:IsHypnotist()
+            target_vampire = ent:IsVampire()
+            target_zombie = ent:IsZombie()
+            target_jester = ent:IsJester()
+            target_swapper = ent:IsSwapper()
+            target_killer = ent:IsKiller()
         end
         if client:IsTraitorTeam() and GetRoundState() == ROUND_ACTIVE then
-            target_glitch = ent:IsRole(ROLE_GLITCH)
-            if client:GetRole() == ROLE_TRAITOR then
-                target_fellow_traitor = ent:IsRole(ROLE_TRAITOR) or target_glitch
+            target_glitch = ent:IsGlitch()
+            if client:IsTraitor() then
+                target_fellow_traitor = ent:IsTraitor() or target_glitch
             else
-                target_traitor = ent:IsRole(ROLE_TRAITOR) or target_glitch
+                target_traitor = ent:IsTraitor() or target_glitch
             end
-            target_hypnotist = ent:IsRole(ROLE_HYPNOTIST)
-            target_jester = ent:IsRole(ROLE_JESTER) or ent:IsRole(ROLE_SWAPPER)
-            target_assassin = ent:IsRole(ROLE_ASSASSIN)
+            target_hypnotist = ent:IsHypnotist()
+            target_assassin = ent:IsAssassin()
+            target_jester = ent:IsJesterTeam()
+
+            -- Show monster icons if Monsters-as-Traitors is enabled
+            if client:IsMonsterAlly() and ent:IsMonsterTeam() then
+                target_vampire = ent:IsVampire()
+                target_zombie = ent:IsZombie()
+            end
         end
         if client:IsMonsterTeam() and GetRoundState() == ROUND_ACTIVE then
-            if client:GetRole() == ROLE_ZOMBIE then
-                target_fellow_zombie = ent:IsRole(ROLE_ZOMBIE)
+            if client:IsZombie() then
+                target_fellow_zombie = ent:IsZombie()
             else
-                target_zombie = ent:IsRole(ROLE_ZOMBIE)
+                target_zombie = ent:IsZombie()
             end
-            target_vampire = ent:IsRole(ROLE_VAMPIRE)
+            target_vampire = ent:IsVampire()
+
+            -- Show traitor icons if Monsters-as-Traitors is enabled
+            if GetGlobalBool("ttt_monsters_are_traitors") then
+                target_glitch = ent:IsGlitch()
+                target_traitor = ent:IsTraitor() or target_glitch
+                target_hypnotist = ent:IsHypnotist()
+                target_assassin = ent:IsAssassin()
+            end
         end
-        if client:GetRole() == ROLE_ASSASSIN and GetRoundState() == ROUND_ACTIVE then
+        if client:IsAssassin() and GetRoundState() == ROUND_ACTIVE then
             target_current_target = (ent:Nick() == client:GetNWString("AssassinTarget", ""))
         end
 
-        target_detective = GetRoundState() > ROUND_PREP and (ent:GetRole() == ROLE_DETECTIVE) or false
+        target_detective = GetRoundState() > ROUND_PREP and ent:IsDetective()
     elseif cls == "prop_ragdoll" then
         -- only show this if the ragdoll has a nick, else it could be a mattress
         if CORPSE.GetPlayerNick(ent, false) == false then return end
@@ -460,7 +492,7 @@ function GM:HUDDrawTargetID()
             surface.SetDrawColor(0, 255, 0, 200)
         elseif target_detective then
             surface.SetDrawColor(0, 0, 255, 200)
-        elseif target_glitch and client:GetRole() == ROLE_DETECTIVE then
+        elseif target_glitch and client:IsDetective() then
             surface.SetDrawColor(245, 106, 0, 200)
         elseif target_mercenary then
             surface.SetDrawColor(245, 200, 0, 200)
@@ -578,7 +610,7 @@ function GM:HUDDrawTargetID()
     elseif target_detective then
         text = L.target_detective
         clr = Color(0, 0, 255, 200)
-    elseif target_glitch and client:GetRole() == ROLE_DETECTIVE then
+    elseif target_glitch and client:IsDetective() then
         text = L.target_glitch
         clr = Color(245, 106, 0, 200)
     elseif target_mercenary then
