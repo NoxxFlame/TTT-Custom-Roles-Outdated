@@ -799,28 +799,37 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
     if ply:Nick() == assassintarget then
         for _, v in pairs(player.GetAll()) do
             if v:IsAssassin() then
-                local innocents = {}
+                local enemies = {}
                 local detectives = {}
                 for _, p in pairs(player.GetAll()) do
                     if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
-                        if p:IsInnocent() or p:IsPhantom() or p:IsMercenary() or p:IsKiller() or p:IsZombie() or p:IsVampire() then
-                            table.insert(innocents, p:Nick())
+                        -- Exclude Glitch from this list so they don't get discovered immediately
+                        if p:IsInnocent() or p:IsPhantom() or p:IsMercenary() or p:IsKiller() then
+                            table.insert(enemies, p:Nick())
+                        -- Count monsters as enemies if Monsters-as-Traitors is not enabled
+                        elseif not GetGlobalBool("ttt_monsters_are_traitors") and (p:IsZombie() or p:IsVampire()) then
+                            table.insert(enemies, p:Nick())
                         elseif p:IsDetective() then
                             table.insert(detectives, p:Nick())
                         end
                     end
                 end
-                if #innocents > 0 then
-                    v:SetNWString("AssassinTarget", innocents[math.random(#innocents)])
-                    --v:PrintMessage( HUD_PRINTTALK, "There is an innocent left")
+                if #enemies > 0 then
+                    v:SetNWString("AssassinTarget", enemies[math.random(#enemies)])
                 elseif #detectives > 0 then
                     v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
-                    --v:PrintMessage( HUD_PRINTTALK, "There is a detective left")
                 end
-                if #innocents + #detectives > 1 then
-                    v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your next target is " .. v:GetNWString("AssassinTarget", ""))
-                elseif #innocents + #detectives == 1 then
-                    v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your final target is " .. v:GetNWString("AssassinTarget", ""))
+
+                if #enemies + #detectives >= 1 then
+                    local targetCount
+                    if #enemies + #detectives > 1 then
+                        targetCount = "next"
+                    elseif #enemies + #detectives == 1 then
+                        targetCount = "final"
+                    end
+                    local targetMessage = "Your " .. targetCount .. " target is " .. v:GetNWString("AssassinTarget", "")
+                    v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. " .. targetMessage)
+                    v:PrintMessage(HUD_PRINTTALK, targetMessage)
                 end
             end
         end

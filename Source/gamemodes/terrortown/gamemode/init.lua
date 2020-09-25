@@ -842,14 +842,18 @@ function BeginRound()
     for _, v in pairs(player.GetAll()) do
         v:SetPData("IsZombifying", 0)
         v:SetNWString("AssassinTarget", "")
-        if v:GetRole() == ROLE_ASSASSIN then
+        if v:IsAssassin() then
             local enemies = {}
             local detectives = {}
             for _, p in pairs(player.GetAll()) do
-                if p:Alive() and not p:IsSpec() then
-                    if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER or p:GetRole() == ROLE_VAMPIRE or p:GetRole() == ROLE_ZOMBIE then
+                if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
+                    -- Exclude Glitch from this list so they don't get discovered immediately
+                    if p:IsInnocent() or p:IsPhantom() or p:IsMercenary() or p:IsKiller() then
                         table.insert(enemies, p:Nick())
-                    elseif p:GetRole() == ROLE_DETECTIVE then
+                    -- Count monsters as enemies if Monsters-as-Traitors is not enabled
+                    elseif not GetGlobalBool("ttt_monsters_are_traitors") and (p:IsZombie() or p:IsVampire()) then
+                        table.insert(enemies, p:Nick())
+                    elseif p:IsDetective() then
                         table.insert(detectives, p:Nick())
                     end
                 end
