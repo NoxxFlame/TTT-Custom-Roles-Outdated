@@ -35,9 +35,13 @@ local function GetTextForLocalPlayer()
         end
 
         local allies = {}
+        local glitches = {}
         for _, ply in pairs(player.GetAll()) do
             if ply:IsMonsterTeam() or ply:IsMonsterAlly() then
                 table.insert(allies, ply)
+            elseif GetGlobalBool("ttt_monsters_are_traitors") and ply:IsGlitch() then
+                table.insert(allies, ply)
+                table.insert(glitches, ply)
             end
         end
 
@@ -48,6 +52,10 @@ local function GetTextForLocalPlayer()
                 if ply ~= client then
                     allylist = allylist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                 end
+            end
+
+            if #glitches > 0 then
+                monsterlabel = monsterlabel .. "_glitch"
             end
 
             text = GetPTranslation(monsterlabel, { menukey = menukey, allylist = allylist })
