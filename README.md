@@ -23,7 +23,9 @@ Goal: Kill all non-team members (except Jester/Swapper)\
 Goal: Kill all non-monsters (except Jester/Swapper)\
 \
 **Vampire** - Kill players and use your fangs to convert other players, regain health, and fade from view\
-**Zombie** - Kill players with your claws to make more zombies
+**Zombie** - Kill players with your claws to make more zombies\
+\
+NOTE: Vampire and Zombie can be included in the Traitor team via the _ttt_monsters_are_traitors_ ConVar. See [Configuration](CONVARS.md) for more information
 
 # Independent Players
 Goal: Work on your own to win the round by playing your role carefully\
