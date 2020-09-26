@@ -195,7 +195,7 @@ local function GetImagePath(idx)
     local image_path = Format(imgpath, idx)
 
     -- Show the Traitor version of the Zombie and Vampire images if Monsters-as-Traitors is enabled
-    if idx == 14 or idx == 15 and GetGlobalBool("ttt_monsters_are_traitors") then
+    if (idx == 14 or idx == 15) and GetGlobalBool("ttt_monsters_are_traitors") then
         image_path = image_path .. "_t"
     end
 
