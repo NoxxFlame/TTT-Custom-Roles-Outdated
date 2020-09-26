@@ -758,7 +758,7 @@ The haunting will then spread if other players kill your attacker.]]
 L.info_popup_zombie = [[You are a Zombie! Work with fellow monsters to kill all others.
 
 These are your comrades:
-{monsterlist}
+{allylist}
 
 All damage you deal with guns is reduced by one half.
 Killing someone with your claws will turn them into a zombie.
@@ -777,7 +777,7 @@ Press {menukey} to receive your special equipment!]]
 L.info_popup_vampire = [[You are a Vampire! Work with fellow monsters to kill all others.
 
 These are your comrades:
-{monsterlist}
+{allylist}
 
 You can use your fangs (left-click) to drink blood from the living and the dead to refill your health or to fade from view (right-click).
 

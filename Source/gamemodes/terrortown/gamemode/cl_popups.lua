@@ -4,66 +4,66 @@ local GetTranslation = LANG.GetTranslation
 local GetPTranslation = LANG.GetParamTranslation
 
 -- Round start
-local function GetTextForRole(role)
+local function GetTextForLocalPlayer()
     local menukey = Key("+menu_context", "C")
 
-    if role == ROLE_INNOCENT then
+    local client = LocalPlayer()
+    if client.IsInnocent() then
         return GetTranslation("info_popup_innocent")
 
-    elseif role == ROLE_DETECTIVE then
+    elseif client.IsDetective() then
         return GetPTranslation("info_popup_detective", { menukey = menukey })
 
-    elseif role == ROLE_MERCENARY then
+    elseif client.IsMercenary() then
         return GetPTranslation("info_popup_mercenary", { menukey = menukey })
 
-    elseif role == ROLE_GLITCH then
+    elseif client.IsGlitch() then
         return GetPTranslation("info_popup_glitch", { menukey = menukey })
 
-    elseif role == ROLE_JESTER then
+    elseif client.IsJester() then
         return GetPTranslation("info_popup_jester", { menukey = menukey })
 
-    elseif role == ROLE_PHANTOM then
+    elseif client.IsPhantom() then
         return GetPTranslation("info_popup_phantom", { menukey = menukey })
 
-    elseif role == ROLE_ZOMBIE or role == ROLE_VAMPIRE then
+    elseif client.IsMonsterTeam() then
         local monsterlabel = "info_popup_"
-        if role == ROLE_ZOMBIE then
+        if client.IsZombie() then
             monsterlabel = monsterlabel .. "zombie"
         else
             monsterlabel = monsterlabel .. "vampire"
         end
 
-        local monsters = {}
+        local allies = {}
         for _, ply in pairs(player.GetAll()) do
-            if ply:IsZombie() or ply:IsVampire() then
-                table.insert(monsters, ply)
+            if ply:IsMonsterTeam() or ply:IsMonsterAlly() then
+                table.insert(allies, ply)
             end
         end
 
         local text
-        if #monsters > 1 then
-            local monsterlist = ""
-
-            for _, ply in pairs(monsters) do
-                if ply ~= LocalPlayer() then
-                    monsterlist = monsterlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
+        if #allies > 1 then
+            local allylist = ""
+            for _, ply in pairs(allies) do
+                if ply ~= client then
+                    allylist = allylist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                 end
             end
 
-            text = GetPTranslation(monsterlabel, { menukey = menukey, monsterlist = monsterlist })
+            text = GetPTranslation(monsterlabel, { menukey = menukey, allylist = allylist })
         else
             text = GetPTranslation(monsterlabel .. "_alone", { menukey = menukey })
         end
 
         return text
 
-    elseif role == ROLE_SWAPPER then
+    elseif client.IsSwapper() then
         return GetPTranslation("info_popup_swapper", { menukey = menukey })
 
-    elseif role == ROLE_KILLER then
+    elseif client.IsKiller() then
         return GetPTranslation("info_popup_killer", { menukey = menukey })
 
-    elseif role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN then
+    elseif client.IsTraitorTeam() then
         local traitors = {}
         local hypnotists = {}
         local assassins = {}
@@ -80,25 +80,27 @@ local function GetTextForRole(role)
             elseif ply:IsGlitch() then
                 table.insert(traitors, ply)
                 table.insert(glitches, ply)
+            elseif ply:IsMonsterTeam() and client:IsMonsterAlly() then
+                table.insert(traitors, ply)
             end
         end
 
-        local type = (role == ROLE_HYPNOTIST and "hypnotist") or (role == ROLE_ASSASSIN and "assassin") or "traitor"
+        local type = (client.IsHypnotist() and "hypnotist") or (client.IsAssassin() and "assassin") or "traitor"
         local text
         if #traitors > 1 then
             local traitorlabel = "info_popup_" .. type
             local traitorlist = ""
 
             for _, ply in pairs(traitors) do
-                if ply ~= LocalPlayer() then
+                if ply ~= client then
                     traitorlist = traitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                 end
             end
 
             local hypnotistlist = ""
-            if #hypnotists > 0 and role ~= ROLE_HYPNOTIST then
+            if #hypnotists > 0 and not client.IsHypnotist() then
                 for _, ply in pairs(hypnotists) do
-                    if ply ~= LocalPlayer() then
+                    if ply ~= client then
                         hypnotistlist = hypnotistlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                     end
                 end
@@ -107,13 +109,13 @@ local function GetTextForRole(role)
 
             local assassintarget = nil
             if role == ROLE_ASSASSIN then
-                assassintarget = string.rep(" ", 42) .. LocalPlayer():GetNWString("AssassinTarget", "")
+                assassintarget = string.rep(" ", 42) .. client:GetNWString("AssassinTarget", "")
             end
 
             local assassinlist = ""
-            if #assassins > 0 and role ~= ROLE_ASSASSIN then
+            if #assassins > 0 and not client.IsAssassin() then
                 for _, ply in pairs(assassins) do
-                    if ply ~= LocalPlayer() then
+                    if ply ~= client then
                         assassinlist = assassinlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                     end
                 end
@@ -152,7 +154,7 @@ local function RoundStartPopup()
         draw.RoundedBox(8, 0, 0, s:GetWide(), s:GetTall(), color)
     end
 
-    local text = GetTextForRole(LocalPlayer():GetRole())
+    local text = GetTextForLocalPlayer()
 
     local dtext = vgui.Create("DLabel", dframe)
     dtext:SetFont("TabLarge")
