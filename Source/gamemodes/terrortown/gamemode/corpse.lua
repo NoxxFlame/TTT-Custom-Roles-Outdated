@@ -106,7 +106,7 @@ local function IdentifyBody(ply, rag)
 
 			if traitor then
 				-- update innocent's list of traitors
-				SendConfirmedTraitors(GetInnocentFilter(false))
+				SendConfirmedTraitors(GetNonTraitorFilter(false))
 			end
 			SCORE:HandleBodyFound(ply, deadply)
 		end

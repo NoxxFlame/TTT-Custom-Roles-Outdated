@@ -491,7 +491,7 @@ function GM:PlayerDisconnected(ply)
         SendTraitorList(GetTraitorFilter(false), nil)
 
         -- Same for confirmed traitors on innocent clients
-        SendConfirmedTraitors(GetInnocentFilter(false))
+        SendConfirmedTraitors(GetNonTraitorFilter(false))
 
         SendDetectiveList()
 

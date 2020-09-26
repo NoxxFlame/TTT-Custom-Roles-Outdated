@@ -60,7 +60,7 @@ local function RoleChatMsg(sender, role, msg)
     elseif role == ROLE_VAMPIRE or role == ROLE_ZOMBIE then
         net.Send(monstersAsTraitors and GetTraitorsAndMonstersFilter() or GetMonstersFilter())
     elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
-        net.Send(GetNonInnocentsFilter())
+        net.Send(GetTraitorsAndJestersFilter())
     else
         net.Send(GetDetectiveFilter())
     end
@@ -68,7 +68,7 @@ end
 
 -- Round start info popup
 function ShowRoundStartPopup()
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if IsValid(v) and v:Team() == TEAM_TERROR and v:Alive() then
             v:ConCommand("ttt_cl_startpopup")
         end
@@ -77,7 +77,7 @@ end
 
 local function GetPlayerFilter(pred)
     local filter = {}
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if IsValid(v) and pred(v) then
             table.insert(filter, v)
         end
@@ -141,11 +141,16 @@ function GetTraitorsFilter(alive_only)
     return GetPlayerFilter(function(p) return p:IsTraitorTeam() and (not alive_only or p:IsTerror()) end)
 end
 
+-- Anyone not part of the Traitor team
+function GetNonTraitorFilter(alive_only)
+    return GetPlayerFilter(function(p) return (p:IsInnocentTeam() or p:IsJesterTeam() or p:IsKiller() or (not GetGlobalBool("ttt_monsters_are_traitors") and p:IsMonsterTeam())) and (not alive_only or p:IsTerror()) end)
+end
+
 function GetInnocentsFilter(alive_only)
     return GetPlayerFilter(function(p) return p:IsInnocentTeam() and (not alive_only or p:IsTerror()) end)
 end
 
-function GetNonInnocentsFilter(alive_only)
+function GetTraitorsAndJestersFilter(alive_only)
     return GetPlayerFilter(function(p) return (p:IsTraitorTeam() or p:IsJesterTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and p:IsMonsterTeam())) and (not alive_only or p:IsTerror()) end)
 end
 
