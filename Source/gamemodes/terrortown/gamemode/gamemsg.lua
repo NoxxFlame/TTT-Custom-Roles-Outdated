@@ -53,12 +53,14 @@ local function RoleChatMsg(sender, role, msg)
     net.WriteUInt(role, 4)
     net.WriteEntity(sender)
     net.WriteString(msg)
+
+    local monstersAsTraitors = GetGlobalBool("ttt_monsters_are_traitors")
     if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN then
-        net.Send(GetTraitorsFilter())
+        net.Send(monstersAsTraitors and GetTraitorsAndMonstersFilter() or GetTraitorsFilter())
     elseif role == ROLE_VAMPIRE or role == ROLE_ZOMBIE then
-        net.Send(GetMonstersFilter())
+        net.Send(monstersAsTraitors and GetTraitorsAndMonstersFilter() or GetMonstersFilter())
     elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
-        net.Send(GetNonInnocentFilter())
+        net.Send(GetNonInnocentsFilter())
     else
         net.Send(GetDetectiveFilter())
     end
@@ -84,7 +86,7 @@ local function GetPlayerFilter(pred)
 end
 
 function GetTraitorFilter(alive_only)
-    return GetPlayerFilter(function(p) return p:GetTraitor() and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return p:IsTraitor() and (not alive_only or p:IsTerror()) end)
 end
 
 function GetDetectiveFilter(alive_only)
@@ -136,15 +138,23 @@ function GetInnocentFilter(alive_only)
 end
 
 function GetTraitorsFilter(alive_only)
-    return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsHypnotist() or p:IsAssassin()) and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return p:IsTraitorTeam() and (not alive_only or p:IsTerror()) end)
 end
 
-function GetNonInnocentFilter(alive_only)
-    return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsHypnotist() or p:IsAssassin() or p:IsJester() or p:IsSwapper()) and (not alive_only or p:IsTerror()) end)
+function GetInnocentsFilter(alive_only)
+    return GetPlayerFilter(function(p) return p:IsInnocentTeam() and (not alive_only or p:IsTerror()) end)
+end
+
+function GetNonInnocentsFilter(alive_only)
+    return GetPlayerFilter(function(p) return (p:IsTraitorTeam() or p:IsJesterTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and p:IsMonsterTeam())) and (not alive_only or p:IsTerror()) end)
+end
+
+function GetTraitorsAndMonstersFilter(alive_only)
+    return GetPlayerFilter(function(p) return (p:IsTraitorTeam() or p:IsMonsterTeam()) and (not alive_only or p:IsTerror()) end)
 end
 
 function GetMonstersFilter(alive_only)
-    return GetPlayerFilter(function(p) return (p:IsVampire() or p:IsZombie()) and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return p:IsMonsterTeam() and (not alive_only or p:IsTerror()) end)
 end
 
 function GetRoleFilter(role, alive_only)
@@ -216,7 +226,14 @@ function GM:PlayerSay(ply, text, team_only)
             for _, v in pairs(player.GetAll()) do
                 if v:IsGlitch() then hasGlitch = true end
             end
-            if (ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin()) and hasGlitch then
+
+            local isTraitor = ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin()
+            -- Count monsters when Monsters-as-Traitors is enabled
+            if GetGlobalBool("ttt_monsters_are_traitors") then
+                isTraitor = isTraitor or ply:IsZombie() or ply:IsVampire()
+            end
+
+            if isTraitor and hasGlitch then
                 ply:SendLua("chat.AddText(\"The glitch is scrambling your communications\")")
                 return ""
             else
