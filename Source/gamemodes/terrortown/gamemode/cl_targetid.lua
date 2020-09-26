@@ -233,7 +233,7 @@ function GM:PostDrawTranslucentRenderables()
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     -- Since Zombie and Vampire were already handled above, this will only cover the traitor team and only if Monsters-as-Traitors is enabled
-                    elseif v:IsMonsterAlly() or v:IsGlitch() then
+                    elseif GetGlobalBool("ttt_monsters_are_traitors") and (v:IsTraitorTeam() or v:IsGlitch()) then
                         ShowTraitorIcon(v, pos, dir)
                     elseif showkillicon then
                         render.SetMaterial(indicator_mat_target)
