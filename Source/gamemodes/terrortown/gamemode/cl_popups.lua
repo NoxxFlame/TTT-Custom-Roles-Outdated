@@ -93,6 +93,11 @@ local function GetTextForLocalPlayer()
             end
         end
 
+        local assassintarget = nil
+        if client:IsAssassin() then
+            assassintarget = string.rep(" ", 42) .. client:GetNWString("AssassinTarget", "")
+        end
+
         local type = (client:IsHypnotist() and "hypnotist") or (client:IsAssassin() and "assassin") or "traitor"
         local text
         if #traitors > 1 then
@@ -115,11 +120,6 @@ local function GetTextForLocalPlayer()
                 traitorlabel = traitorlabel .. "_hypnotist"
             end
 
-            local assassintarget = nil
-            if role == ROLE_ASSASSIN then
-                assassintarget = string.rep(" ", 42) .. client:GetNWString("AssassinTarget", "")
-            end
-
             local assassinlist = ""
             if #assassins > 0 and not client:IsAssassin() then
                 for _, ply in pairs(assassins) do
@@ -136,7 +136,7 @@ local function GetTextForLocalPlayer()
 
             text = GetPTranslation(traitorlabel, { menukey = menukey, traitorlist = traitorlist, hypnotistlist = hypnotistlist, assassinlist = assassinlist, assassintarget = assassintarget })
         else
-            text = GetPTranslation("info_popup_" .. type .. "_alone", { menukey = menukey })
+            text = GetPTranslation("info_popup_" .. type .. "_alone", { menukey = menukey, assassintarget = assassintarget })
         end
 
         return text
