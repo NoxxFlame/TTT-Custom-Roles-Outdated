@@ -519,7 +519,7 @@ net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
         local allies = {ROLE_VAMPIRE}
         local traitors_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
         if traitors_are_friends then
-            allies = {ROLE_VAMPIRE, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST}
+            allies = {ROLE_VAMPIRE, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_GLITCH}
         end
         OnPlayerHighlightEnabled(ROLE_ZOMBIE, allies, false, traitors_are_friends)
     end)
