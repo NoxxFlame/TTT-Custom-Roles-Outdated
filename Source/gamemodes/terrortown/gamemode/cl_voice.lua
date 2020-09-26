@@ -508,6 +508,15 @@ function GM:PlayerStartVoice(ply)
             end
         end
 
+        local hasGlitch = false
+        for _, v in pairs(player.GetAll()) do
+            if v:IsGlitch() then hasGlitch = true end
+        end
+        -- Return early so the client doesn't think they are talking
+        if not client.traitor_gvoice and hasGlitch then
+            return
+        end
+
         VOICE.SetSpeaking(true)
     end
 
