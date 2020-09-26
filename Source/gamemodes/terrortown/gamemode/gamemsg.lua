@@ -289,11 +289,11 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
         return true, false
     end
 
-    -- Traitors "team"chat by default, non-locationally
-    if speaker:IsActiveTraitor() or speaker:IsActiveHypnotist() or speaker:IsActiveAssassin() then
+    -- Traitors "team" chat by default, non-locationally
+    if player.IsActiveTraitorTeam(speaker) then
         if speaker.traitor_gvoice then
             return true, loc_voice:GetBool()
-        elseif listener:IsActiveTraitor() or listener:IsActiveHypnotist() or listener:IsActiveAssassin() then
+        elseif player.IsActiveTraitorTeam(listener) then
             return true, false
         else
             -- unless traitor_gvoice is true, normal innos can't hear speaker
@@ -306,7 +306,12 @@ end
 
 local function SendTraitorVoiceState(speaker, state)
     -- send umsg to living traitors that this is traitor-only talk
-    local rf = GetTraitorsFilter(true)
+    local rf = nil
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        rf = GetTraitorsAndMonstersFilter(true)
+    else
+        rf = GetTraitorsFilter(true)
+    end
 
     -- make it as small as possible, to get there as fast as possible
     -- we can fit it into a mere byte by being cheeky.
@@ -321,7 +326,7 @@ local function SendTraitorVoiceState(speaker, state)
 end
 
 local function TraitorGlobalVoice(ply, cmd, args)
-    if not IsValid(ply) or not (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) then return end
+    if not IsValid(ply) or not player.IsActiveTraitorTeam(ply) then return end
     if not #args == 1 then return end
     local state = tonumber(args[1])
 

@@ -101,7 +101,7 @@ function GM:KeyPress(ply, key)
     if not IsFirstTimePredicted() then return end
     if not IsValid(ply) or ply ~= LocalPlayer() then return end
 
-    if key == IN_SPEED and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) then
+    if key == IN_SPEED and player.IsActiveTraitorTeam(ply) then
         timer.Simple(0.05, function() RunConsoleCommand("+voicerecord") end)
     end
 end
@@ -110,7 +110,7 @@ function GM:KeyRelease(ply, key)
     if not IsFirstTimePredicted() then return end
     if not IsValid(ply) or ply ~= LocalPlayer() then return end
 
-    if key == IN_SPEED and (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) then
+    if key == IN_SPEED and player.IsActiveTraitorTeam(ply) then
         timer.Simple(0.05, function() RunConsoleCommand("-voicerecord") end)
     end
 end

@@ -120,6 +120,14 @@ function plymeta:IsActiveKiller() return self:IsActiveRole(ROLE_KILLER) end
 
 function plymeta:IsActiveSpecial() return self:IsSpecial() and self:IsActive() end
 
+function plymeta:IsActiveInnocentTeam() return self:IsInnocentTeam() and self:IsActive() end
+
+function plymeta:IsActiveTraitorTeam() return self:IsTraitorTeam() and self:IsActive() end
+
+function plymeta:IsActiveMonsterTeam() return self:IsMonsterTeam() and self:IsActive() end
+
+function plymeta:IsActiveJesterTeam() return self:IsJesterTeam() and self:IsActive() end
+
 local GetRTranslation = CLIENT and LANG.GetRawTranslation or util.passthrough
 
 -- Returns printable role
@@ -302,4 +310,20 @@ else -- SERVER
         net.WriteUInt(act, 16)
         net.Broadcast()
     end
+end
+
+function player.IsActiveTraitorTeam(ply)
+    local is_traitor = ply:IsActiveTraitorTeam()
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        is_traitor = is_traitor or ply:IsActiveMonsterTeam()
+    end
+    return is_traitor
+end
+
+function player.IsTraitorTeam(ply)
+    local is_traitor = ply:IsTraitorTeam()
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        is_traitor = is_traitor or ply:IsMonsterTeam()
+    end
+    return is_traitor
 end

@@ -554,22 +554,6 @@ local function PlayDeathSound(victim)
     sound.Play(table.Random(deathsounds), victim:GetShootPos(), 90, 100)
 end
 
-local function IsActiveTraitor(ply)
-    local is_traitor = ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()
-    if GetGlobalBool("ttt_monsters_are_traitors") then
-        is_traitor = is_traitor or ply:IsActiveZombie() or ply:IsActiveVampire()
-    end
-    return is_traitor
-end
-
-local function IsTraitor(ply)
-    local is_traitor = ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin()
-    if GetGlobalBool("ttt_monsters_are_traitors") then
-        is_traitor = is_traitor or ply:IsZombie() or ply:IsVampire()
-    end
-    return is_traitor
-end
-
 -- See if we should award credits now
 local function CheckCreditAward(victim, attacker)
     if GetRoundState() ~= ROUND_ACTIVE then return end
@@ -589,13 +573,13 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- TRAITOR AWARD
-    if IsActiveTraitor(attacker) and (not (IsTraitor(victim) or victim:IsJesterTeam())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if player.IsActiveTraitorTeam(attacker) and (not (IsTraitor(victim) or victim:IsJesterTeam())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local inno_alive = 0
         local inno_dead = 0
         local inno_total = 0
 
         for _, ply in pairs(player.GetAll()) do
-            if not IsTraitor(ply) then
+            if not player.IsTraitorTeam(ply) then
                 if ply:IsTerror() then
                     inno_alive = inno_alive + 1
                 elseif ply:IsDeadTerror() then
@@ -625,7 +609,7 @@ local function CheckCreditAward(victim, attacker)
                 LANG.Msg(GetTraitorsFilter(true), "credit_tr_all", { num = amt })
 
                 for _, ply in pairs(player.GetAll()) do
-                    if IsActiveTraitor(ply) then
+                    if player.IsActiveTraitorTeam(ply) then
                         ply:AddCredits(amt)
                     end
                 end
