@@ -554,6 +554,22 @@ local function PlayDeathSound(victim)
     sound.Play(table.Random(deathsounds), victim:GetShootPos(), 90, 100)
 end
 
+local function IsActiveTraitor(ply)
+    local is_traitor = ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        is_traitor = is_traitor or ply:IsActiveZombie() or ply:IsActiveVampire()
+    end
+    return is_traitor
+end
+
+local function IsTraitor(ply)
+    local is_traitor = ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin()
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        is_traitor = is_traitor or ply:IsZombie() or ply:IsVampire()
+    end
+    return is_traitor
+end
+
 -- See if we should award credits now
 local function CheckCreditAward(victim, attacker)
     if GetRoundState() ~= ROUND_ACTIVE then return end
@@ -573,13 +589,13 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- TRAITOR AWARD
-    if (attacker:IsActiveTraitor() or attacker:IsActiveHypnotist() or attacker:IsActiveAssassin()) and (not (victim:IsTraitor() or victim:IsHypnotist() or victim:IsAssassin() or victim:IsSwapper())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if IsActiveTraitor(attacker) and (not (IsTraitor(victim) or victim:IsJesterTeam())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local inno_alive = 0
         local inno_dead = 0
         local inno_total = 0
 
         for _, ply in pairs(player.GetAll()) do
-            if not (ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()) then
+            if not IsTraitor(ply) then
                 if ply:IsTerror() then
                     inno_alive = inno_alive + 1
                 elseif ply:IsDeadTerror() then
@@ -609,7 +625,7 @@ local function CheckCreditAward(victim, attacker)
                 LANG.Msg(GetTraitorsFilter(true), "credit_tr_all", { num = amt })
 
                 for _, ply in pairs(player.GetAll()) do
-                    if ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() then
+                    if IsActiveTraitor(ply) then
                         ply:AddCredits(amt)
                     end
                 end
@@ -621,13 +637,13 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- VAMPIRE AWARD
-    if attacker:IsActiveVampire() and (not (victim:IsVampire() or victim:IsZombie() or victim:IsSwapper())) and (not GAMEMODE.AwardedVampireCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if not GetGlobalBool("ttt_monsters_are_traitors") and attacker:IsActiveVampire() and (not (victim:IsMonsterTeam() or victim:IsJesterTeam())) and (not GAMEMODE.AwardedVampireCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local ply_alive = 0
         local ply_dead = 0
         local ply_total = 0
 
         for _, ply in pairs(player.GetAll()) do
-            if not (ply:GetVampire() or ply:GetZombie()) then
+            if not ply:IsMonsterTeam() then
                 if ply:IsTerror() then
                     ply_alive = ply_alive + 1
                 elseif ply:IsDeadTerror() then
@@ -669,13 +685,13 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- KILLER AWARD
-    if attacker:IsActiveKiller() and (not (victim:IsKiller() or victim:IsSwapper())) and (not GAMEMODE.AwardedKillerCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if attacker:IsActiveKiller() and (not (victim:IsKiller() or victim:IsJesterTeam())) and (not GAMEMODE.AwardedKillerCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local ply_alive = 0
         local ply_dead = 0
         local ply_total = 0
 
         for _, ply in pairs(player.GetAll()) do
-            if not ply:GetKiller() then
+            if not ply:IsKiller() then
                 if ply:IsTerror() then
                     ply_alive = ply_alive + 1
                 elseif ply:IsDeadTerror() then
@@ -989,9 +1005,9 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
     -- Check for T killing D or vice versa
     if IsValid(attacker) and attacker:IsPlayer() then
         local reward = 0
-        if (attacker:IsActiveTraitor() or attacker:IsActiveHypnotist() or attacker:IsActiveVampire() or attacker:IsActiveAssassin()) and ply:GetDetective() then
+        if (attacker:IsActiveTraitor() or attacker:IsActiveHypnotist() or attacker:IsActiveAssassin() or attacker:IsActiveVampire()) and ply:IsDetective() then
             reward = math.ceil(GetConVarNumber("ttt_credits_detectivekill"))
-        elseif attacker:IsActiveDetective() and (ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()) then
+        elseif attacker:IsActiveDetective() and (ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin() or ply:IsVampire()) then
             reward = math.ceil(GetConVarNumber("ttt_det_credits_traitorkill"))
         end
 
