@@ -71,6 +71,16 @@ local function ShowTraitorIcon(ply, pos, dir)
     end
 end
 
+local function ShowMonsterIcon(ply, pos, dir)
+    if ply:IsZombie() then
+        render.SetMaterial(indicator_matzom_noz)
+        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+    elseif ply:IsVampire() then
+        render.SetMaterial(indicator_matvam_noz)
+        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+    end
+end
+
 -- using this hook instead of pre/postplayerdraw because playerdraw seems to
 -- happen before certain entities are drawn, which then clip over the sprite
 function GM:PostDrawTranslucentRenderables()
@@ -211,29 +221,19 @@ function GM:PostDrawTranslucentRenderables()
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     -- If Monsters-as-Traitors is enabled and the target is a Monster, show icons
                     elseif client:IsMonsterAlly() and v:IsMonsterTeam() then
-                        if v:IsZombie() then
-                            render.SetMaterial(indicator_matzom_noz)
-                            render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                        elseif v:IsVampire() then
-                            render.SetMaterial(indicator_matvam_noz)
-                            render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                        end
+                        ShowMonsterIcon(v, pos, dir)
                     elseif showkillicon then
                         render.SetMaterial(indicator_mat_target)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
                 elseif client:IsMonsterTeam() then
-                    if v:IsZombie() then
-                        render.SetMaterial(indicator_matzom_noz)
-                        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
-                    elseif v:IsVampire() then
-                        render.SetMaterial(indicator_matvam_noz)
-                        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                    if v:IsMonsterTeam() then
+                        ShowMonsterIcon(v, pos, dir)
                     elseif v:IsJesterTeam() then
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     -- Since Zombie and Vampire were already handled above, this will only cover the traitor team and only if Monsters-as-Traitors is enabled
-                    elseif v:IsMonsterAlly() then
+                    elseif v:IsMonsterAlly() or v:IsGlitch() then
                         ShowTraitorIcon(v, pos, dir)
                     elseif showkillicon then
                         render.SetMaterial(indicator_mat_target)
