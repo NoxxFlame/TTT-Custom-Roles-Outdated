@@ -41,7 +41,7 @@ function CreateTransferMenu(parent)
 			) or
             (
                 -- Local player is a monster and target is a monster or an ally if Monsters-as-Traitors is enabled
-                ply:IsMonsterTeam() and (p:IsMonsterTeam() or p:IsMonsterAlly())
+                ply:IsMonsterTeam() and (p:IsMonsterTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and (p:IsTraitorTeam() or p:IsActiveGlitch())))
             )) then
 			dpick:AddChoice(p:Nick(), p:UniqueID())
 		end
