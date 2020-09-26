@@ -60,6 +60,7 @@ function ScoreEvent(e, scores)
         elseif aid ~= -1 then
             if e.vic.tr then
                 scores[aid].traitors = scores[aid].traitors + 1
+            -- e.vic.mon will always be false if Monsters-as-Traitors is enabled
             elseif e.vic.mon then
                 scores[aid].monsters = scores[aid].monsters + 1
             elseif e.vic.jes then
@@ -118,7 +119,11 @@ function ScoreTeamBonus(scores, wintype)
         if sc.was_traitor or sc.was_hypnotist or sc.was_assassin then
             state.traitors = state.traitors + 1
         elseif sc.was_zombie or sc.was_vampire then
-            state.monsters = state.monsters + 1
+            if GetGlobalBool("ttt_monsters_are_traitors") then
+                state.traitors = state.traitors + 1
+            else
+                state.monsters = state.monsters + 1
+            end
         elseif sc.was_jester or sc.was_swapper then
             state.jesters = state.jesters + 1
         elseif sc.was_killer then
@@ -199,13 +204,13 @@ local WeaponNames = nil
 function GetWeaponClassNames()
     if not WeaponNames then
         local tbl = {}
-        for k, v in pairs(weapons.GetList()) do
+        for _, v in pairs(weapons.GetList()) do
             if v and v.WeaponID then
                 tbl[v.WeaponID] = WEPS.GetClass(v)
             end
         end
 
-        for k, v in pairs(scripted_ents.GetList()) do
+        for _, v in pairs(scripted_ents.GetList()) do
             local id = v and (v.WeaponID or (v.t and v.t.WeaponID))
             if id then
                 tbl[id] = WEPS.GetClass(v)

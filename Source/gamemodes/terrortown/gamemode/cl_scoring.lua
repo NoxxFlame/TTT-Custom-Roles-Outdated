@@ -351,7 +351,6 @@ function CLSCORE:BuildEventLogPanel(dpanel)
 end
 
 function CLSCORE:BuildScorePanel(dpanel)
-    local margin = 10
     local w, h = dpanel:GetSize()
 
     local dlist = vgui.Create("DListView", dpanel)
@@ -388,7 +387,13 @@ function CLSCORE:BuildScorePanel(dpanel)
     for id, s in pairs(scores) do
         if id ~= -1 then
             local was_traitor = s.was_traitor or s.was_assassin or s.was_hypnotist
-            local was_monster = s.was_zombie or s.was_vampire
+            local was_monster = false
+            -- Count Monsters if Monsters-as-Traitors is enabled
+            if GetGlobalBool("ttt_monsters_are_traitors") then
+                was_traitor = was_traitor or s.was_zombie or s.was_vampire
+            else
+                was_monster = s.was_zombie or s.was_vampire
+            end
             local was_innocent = s.was_innocent or s.was_detective or s.was_phantom or s.was_mercenary or s.was_glitch
             local role = was_traitor and T("traitor") or (s.was_detective and T("detective") or (s.was_hypnotist and T("hypnotist") or (s.was_mercenary and T("mercenary") or (s.was_jester and T("jester") or (s.was_phantom and T("phantom") or (s.was_glitch and T("glitch") or (s.was_zombie and T("zombie") or (s.was_vampire and T("vampire") or (s.was_swapper and T("swapper") or (s.was_assassin and T("assassin") or (s.was_killer and T("killer") or T("innocent"))))))))))))
 
@@ -524,32 +529,32 @@ function CLSCORE:BuildSummaryPanel(dpanel)
         if id ~= -1 then
             local role = s.was_traitor and "tra" or (s.was_detective and "det" or (s.was_hypnotist and "hyp" or (s.was_jester and "jes" or (s.was_swapper and "swa" or (s.was_mercenary and "mer" or (s.was_glitch and "gli" or (s.was_phantom and "pha" or (s.was_zombie and "zom" or (s.was_assassin and "ass" or (s.was_vampire and "vam" or (s.was_killer and "kil" or "inn")))))))))))
 
-            if role == "swa" and jesterkillerrole >= 0 then
-                if jesterkillerrole == 0 then
+            if role == "swa" and jesterkillerrole >= ROLE_INNOCENT then
+                if jesterkillerrole == ROLE_INNOCENT then
                     role = "inn"
-                elseif jesterkillerrole == 1 then
+                elseif jesterkillerrole == ROLE_TRAITOR then
                     role = "tra"
-                elseif jesterkillerrole == 2 then
+                elseif jesterkillerrole == ROLE_DETECTIVE then
                     role = "det"
-                elseif jesterkillerrole == 3 then
+                elseif jesterkillerrole == ROLE_MERCENARY then
                     role = "mer"
-                elseif jesterkillerrole == 4 then
+                elseif jesterkillerrole == ROLE_JESTER then
                     role = "jes"
-                elseif jesterkillerrole == 5 then
+                elseif jesterkillerrole == ROLE_PHANTOM then
                     role = "pha"
-                elseif jesterkillerrole == 6 then
+                elseif jesterkillerrole == ROLE_HYPNOTIST then
                     role = "hyp"
-                elseif jesterkillerrole == 7 then
+                elseif jesterkillerrole == ROLE_GLITCH then
                     role = "gli"
-                elseif jesterkillerrole == 8 then
+                elseif jesterkillerrole == ROLE_ZOMBIE then
                     role = "zom"
-                elseif jesterkillerrole == 9 then
+                elseif jesterkillerrole == ROLE_VAMPIRE then
                     role = "vam"
-                elseif jesterkillerrole == 10 then
+                elseif jesterkillerrole == ROLE_SWAPPER then
                     role = "swa"
-                elseif jesterkillerrole == 11 then
+                elseif jesterkillerrole == ROLE_ASSASSIN then
                     role = "ass"
-                elseif jesterkillerrole == 12 then
+                elseif jesterkillerrole == ROLE_KILLER then
                     role = "kil"
                 end
             end

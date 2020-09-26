@@ -71,9 +71,14 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
     e.vic.role = victim:GetRole()
     e.vic.tr = victim:IsTraitorTeam()
     e.vic.inno = victim:IsInnocentTeam()
-    e.vic.mon = victim:IsMonsterTeam()
+    -- If Monsters-as-Traitors is enabled, count the victim as a traitor
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        e.vic.tr = e.vic.tr or victim:IsMonsterTeam()
+    else
+        e.vic.mon = victim:IsMonsterTeam()
+    end
     e.vic.jes = victim:IsJesterTeam()
-    e.vic.kil = victim:GetRole() == ROLE_KILLER
+    e.vic.kil = victim:IsKiller()
 
 	if IsValid(attacker) and attacker:IsPlayer() then
 		e.att.ni = attacker:Nick()
@@ -82,14 +87,19 @@ function SCORE:HandleKill(victim, attacker, dmginfo)
         e.att.role = attacker:GetRole()
         e.att.tr = attacker:IsTraitorTeam()
         e.att.inno = attacker:IsInnocentTeam()
-        e.att.mon = attacker:IsMonsterTeam()
+        -- If Monsters-as-Traitors is enabled, count the attacker as a traitor
+        if GetGlobalBool("ttt_monsters_are_traitors") then
+            e.att.tr = e.att.tr or attacker:IsMonsterTeam()
+        else
+            e.att.mon = attacker:IsMonsterTeam()
+        end
         e.att.jes = attacker:IsJesterTeam()
-        e.att.kil = attacker:GetRole() == ROLE_KILLER
+        e.att.kil = attacker:IsKiller()
         e.tk = (e.att.tr and e.vic.tr) or (e.att.inno and e.vic.inno) or (e.att.mon and e.vic.mon) or (e.att.jes and e.vic.jes) or (e.att.kil and e.vic.kil)
 
 		-- If a traitor gets himself killed by another traitor's C4, it's his own
 		-- damn fault for ignoring the indicator.
-		if dmginfo:IsExplosionDamage() and attacker:GetTraitor() and victim:GetTraitor() then
+		if dmginfo:IsExplosionDamage() and e.att.tr and e.vic.tr then
 			local infl = dmginfo:GetInflictor()
 			if IsValid(infl) and infl:GetClass() == "ttt_c4" then
 				e.att = table.Copy(e.vic)
@@ -120,32 +130,32 @@ function SCORE:HandleSelection()
 	local swappers = {}
 	local assassins = {}
 	local killers = {}
-	for k, ply in pairs(player.GetAll()) do
-		if ply:GetTraitor() then
+	for _, ply in pairs(player.GetAll()) do
+		if ply:IsTraitor() then
 			table.insert(traitors, ply:UniqueID())
-		elseif ply:GetDetective() then
+		elseif ply:IsDetective() then
 			table.insert(detectives, ply:UniqueID())
-		elseif ply:GetMercenary() then
+		elseif ply:IsMercenary() then
 			table.insert(mercenaries, ply:UniqueID())
-		elseif ply:GetHypnotist() then
+		elseif ply:IsHypnotist() then
 			table.insert(hypnotists, ply:UniqueID())
-		elseif ply:GetGlitch() then
+		elseif ply:IsGlitch() then
 			table.insert(glitches, ply:UniqueID())
-		elseif ply:GetJester() then
+		elseif ply:IsJester() then
 			table.insert(jesters, ply:UniqueID())
-		elseif ply:GetPhantom() then
+		elseif ply:IsPhantom() then
 			table.insert(phantoms, ply:UniqueID())
-		elseif ply:GetZombie() then
+		elseif ply:IsZombie() then
 			table.insert(zombies, ply:UniqueID())
-		elseif ply:GetVampire() then
+		elseif ply:IsVampire() then
 			table.insert(vampires, ply:UniqueID())
-		elseif ply:GetSwapper() then
+		elseif ply:IsSwapper() then
 			table.insert(swappers, ply:UniqueID())
-		elseif ply:GetAssassin() then
+		elseif ply:IsAssassin() then
 			table.insert(assassins, ply:UniqueID())
-		elseif ply:GetKiller() then
+		elseif ply:IsKiller() then
 			table.insert(killers, ply:UniqueID())
-		elseif ply:GetInnocent() then
+		elseif ply:IsInnocent() then
 			table.insert(innocents, ply:UniqueID())
 		end
 	end
@@ -212,31 +222,31 @@ function SCORE:ApplyEventLogScores(wintype)
 	for _, ply in pairs(player.GetAll()) do
 		scores[ply:UniqueID()] = {}
 
-		if ply:GetTraitor() then
+		if ply:IsTraitor() then
 			table.insert(traitors, ply:UniqueID())
-		elseif ply:GetDetective() then
+		elseif ply:IsDetective() then
 			table.insert(detectives, ply:UniqueID())
-		elseif ply:GetMercenary() then
+		elseif ply:IsMercenary() then
 			table.insert(mercenaries, ply:UniqueID())
-		elseif ply:GetHypnotist() then
+		elseif ply:IsHypnotist() then
 			table.insert(hypnotists, ply:UniqueID())
-		elseif ply:GetGlitch() then
+		elseif ply:IsGlitch() then
 			table.insert(glitches, ply:UniqueID())
-		elseif ply:GetJester() then
+		elseif ply:IsJester() then
 			table.insert(jesters, ply:UniqueID())
-		elseif ply:GetPhantom() then
+		elseif ply:IsPhantom() then
 			table.insert(phantoms, ply:UniqueID())
-		elseif ply:GetZombie() then
+		elseif ply:IsZombie() then
 			table.insert(zombies, ply:UniqueID())
-		elseif ply:GetVampire() then
+		elseif ply:IsVampire() then
 			table.insert(vampires, ply:UniqueID())
-		elseif ply:GetSwapper() then
+		elseif ply:IsSwapper() then
 			table.insert(swappers, ply:UniqueID())
-		elseif ply:GetAssassin() then
+		elseif ply:IsAssassin() then
 			table.insert(assassins, ply:UniqueID())
-		elseif ply:GetKiller() then
+		elseif ply:IsKiller() then
 			table.insert(killers, ply:UniqueID())
-		elseif ply:GetInnocent() then
+		elseif ply:IsInnocent() then
 			table.insert(innocents, ply:UniqueID())
 		end
 	end
@@ -246,8 +256,16 @@ function SCORE:ApplyEventLogScores(wintype)
 	local ply = nil
     for uid, s in pairs(scored_log) do
 		ply = Player(uid)
-		if IsValid(ply) and ply:ShouldScore() then
-			ply:AddFrags(KillsToPoints(s, ply:GetTraitor()))
+        if IsValid(ply) and ply:ShouldScore() then
+            local was_traitor = ply:IsTraitorTeam()
+            local was_monster = false
+            -- Count Monsters if Monsters-as-Traitors is enabled
+            if GetGlobalBool("ttt_monsters_are_traitors") then
+                was_traitor = was_traitor or ply:IsMonsterTeam()
+            else
+                was_monster = ply:IsMonsterTeam()
+            end
+			ply:AddFrags(KillsToPoints(s, was_traitor, was_monster, ply:IsKiller(), ply:IsInnocentTeam()))
 		end
 	end
 
@@ -258,11 +276,16 @@ function SCORE:ApplyEventLogScores(wintype)
 		ply = Player(uid)
         if IsValid(ply) and ply:ShouldScore() then
             local points_team = bonus.innos
-            if ply:GetTraitor() or ply:GetAssassin() or ply:GetHypnotist() then
+            if ply:IsTraitorTeam() then
                 points_team = bonus.traitors
-            elseif ply:GetVampire() or ply:GetZombie() then
-                points_team = bonus.monsters
-            elseif ply:GetJester() or ply:GetSwapper() then
+            elseif ply:IsMonsterTeam() then
+                -- Use the traitor's team bonus is Monsters-as-Traitors is enabled
+                if GetGlobalBool("ttt_monsters_are_traitors") then
+                    points_team = bonus.traitors
+                else
+                    points_team = bonus.monsters
+                end
+            elseif ply:IsJesterTeam() then
                 points_team = bonus.jesters
             elseif ply:GetKiller() then
                 points_team = bonus.killers

@@ -682,13 +682,16 @@ function TellTraitorsAboutTraitors()
     local glitchnick = {}
     local jesternick = {}
     local killernick = {}
-    for k, v in pairs(player.GetAll()) do
-        if v:IsTraitor() or v:IsHypnotist() or v:IsAssassin() then
+    for _, v in pairs(player.GetAll()) do
+        if v:IsTraitorTeam() then
+            table.insert(traitornicks, v:Nick())
+        -- Count Monsters when Monsters-as-Traitors is enabled
+        elseif GetGlobalBool("ttt_monsters_are_traitors") and v:IsMonsterTeam() then
             table.insert(traitornicks, v:Nick())
         elseif v:IsGlitch() then
             table.insert(traitornicks, v:Nick())
             table.insert(glitchnick, v:Nick())
-        elseif v:IsJester() or v:IsSwapper() then
+        elseif v:IsJesterTeam() then
             table.insert(jesternick, v:Nick())
         elseif v:IsKiller() then
             table.insert(killernick, v:Nick())
@@ -697,8 +700,9 @@ function TellTraitorsAboutTraitors()
 
     -- This is ugly as hell, but it's kinda nice to filter out the names of the
     -- traitors themselves in the messages to them
-    for k, v in pairs(player.GetAll()) do
-        if v:IsTraitor() or v:IsHypnotist() or v:IsAssassin() then
+    for _, v in pairs(player.GetAll()) do
+        -- Count Monsters when Monsters-as-Traitors is enabled
+        if v:IsTraitorTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and v:IsMonsterTeam()) then
             if not table.IsEmpty(glitchnick) then
                 v:PrintMessage(HUD_PRINTTALK, "There is a Glitch.")
                 v:PrintMessage(HUD_PRINTCENTER, "There is a Glitch.")
@@ -718,7 +722,7 @@ function TellTraitorsAboutTraitors()
                 return
             else
                 local names = ""
-                for i, name in pairs(traitornicks) do
+                for _, name in pairs(traitornicks) do
                     if name ~= v:Nick() then
                         names = names .. name .. ", "
                     end
@@ -1006,7 +1010,15 @@ function LogScore(type)
     local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer" }
 
     for _, v in pairs(player.GetAll()) do
-        local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and v:IsInnocentTeam()) or (type == WIN_TRAITOR and v:IsTraitorTeam()) or (type == WIN_MONSTER and v:IsMonsterTeam()) or (type == WIN_JESTER and v:IsJesterTeam()) or (type == WIN_KILLER and v:IsKiller())
+        local traitor_win = type == WIN_TRAITOR and v:IsTraitorTeam()
+        local monster_win = false
+        -- Count Monsters if Monsters-as-Traitors is enabled
+        if GetGlobalBool("ttt_monsters_are_traitors") then
+            traitor_win = traitor_win or (type == WIN_TRAITOR and v:IsMonsterTeam())
+        else
+            monster_win = type == WIN_MONSTER and v:IsMonsterTeam()
+        end
+        local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and v:IsInnocentTeam()) or traitor_win or monster_win or (type == WIN_JESTER and v:IsJesterTeam()) or (type == WIN_KILLER and v:IsKiller())
 
         if not playerStats[v:Nick()] then
             playerStats[v:Nick()] = { 0, 0 } -- Wins, Rounds
@@ -1089,7 +1101,7 @@ end
 function GM:TTTCheckForWin()
     if ttt_dbgwin:GetBool() then return WIN_NONE end
 
-    if GAMEMODE.MapWin == WIN_TRAITOR or GAMEMODE.MapWin == WIN_INNOCENT then
+    if GAMEMODE.MapWin ~= WIN_NONE then
         local mw = GAMEMODE.MapWin
         GAMEMODE.MapWin = WIN_NONE
         return mw
