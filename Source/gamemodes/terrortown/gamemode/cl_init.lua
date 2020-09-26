@@ -516,13 +516,23 @@ end)
 net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHighlightEnabled(ROLE_ZOMBIE, {ROLE_VAMPIRE})
+        local allies = {ROLE_VAMPIRE}
+        local traitors_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
+        if traitors_are_friends then
+            allies = {ROLE_VAMPIRE, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST}
+        end
+        OnPlayerHighlightEnabled(ROLE_ZOMBIE, allies, false, traitors_are_friends)
     end)
 end)
 net.Receive("TTT_Vampire_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHighlightEnabled(ROLE_VAMPIRE, {ROLE_ZOMBIE})
+        local allies = {ROLE_ZOMBIE}
+        local traitors_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
+        if traitors_are_friends then
+            allies = {ROLE_ZOMBIE, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST}
+        end
+        OnPlayerHighlightEnabled(ROLE_VAMPIRE, allies, false, traitors_are_friends)
     end)
 end)
 net.Receive("TTT_Traitor_PlayerHighlightOn", function(len, ply)
