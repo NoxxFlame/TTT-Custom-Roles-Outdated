@@ -1100,16 +1100,22 @@ function GM:TTTCheckForWin()
     local jester_alive = false
     local killer_alive = false
     local monster_alive = false
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if (v:Alive() and v:IsTerror()) or v:GetPData("IsZombifying", 0) == 1 then
-            if v:GetTraitor() or v:GetHypnotist() or v:GetAssassin() then
+            -- Check for zombification first so Monsters can win in weird circumstances where everyone dies by someone is coming back as a zombie in a second
+            if v:IsMonsterTeam() or v:GetPData("IsZombifying", 0) == 1 then
+                -- If Monsters-as-Traitors is enabled, don't ever mark Monsters as being alive
+                if GetGlobalBool("ttt_monsters_are_traitors") then
+                    traitor_alive = true
+                else
+                    monster_alive = true
+                end
+            elseif v:IsTraitorTeam() then
                 traitor_alive = true
-            elseif v:GetJester() or v:GetSwapper() then
+            elseif v:IsJesterTeam() then
                 jester_alive = true
             elseif v:GetKiller() then
                 killer_alive = true
-            elseif v:GetZombie() or v:GetVampire() or v:GetPData("IsZombifying", 0) == 1 then
-                monster_alive = true
             else
                 innocent_alive = true
             end
