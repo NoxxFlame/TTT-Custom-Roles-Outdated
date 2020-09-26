@@ -573,7 +573,7 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- TRAITOR AWARD
-    if player.IsActiveTraitorTeam(attacker) and (not (IsTraitor(victim) or victim:IsJesterTeam())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if player.IsActiveTraitorTeam(attacker) and (not (player.IsTraitorTeam(victim) or victim:IsJesterTeam())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local inno_alive = 0
         local inno_dead = 0
         local inno_total = 0

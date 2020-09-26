@@ -8,27 +8,27 @@ local function GetTextForLocalPlayer()
     local menukey = Key("+menu_context", "C")
 
     local client = LocalPlayer()
-    if client.IsInnocent() then
+    if client:IsInnocent() then
         return GetTranslation("info_popup_innocent")
 
-    elseif client.IsDetective() then
+    elseif client:IsDetective() then
         return GetPTranslation("info_popup_detective", { menukey = menukey })
 
-    elseif client.IsMercenary() then
+    elseif client:IsMercenary() then
         return GetPTranslation("info_popup_mercenary", { menukey = menukey })
 
-    elseif client.IsGlitch() then
+    elseif client:IsGlitch() then
         return GetPTranslation("info_popup_glitch", { menukey = menukey })
 
-    elseif client.IsJester() then
+    elseif client:IsJester() then
         return GetPTranslation("info_popup_jester", { menukey = menukey })
 
-    elseif client.IsPhantom() then
+    elseif client:IsPhantom() then
         return GetPTranslation("info_popup_phantom", { menukey = menukey })
 
-    elseif client.IsMonsterTeam() then
+    elseif client:IsMonsterTeam() then
         local monsterlabel = "info_popup_"
-        if client.IsZombie() then
+        if client:IsZombie() then
             monsterlabel = monsterlabel .. "zombie"
         else
             monsterlabel = monsterlabel .. "vampire"
@@ -57,13 +57,13 @@ local function GetTextForLocalPlayer()
 
         return text
 
-    elseif client.IsSwapper() then
+    elseif client:IsSwapper() then
         return GetPTranslation("info_popup_swapper", { menukey = menukey })
 
-    elseif client.IsKiller() then
+    elseif client:IsKiller() then
         return GetPTranslation("info_popup_killer", { menukey = menukey })
 
-    elseif client.IsTraitorTeam() then
+    elseif client:IsTraitorTeam() then
         local traitors = {}
         local hypnotists = {}
         local assassins = {}
@@ -85,7 +85,7 @@ local function GetTextForLocalPlayer()
             end
         end
 
-        local type = (client.IsHypnotist() and "hypnotist") or (client.IsAssassin() and "assassin") or "traitor"
+        local type = (client:IsHypnotist() and "hypnotist") or (client:IsAssassin() and "assassin") or "traitor"
         local text
         if #traitors > 1 then
             local traitorlabel = "info_popup_" .. type
@@ -98,7 +98,7 @@ local function GetTextForLocalPlayer()
             end
 
             local hypnotistlist = ""
-            if #hypnotists > 0 and not client.IsHypnotist() then
+            if #hypnotists > 0 and not client:IsHypnotist() then
                 for _, ply in pairs(hypnotists) do
                     if ply ~= client then
                         hypnotistlist = hypnotistlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
@@ -113,7 +113,7 @@ local function GetTextForLocalPlayer()
             end
 
             local assassinlist = ""
-            if #assassins > 0 and not client.IsAssassin() then
+            if #assassins > 0 and not client:IsAssassin() then
                 for _, ply in pairs(assassins) do
                     if ply ~= client then
                         assassinlist = assassinlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
