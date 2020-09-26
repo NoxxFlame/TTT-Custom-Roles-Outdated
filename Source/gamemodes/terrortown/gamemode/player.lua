@@ -124,7 +124,11 @@ function GM:PlayerSpawn(ply)
 
     -- ye olde hooks
     hook.Call("PlayerLoadout", GAMEMODE, ply)
-    if GetRoundState() == ROUND_ACTIVE and GetConVar("ttt_player_set_model_on_respawn"):GetBool() then
+    local max_rounds = GetConVar("ttt_round_limit"):GetInt()
+    local rounds_left = GetGlobalInt("ttt_rounds_left", max_rounds)
+    local round_number = max_rounds - rounds_left
+    local round_start = GetRoundState() == ROUND_PREP
+    if round_start and ((round_number == 0 and GetConVar("ttt_player_set_model_on_initial_spawn"):GetBool()) or GetConVar("ttt_player_set_model_on_respawn"):GetBool()) then
         hook.Call("PlayerSetModel", GAMEMODE, ply)
     end
     hook.Call("TTTPlayerSetColor", GAMEMODE, ply)
