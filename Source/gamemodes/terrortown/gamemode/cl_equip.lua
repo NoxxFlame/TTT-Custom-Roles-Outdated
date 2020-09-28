@@ -700,8 +700,8 @@ local function TraitorMenuPopup()
     end
 
     function file.AppendLine(filename, addme)
-        data = file.Read(filename)
-        if (data) then
+        local data = file.Read(filename)
+        if data then
             file.Write(filename, data .. "\n" .. tostring(addme))
         else
             file.Write(filename, tostring(addme))
@@ -717,9 +717,9 @@ local function TraitorMenuPopup()
     dfav:SetText("")
     dfav:SetImage("icon16/star.png")
     dfav.DoClick = function()
-        local ply = LocalPlayer()
-        local role = ply:GetRole()
-        local guid = ply:SteamID()
+        local local_ply = LocalPlayer()
+        local role = local_ply:GetRole()
+        local guid = local_ply:SteamID()
         local pnl = dlist.SelectedPanel
         if not pnl or not pnl.item then return end
         local choice = pnl.item

@@ -738,7 +738,6 @@ function FindRespawnLocation(pos)
         local t = {
             start = v,
             endpos = v,
-            filter = target,
             mins = midsize / -2,
             maxs = midsize / 2
         }
@@ -1596,7 +1595,7 @@ function GM:Tick()
             end
 
             -- Run DNA Scanner think also when it is not deployed
-            if IsValid(ply.scanner_weapon) and wep ~= ply.scanner_weapon then
+            if IsValid(ply.scanner_weapon) and ply:GetActiveWeapon() ~= ply.scanner_weapon then
                 ply.scanner_weapon:Think()
             end
 

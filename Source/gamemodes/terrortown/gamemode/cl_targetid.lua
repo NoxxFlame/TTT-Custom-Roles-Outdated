@@ -299,7 +299,7 @@ local function DrawPropSpecLabels(client)
             end
         else
             local _, healthcolor = util.HealthToString(ply:Health(), ply:GetMaxHealth())
-            surface.SetTextColor(clr(healthcolor))
+            surface.SetTextColor(UnpackColor(healthcolor))
 
             scrpos = ply:EyePos()
             scrpos.z = scrpos.z + 20

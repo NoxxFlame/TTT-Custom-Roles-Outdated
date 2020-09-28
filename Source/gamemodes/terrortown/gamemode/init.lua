@@ -257,11 +257,7 @@ util.AddNetworkString("TTT_BuyableWeapon_Assassin")
 util.AddNetworkString("TTT_BuyableWeapon_Hypnotist")
 util.AddNetworkString("TTT_BuyableWeapon_Killer")
 
-jesterkilled = 0
-
-rolemapgo = {}
-
-rolemapgotwo = {}
+local jesterkilled = 0
 
 -- Round mechanics
 function GM:Initialize()
@@ -368,7 +364,7 @@ function GM:SyncGlobals()
     SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 
     SetGlobalBool("sv_voiceenable", GetConVar("sv_voiceenable"):GetBool())
-    
+
     SetGlobalBool("ttt_assassin_show_target_icon", GetConVar("ttt_assassin_show_target_icon"):GetBool())
     SetGlobalBool("ttt_killer_show_target_icon", GetConVar("ttt_killer_show_target_icon"):GetBool())
     SetGlobalBool("ttt_zombie_show_target_icon", GetConVar("ttt_zombie_show_target_icon"):GetBool())
@@ -850,7 +846,7 @@ function BeginRound()
             local enemies = {}
             local detectives = {}
             for _, p in pairs(player.GetAll()) do
-                if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
+                if p:Alive() and not p:IsSpec() then
                     -- Exclude Glitch from this list so they don't get discovered immediately
                     if p:IsInnocent() or p:IsPhantom() or p:IsMercenary() or p:IsKiller() then
                         table.insert(enemies, p:Nick())

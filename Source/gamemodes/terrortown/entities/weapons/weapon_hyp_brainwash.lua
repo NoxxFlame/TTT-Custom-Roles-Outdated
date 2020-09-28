@@ -76,6 +76,7 @@ SWEP.NoSights = true
 local DEFIB_IDLE = 0
 local DEFIB_BUSY = 1
 local DEFIB_ERROR = 2
+local oldScoreGroup = nil
 
 if CLIENT then
     function SWEP:Initialize()
@@ -116,7 +117,6 @@ if SERVER then
             local t = {
                 start = v,
                 endpos = v,
-                filter = target,
                 mins = midsize / -2,
                 maxs = midsize / 2
             }

@@ -99,7 +99,7 @@ function ScoreGroup(p)
 end
 
 -- Comparison functions used to sort scoreboard
-sboard_sort = {
+_G.sboard_sort = {
 	name = function(plya, plyb)
 		-- Automatically sorts by name if this returns 0
 		return 0
@@ -345,7 +345,7 @@ function PANEL:PerformLayout()
 	local tw, _ = surface.GetTextSize(hname)
 	while tw > hw do
 		hname = string.sub(hname, 1, -6) .. "..."
-		tw, th = surface.GetTextSize(hname)
+		tw, _ = surface.GetTextSize(hname)
 	end
 
 	self.hostname:SetText(hname)
@@ -356,7 +356,7 @@ function PANEL:PerformLayout()
 	-- score columns
 	local cy = y_logo_off + 90
 	local cx = w - 8 - (scrolling and 16 or 0)
-	for k, v in ipairs(self.cols) do
+	for _, v in ipairs(self.cols) do
 		v:SizeToContents()
 		cx = cx - v.Width
 		v:SetPos(cx - v:GetWide() / 2, cy)
@@ -365,8 +365,8 @@ function PANEL:PerformLayout()
 	-- sort headers
 	-- reuse cy
 	-- cx = logo width + buffer space
-	local cx = 256 + 8
-	for k, v in ipairs(self.sort_headers) do
+	cx = 256 + 8
+	for _, v in ipairs(self.sort_headers) do
 		v:SizeToContents()
 		cx = cx + v.Width
 		v:SetPos(cx - v:GetWide() / 2, cy)

@@ -99,7 +99,7 @@ local function IdentifyBody(ply, rag)
     -- Register find
     if not CORPSE.GetFound(rag, false) then
         -- will return either false or a valid ply
-        local deadply = player.GetBySteamID(rag.sid)
+        local deadply = (rag.sid == "BOT" and player.GetByUniqueID(rag.uqid)) or player.GetBySteamID(rag.sid)
         if deadply then
             deadply:SetNWBool("body_searched", true)
             deadply:SetNWBool("body_found", true)
@@ -258,7 +258,7 @@ function CORPSE.ShowSearch(ply, rag, covert, long_range)
             IdentifyBody(ply, rag)
         elseif not ply:IsSpec() and not ownerEnt:GetNWBool("det_called", false) and not ownerEnt:GetNWBool("body_searched", false) then
             if IsValid(rag) and rag:GetPos():Distance(ply:GetPos()) < 128 then
-                hook.Call("TTTBodyFound", GAMEMODE, ply, deadply, rag)
+                hook.Call("TTTBodyFound", GAMEMODE, ply, ownerEnt, rag)
                 net.Start("TTT_CorpseCall")
                 net.WriteVector(rag:GetPos())
                 net.Send(GetDetectiveFilter(true))
@@ -422,7 +422,6 @@ local function GetSceneData(victim, attacker, dmginfo)
 end
 
 local rag_collide = CreateConVar("ttt_ragdoll_collide", "0")
-realdamageinfo = 0
 
 -- Creates client or server ragdoll depending on settings
 function CORPSE.Create(ply, attacker, dmginfo)

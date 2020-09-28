@@ -259,6 +259,7 @@ function PANEL:Paint(width, height)
     end
 
     if rolestr ~= "" then
+        local symbols = false
         if ConVarExists("ttt_role_symbols") then
             symbols = GetConVar("ttt_role_symbols"):GetBool()
         end

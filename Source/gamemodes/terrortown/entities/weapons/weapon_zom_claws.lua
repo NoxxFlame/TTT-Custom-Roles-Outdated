@@ -271,7 +271,6 @@ function FindRespawnLocation(pos)
         local t = {
             start = v,
             endpos = v,
-            filter = target,
             mins = midsize / -2,
             maxs = midsize / 2
         }
