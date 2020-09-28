@@ -469,7 +469,7 @@ local g_VoicePanelList = nil
 local function VoiceNotifyThink(pnl)
     if not (IsValid(pnl) and LocalPlayer() and IsValid(pnl.ply)) then return end
     if not (GetGlobalBool("ttt_locational_voice", false) and (not pnl.ply:IsSpec()) and (pnl.ply ~= LocalPlayer())) then return end
-    if player.IsActiveTraitorTeam(LocalPlayer) and player.IsActiveTraitorTeam(pnl.ply) then return end
+    if player.IsActiveTraitorTeam(LocalPlayer()) and player.IsActiveTraitorTeam(pnl.ply) then return end
 
     local d = LocalPlayer():GetPos():Distance(pnl.ply:GetPos())
 
@@ -552,7 +552,7 @@ function GM:PlayerStartVoice(ply)
     PlayerVoicePanels[ply] = pnl
 
     -- run ear gesture
-    if not (player.IsActiveTraitorTeam(ply) and (not ply.traitor_gvoice)) then
+    if not player.IsActiveTraitorTeam(ply) or ply.traitor_gvoice then
         ply:AnimPerformGesture(ACT_GMOD_IN_CHAT)
     end
 end
@@ -580,7 +580,7 @@ net.Receive("TTT_TraitorVoiceState", ReceiveVoiceState)
 local function VoiceClean()
     for ply, pnl in pairs(PlayerVoicePanels) do
         if (not IsValid(pnl)) or (not IsValid(ply)) then
-            GAMEMODE:PlayerEndVoice(ply)
+            GAMEMODE:PlayerEndVoice(ply, true)
         end
     end
 end
@@ -593,7 +593,8 @@ function GM:PlayerEndVoice(ply, no_reset)
         PlayerVoicePanels[ply] = nil
     end
 
-    if IsValid(ply) and not no_reset then
+    -- Specifically check for "false" since some base classes don't pass a value
+    if IsValid(ply) and no_reset == false then
         ply.traitor_gvoice = false
     end
 
