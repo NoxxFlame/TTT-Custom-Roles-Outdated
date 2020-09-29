@@ -240,7 +240,7 @@ function GM:PostDrawTranslucentRenderables()
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     end
                 elseif client:IsKiller() then
-                    if v:Is1JesterTeam() then
+                    if v:IsJesterTeam() then
                         render.SetMaterial(indicator_matjes)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     elseif showkillicon then
