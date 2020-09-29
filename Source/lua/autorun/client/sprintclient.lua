@@ -143,7 +143,7 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
             end
 
             if GetRoundState() ~= ROUND_WAIT then
-                if IsValid(client) and client:IsPlayer() and (client:IsTraitorTeam() or client:IsKiller()) then
+                if IsValid(client) and client:IsPlayer() and (client:IsTraitorTeam() or client:IsMonsterTeam() or client:IsKiller()) then
                     realPercent = realPercent + (CurTime() - timerReg) * (math.min(math.max(regenerateT, 0.01), 2) * 250)
                 else
                     realPercent = realPercent + (CurTime() - timerReg) * (math.min(math.max(regenerateI, 0.01), 2) * 250)
