@@ -469,11 +469,15 @@ local g_VoicePanelList = nil
 local function VoiceNotifyThink(pnl)
     if not (IsValid(pnl) and LocalPlayer() and IsValid(pnl.ply)) then return end
     if not (GetGlobalBool("ttt_locational_voice", false) and (not pnl.ply:IsSpec()) and (pnl.ply ~= LocalPlayer())) then return end
-    if player.IsActiveTraitorTeam(LocalPlayer()) and player.IsActiveTraitorTeam(pnl.ply) then return end
+    if player.IsTraitorTeam(LocalPlayer()) and player.IsTraitorTeam(pnl.ply) then return end
 
     local d = LocalPlayer():GetPos():Distance(pnl.ply:GetPos())
 
     pnl:SetAlpha(math.max(-0.1 * d + 255, 15))
+end
+
+local function IsTraitorChatting(client)
+    return player.IsActiveTraitorTeam(client) and (not client.traitor_gvoice)
 end
 
 local PlayerVoicePanels = {}
@@ -502,15 +506,16 @@ function GM:PlayerStartVoice(ply)
                 client.traitor_gvoice = false
                 RunConsoleCommand("tvog", "0")
             end
-        end
 
-        local hasGlitch = false
-        for _, v in pairs(player.GetAll()) do
-            if v:IsGlitch() then hasGlitch = true end
-        end
-        -- Return early so the client doesn't think they are talking
-        if not client.traitor_gvoice and hasGlitch then
-            return
+            local hasGlitch = false
+            for _, v in pairs(player.GetAll()) do
+                if v:IsGlitch() then hasGlitch = true end
+            end
+
+            -- Return early so the client doesn't think they are talking
+            if not client.traitor_gvoice and hasGlitch then
+                return
+            end
         end
 
         VOICE.SetSpeaking(true)
@@ -552,7 +557,7 @@ function GM:PlayerStartVoice(ply)
     PlayerVoicePanels[ply] = pnl
 
     -- run ear gesture
-    if not player.IsActiveTraitorTeam(ply) or ply.traitor_gvoice then
+    if not IsTraitorChatting(ply) then
         ply:AnimPerformGesture(ACT_GMOD_IN_CHAT)
     end
 end
@@ -675,10 +680,6 @@ local function GetDrainRate()
     else
         return GetGlobalFloat("ttt_voice_drain_normal", 0)
     end
-end
-
-local function IsTraitorChatting(client)
-    return player.IsActiveTraitorTeam(client) and (not client.traitor_gvoice)
 end
 
 function VOICE.Tick()
