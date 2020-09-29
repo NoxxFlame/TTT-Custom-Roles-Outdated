@@ -53,12 +53,14 @@ local function RoleChatMsg(sender, role, msg)
     net.WriteUInt(role, 4)
     net.WriteEntity(sender)
     net.WriteString(msg)
+
+    local monstersAsTraitors = GetGlobalBool("ttt_monsters_are_traitors")
     if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN then
-        net.Send(GetTraitorsFilter())
+        net.Send(monstersAsTraitors and GetTraitorsAndMonstersFilter() or GetTraitorsFilter())
     elseif role == ROLE_VAMPIRE or role == ROLE_ZOMBIE then
-        net.Send(GetMonstersFilter())
+        net.Send(monstersAsTraitors and GetTraitorsAndMonstersFilter() or GetMonstersFilter())
     elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
-        net.Send(GetNonInnocentFilter())
+        net.Send(GetTraitorsAndJestersFilter())
     else
         net.Send(GetDetectiveFilter())
     end
@@ -66,7 +68,7 @@ end
 
 -- Round start info popup
 function ShowRoundStartPopup()
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if IsValid(v) and v:Team() == TEAM_TERROR and v:Alive() then
             v:ConCommand("ttt_cl_startpopup")
         end
@@ -75,7 +77,7 @@ end
 
 local function GetPlayerFilter(pred)
     local filter = {}
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if IsValid(v) and pred(v) then
             table.insert(filter, v)
         end
@@ -84,7 +86,7 @@ local function GetPlayerFilter(pred)
 end
 
 function GetTraitorFilter(alive_only)
-    return GetPlayerFilter(function(p) return p:GetTraitor() and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return p:IsTraitor() and (not alive_only or p:IsTerror()) end)
 end
 
 function GetDetectiveFilter(alive_only)
@@ -136,15 +138,28 @@ function GetInnocentFilter(alive_only)
 end
 
 function GetTraitorsFilter(alive_only)
-    return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsHypnotist() or p:IsAssassin()) and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return p:IsTraitorTeam() and (not alive_only or p:IsTerror()) end)
 end
 
-function GetNonInnocentFilter(alive_only)
-    return GetPlayerFilter(function(p) return (p:IsTraitor() or p:IsHypnotist() or p:IsAssassin() or p:IsJester() or p:IsSwapper()) and (not alive_only or p:IsTerror()) end)
+-- Anyone not part of the Traitor team
+function GetNonTraitorFilter(alive_only)
+    return GetPlayerFilter(function(p) return (p:IsInnocentTeam() or p:IsJesterTeam() or p:IsKiller() or (not GetGlobalBool("ttt_monsters_are_traitors") and p:IsMonsterTeam())) and (not alive_only or p:IsTerror()) end)
+end
+
+function GetInnocentsFilter(alive_only)
+    return GetPlayerFilter(function(p) return p:IsInnocentTeam() and (not alive_only or p:IsTerror()) end)
+end
+
+function GetTraitorsAndJestersFilter(alive_only)
+    return GetPlayerFilter(function(p) return (p:IsTraitorTeam() or p:IsJesterTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and p:IsMonsterTeam())) and (not alive_only or p:IsTerror()) end)
+end
+
+function GetTraitorsAndMonstersFilter(alive_only)
+    return GetPlayerFilter(function(p) return (p:IsTraitorTeam() or p:IsMonsterTeam()) and (not alive_only or p:IsTerror()) end)
 end
 
 function GetMonstersFilter(alive_only)
-    return GetPlayerFilter(function(p) return (p:IsVampire() or p:IsZombie()) and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return p:IsMonsterTeam() and (not alive_only or p:IsTerror()) end)
 end
 
 function GetRoleFilter(role, alive_only)
@@ -195,7 +210,7 @@ function GM:PlayerSay(ply, text, team_only)
         local team = ply:Team() == TEAM_SPEC
         if team and not DetectiveMode() then
             local filtered = {}
-            for k, v in pairs(string.Explode(" ", text)) do
+            for _, v in pairs(string.Explode(" ", text)) do
                 -- grab word characters and whitelisted interpunction
                 -- necessary or leetspeek will be used (by trolls especially)
                 local word, interp = string.match(v, "(%a*)([%.,;!%?]*)")
@@ -211,12 +226,13 @@ function GM:PlayerSay(ply, text, team_only)
 
             table.insert(filtered, 1, "[MUMBLED]")
             return table.concat(filtered, " ")
-        elseif team_only and not team and (ply:IsTraitor() or ply:IsZombie() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsDetective() or ply:IsJester() or ply:IsSwapper()) then
+        elseif team_only and not team and (ply:IsTraitorTeam() or ply:IsMonsterTeam() or ply:IsJesterTeam() or ply:IsDetective()) then
             local hasGlitch = false
             for _, v in pairs(player.GetAll()) do
                 if v:IsGlitch() then hasGlitch = true end
             end
-            if (ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin()) and hasGlitch then
+
+            if player.IsTraitorTeam(ply) and hasGlitch then
                 ply:SendLua("chat.AddText(\"The glitch is scrambling your communications\")")
                 return ""
             else
@@ -267,11 +283,11 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
         return true, false
     end
 
-    -- Traitors "team"chat by default, non-locationally
-    if speaker:IsActiveTraitor() or speaker:IsActiveHypnotist() or speaker:IsActiveAssassin() then
+    -- Traitors "team" chat by default, non-locationally
+    if player.IsActiveTraitorTeam(speaker) then
         if speaker.traitor_gvoice then
             return true, loc_voice:GetBool()
-        elseif listener:IsActiveTraitor() or listener:IsActiveHypnotist() or listener:IsActiveAssassin() then
+        elseif player.IsActiveTraitorTeam(listener) then
             return true, false
         else
             -- unless traitor_gvoice is true, normal innos can't hear speaker
@@ -284,7 +300,12 @@ end
 
 local function SendTraitorVoiceState(speaker, state)
     -- send umsg to living traitors that this is traitor-only talk
-    local rf = GetTraitorsFilter(true)
+    local rf = nil
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        rf = GetTraitorsAndMonstersFilter(true)
+    else
+        rf = GetTraitorsFilter(true)
+    end
 
     -- make it as small as possible, to get there as fast as possible
     -- we can fit it into a mere byte by being cheeky.
@@ -299,7 +320,7 @@ local function SendTraitorVoiceState(speaker, state)
 end
 
 local function TraitorGlobalVoice(ply, cmd, args)
-    if not IsValid(ply) or not (ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) then return end
+    if not IsValid(ply) or not player.IsActiveTraitorTeam(ply) then return end
     if not #args == 1 then return end
     local state = tonumber(args[1])
 

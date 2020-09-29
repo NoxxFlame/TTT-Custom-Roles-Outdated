@@ -114,6 +114,7 @@ CreateConVar("ttt_assassin_required_traitors", "2", FCVAR_ARCHIVE)
 CreateConVar("ttt_killer_required_innos", "3", FCVAR_ARCHIVE)
 
 CreateConVar("ttt_monster_pct", "0.33", FCVAR_ARCHIVE)
+CreateConVar("ttt_monsters_are_traitors", "0", FCVAR_ARCHIVE)
 
 -- Traitor credits
 CreateConVar("ttt_credits_starting", "2", FCVAR_ARCHIVE)
@@ -256,11 +257,7 @@ util.AddNetworkString("TTT_BuyableWeapon_Assassin")
 util.AddNetworkString("TTT_BuyableWeapon_Hypnotist")
 util.AddNetworkString("TTT_BuyableWeapon_Killer")
 
-jesterkilled = 0
-
-rolemapgo = {}
-
-rolemapgotwo = {}
+local jesterkilled = 0
 
 -- Round mechanics
 function GM:Initialize()
@@ -362,10 +359,12 @@ function GM:SyncGlobals()
     SetGlobalBool("ttt_shop_assassin_sync", GetConVar("ttt_shop_assassin_sync"):GetBool())
     SetGlobalBool("ttt_shop_hypnotist_sync", GetConVar("ttt_shop_hypnotist_sync"):GetBool())
 
+    SetGlobalBool("ttt_monsters_are_traitors", GetConVar("ttt_monsters_are_traitors"):GetBool())
+
     SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 
     SetGlobalBool("sv_voiceenable", GetConVar("sv_voiceenable"):GetBool())
-    
+
     SetGlobalBool("ttt_assassin_show_target_icon", GetConVar("ttt_assassin_show_target_icon"):GetBool())
     SetGlobalBool("ttt_killer_show_target_icon", GetConVar("ttt_killer_show_target_icon"):GetBool())
     SetGlobalBool("ttt_zombie_show_target_icon", GetConVar("ttt_zombie_show_target_icon"):GetBool())
@@ -679,13 +678,16 @@ function TellTraitorsAboutTraitors()
     local glitchnick = {}
     local jesternick = {}
     local killernick = {}
-    for k, v in pairs(player.GetAll()) do
-        if v:IsTraitor() or v:IsHypnotist() or v:IsAssassin() then
+    for _, v in pairs(player.GetAll()) do
+        if v:IsTraitorTeam() then
+            table.insert(traitornicks, v:Nick())
+        -- Count Monsters when Monsters-as-Traitors is enabled
+        elseif GetGlobalBool("ttt_monsters_are_traitors") and v:IsMonsterTeam() then
             table.insert(traitornicks, v:Nick())
         elseif v:IsGlitch() then
             table.insert(traitornicks, v:Nick())
             table.insert(glitchnick, v:Nick())
-        elseif v:IsJester() or v:IsSwapper() then
+        elseif v:IsJesterTeam() then
             table.insert(jesternick, v:Nick())
         elseif v:IsKiller() then
             table.insert(killernick, v:Nick())
@@ -694,8 +696,9 @@ function TellTraitorsAboutTraitors()
 
     -- This is ugly as hell, but it's kinda nice to filter out the names of the
     -- traitors themselves in the messages to them
-    for k, v in pairs(player.GetAll()) do
-        if v:IsTraitor() or v:IsHypnotist() or v:IsAssassin() then
+    for _, v in pairs(player.GetAll()) do
+        -- Count Monsters when Monsters-as-Traitors is enabled
+        if v:IsTraitorTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and v:IsMonsterTeam()) then
             if not table.IsEmpty(glitchnick) then
                 v:PrintMessage(HUD_PRINTTALK, "There is a Glitch.")
                 v:PrintMessage(HUD_PRINTCENTER, "There is a Glitch.")
@@ -715,7 +718,7 @@ function TellTraitorsAboutTraitors()
                 return
             else
                 local names = ""
-                for i, name in pairs(traitornicks) do
+                for _, name in pairs(traitornicks) do
                     if name ~= v:Nick() then
                         names = names .. name .. ", "
                     end
@@ -839,14 +842,18 @@ function BeginRound()
     for _, v in pairs(player.GetAll()) do
         v:SetPData("IsZombifying", 0)
         v:SetNWString("AssassinTarget", "")
-        if v:GetRole() == ROLE_ASSASSIN then
+        if v:IsAssassin() then
             local enemies = {}
             local detectives = {}
             for _, p in pairs(player.GetAll()) do
                 if p:Alive() and not p:IsSpec() then
-                    if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER or p:GetRole() == ROLE_VAMPIRE or p:GetRole() == ROLE_ZOMBIE then
+                    -- Exclude Glitch from this list so they don't get discovered immediately
+                    if p:IsInnocent() or p:IsPhantom() or p:IsMercenary() or p:IsKiller() then
                         table.insert(enemies, p:Nick())
-                    elseif p:GetRole() == ROLE_DETECTIVE then
+                    -- Count monsters as enemies if Monsters-as-Traitors is not enabled
+                    elseif not GetGlobalBool("ttt_monsters_are_traitors") and (p:IsZombie() or p:IsVampire()) then
+                        table.insert(enemies, p:Nick())
+                    elseif p:IsDetective() then
                         table.insert(detectives, p:Nick())
                     end
                 end
@@ -999,7 +1006,15 @@ function LogScore(type)
     local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer" }
 
     for _, v in pairs(player.GetAll()) do
-        local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and v:IsInnocentTeam()) or (type == WIN_TRAITOR and v:IsTraitorTeam()) or (type == WIN_MONSTER and v:IsMonsterTeam()) or (type == WIN_JESTER and v:IsJesterTeam()) or (type == WIN_KILLER and v:IsKiller())
+        local traitor_win = type == WIN_TRAITOR and v:IsTraitorTeam()
+        local monster_win = false
+        -- Count Monsters if Monsters-as-Traitors is enabled
+        if GetGlobalBool("ttt_monsters_are_traitors") then
+            traitor_win = traitor_win or (type == WIN_TRAITOR and v:IsMonsterTeam())
+        else
+            monster_win = type == WIN_MONSTER and v:IsMonsterTeam()
+        end
+        local didWin = ((type == WIN_INNOCENT or type == WIN_TIMELIMIT) and v:IsInnocentTeam()) or traitor_win or monster_win or (type == WIN_JESTER and v:IsJesterTeam()) or (type == WIN_KILLER and v:IsKiller())
 
         if not playerStats[v:Nick()] then
             playerStats[v:Nick()] = { 0, 0 } -- Wins, Rounds
@@ -1082,7 +1097,7 @@ end
 function GM:TTTCheckForWin()
     if ttt_dbgwin:GetBool() then return WIN_NONE end
 
-    if GAMEMODE.MapWin == WIN_TRAITOR or GAMEMODE.MapWin == WIN_INNOCENT then
+    if GAMEMODE.MapWin ~= WIN_NONE then
         local mw = GAMEMODE.MapWin
         GAMEMODE.MapWin = WIN_NONE
         return mw
@@ -1093,16 +1108,22 @@ function GM:TTTCheckForWin()
     local jester_alive = false
     local killer_alive = false
     local monster_alive = false
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if (v:Alive() and v:IsTerror()) or v:GetPData("IsZombifying", 0) == 1 then
-            if v:GetTraitor() or v:GetHypnotist() or v:GetAssassin() then
+            -- Check for zombification first so Monsters can win in weird circumstances where everyone dies by someone is coming back as a zombie in a second
+            if v:IsMonsterTeam() or v:GetPData("IsZombifying", 0) == 1 then
+                -- If Monsters-as-Traitors is enabled, don't ever mark Monsters as being alive
+                if GetGlobalBool("ttt_monsters_are_traitors") then
+                    traitor_alive = true
+                else
+                    monster_alive = true
+                end
+            elseif v:IsTraitorTeam() then
                 traitor_alive = true
-            elseif v:GetJester() or v:GetSwapper() then
+            elseif v:IsJesterTeam() then
                 jester_alive = true
             elseif v:GetKiller() then
                 killer_alive = true
-            elseif v:GetZombie() or v:GetVampire() or v:GetPData("IsZombifying", 0) == 1 then
-                monster_alive = true
             else
                 innocent_alive = true
             end
@@ -1242,6 +1263,8 @@ function SelectRoles()
     local vanilla_ts = 0
     local ds = 0
     local ms = 0
+    local hasTraitor = false
+    local hasZombie = false
     local hasMonster = false
     local hasSpecial = false
     local hasJester = false
@@ -1265,12 +1288,14 @@ function SelectRoles()
                 if role == ROLE_TRAITOR then
                     ts = ts + 1
                     vanilla_ts = vanilla_ts + 1
+                    hasTraitor = true
                     print(v:Nick() .. " (" .. v:SteamID() .. ") - Traitor")
                 elseif role == ROLE_ZOMBIE then
                     ms = ms + 1
+                    hasMonster = true
+                    hasZombie = true
                     print(v:Nick() .. " (" .. v:SteamID() .. ") - Zombie")
                     v:SetZombiePrime(true)
-                    hasMonster = true
                 elseif role == ROLE_HYPNOTIST then
                     ts = ts + 1
                     hasSpecial = true
@@ -1312,52 +1337,81 @@ function SelectRoles()
     end
 
     print("-----RANDOMLY PICKING REMAINING ROLES-----")
-    while ts < traitor_count and #choices > 0 do
-        -- select random index in choices table
-        local pply, pick = GetRandomPlayer(choices)
 
-        -- make this guy traitor if he was not one last time, or if he makes
-        -- a roll
-        if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST) or math.random(1, 3) == 2) then
-            if ts >= GetConVar("ttt_hypnotist_required_traitors"):GetInt() and GetConVar("ttt_hypnotist_enabled"):GetInt() == 1 and math.random() <= hypnotist_chance and not hasSpecial then
-                print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Hypnotist")
-                pply:SetRole(ROLE_HYPNOTIST)
-                hasSpecial = true
-            elseif ts >= GetConVar("ttt_assassin_required_traitors"):GetInt() and GetConVar("ttt_assassin_enabled"):GetInt() == 1 and math.random() <= assassin_chance and not hasSpecial then
-                print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Assassin")
-                pply:SetRole(ROLE_ASSASSIN)
-                hasSpecial = true
-            else
-                print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Traitor")
-                pply:SetRole(ROLE_TRAITOR)
-                vanilla_ts = vanilla_ts + 1
+    -- If monsters are traitors, run the old zombie check logic
+    if GetConVar("ttt_monsters_are_traitors"):GetBool() and (GetConVar("ttt_zombie_enabled"):GetBool() and math.random() <= zombie_chance and not hasTraitor and not hasSpecial) or hasZombie then
+        while ts < monster_count and #choices > 0 do
+            -- select random index in choices table
+            local pply, pick = GetRandomPlayer(choices)
+            
+            -- make this guy zombie if he was not a traitor last time, or if he makes a roll
+            if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_ZOMBIE, ROLE_VAMPIRE) or (math.random(1, 3) == 2)) then
+                print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Zombie")
+                pply:SetRole(ROLE_ZOMBIE)
+                table.remove(choices, pick)
+                ts = ts + 1
             end
-            table.remove(choices, pick)
-            ts = ts + 1
+        end
+    else
+        while ts < traitor_count and #choices > 0 do
+            -- select random index in choices table
+            local pply, pick = GetRandomPlayer(choices)
+
+            -- Handle previous role logic, paying attention to whether monsters are traitors
+            local wasTraitor = WasRole(prev_roles, pply, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST)
+            if GetConVar("ttt_monsters_are_traitors"):GetBool() then
+                wasTraitor = wasTraitor or WasRole(prev_roles, pply, ROLE_ZOMBIE, ROLE_VAMPIRE)
+            end
+
+            -- make this guy traitor if he was not one last time, or if he makes a roll
+            if IsValid(pply) and (not wasTraitor or math.random(1, 3) == 2) then
+                if ts >= GetConVar("ttt_hypnotist_required_traitors"):GetInt() and GetConVar("ttt_hypnotist_enabled"):GetBool() and math.random() <= hypnotist_chance and not hasSpecial then
+                    print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Hypnotist")
+                    pply:SetRole(ROLE_HYPNOTIST)
+                    hasSpecial = true
+                -- Include Vampires only if Monsters are considered traitors
+                elseif GetConVar("ttt_monsters_are_traitors"):GetBool() and ts >= GetConVar("ttt_vampire_required_traitors"):GetInt() and GetConVar("ttt_vampire_enabled"):GetBool() and math.random() <= vampire_chance and not hasSpecial then
+                    print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Vampire")
+                    pply:SetRole(ROLE_VAMPIRE)
+                    hasSpecial = true
+                elseif ts >= GetConVar("ttt_assassin_required_traitors"):GetInt() and GetConVar("ttt_assassin_enabled"):GetBool() and math.random() <= assassin_chance and not hasSpecial then
+                    print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Assassin")
+                    pply:SetRole(ROLE_ASSASSIN)
+                    hasSpecial = true
+                else
+                    print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Traitor")
+                    pply:SetRole(ROLE_TRAITOR)
+                    vanilla_ts = vanilla_ts + 1
+                end
+                table.remove(choices, pick)
+                ts = ts + 1
+            end
         end
     end
 
-    while ms < monster_count and #choices > 0 do
-        -- select random index in choices table
-        local pply, pick = GetRandomPlayer(choices)
+    -- If monsters aren't traitors, add some monsters maybe
+    if not GetConVar("ttt_monsters_are_traitors"):GetBool() then
+        while ms < monster_count and #choices > 0 do
+            -- select random index in choices table
+            local pply, pick = GetRandomPlayer(choices)
 
-        -- make this guy monster if he was not one last time, or if he makes
-        -- a roll
-        if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_ZOMBIE, ROLE_VAMPIRE) or math.random(1, 3) == 2) then
-            if ts >= GetConVar("ttt_zombie_required_traitors"):GetInt() and GetConVar("ttt_zombie_enabled"):GetInt() == 1 and math.random() <= zombie_chance and not hasMonster then
-                print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Zombie")
-                pply:SetRole(ROLE_ZOMBIE)
-                pply:SetZombiePrime(true)
-                table.remove(choices, pick)
-                hasMonster = true
-            elseif ts >= GetConVar("ttt_vampire_required_traitors"):GetInt() and GetConVar("ttt_vampire_enabled"):GetInt() == 1 and math.random() <= vampire_chance and not hasMonster then
-                print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Vampire")
-                pply:SetRole(ROLE_VAMPIRE)
-                table.remove(choices, pick)
-                hasMonster = true
+            -- make this guy monster if he was not one last time, or if he makes a roll
+            if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_ZOMBIE, ROLE_VAMPIRE) or math.random(1, 3) == 2) then
+                if ts >= GetConVar("ttt_zombie_required_traitors"):GetInt() and GetConVar("ttt_zombie_enabled"):GetBool() and math.random() <= zombie_chance and not hasMonster then
+                    print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Zombie")
+                    pply:SetRole(ROLE_ZOMBIE)
+                    pply:SetZombiePrime(true)
+                    table.remove(choices, pick)
+                    hasMonster = true
+                elseif ts >= GetConVar("ttt_vampire_required_traitors"):GetInt() and GetConVar("ttt_vampire_enabled"):GetBool() and math.random() <= vampire_chance and not hasMonster then
+                    print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Vampire")
+                    pply:SetRole(ROLE_VAMPIRE)
+                    table.remove(choices, pick)
+                    hasMonster = true
+                end
+                -- Count the attempts so we don't stay in this loop forever
+                ms = ms + 1
             end
-            -- Count the attempts so we don't stay in this loop forever
-            ms = ms + 1
         end
     end
 
@@ -1401,17 +1455,16 @@ function SelectRoles()
     -- select random index in choices table
     local pply, pick = GetRandomPlayer(choices)
 
-    -- make this guy jester if he was not one last time, or if he makes
-    -- a roll
+    -- make this guy jester if he was not one last time, or if he makes a roll
     if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_JESTER, ROLE_SWAPPER) or math.random(1, 3) == 2) then
-        if GetConVar("ttt_jester_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= jester_chance and not hasJester then
+        if GetConVar("ttt_jester_enabled"):GetBool() and #choices >= GetConVar("ttt_jester_required_innos"):GetInt() and math.random() <= jester_chance and not hasJester then
             if IsValid(pply) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Jester")
                 pply:SetRole(ROLE_JESTER)
                 table.remove(choices, pick)
                 hasJester = true
             end
-        elseif GetConVar("ttt_swapper_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= swapper_chance and not hasJester then
+        elseif GetConVar("ttt_swapper_enabled"):GetBool() and #choices >= GetConVar("ttt_swapper_required_innos"):GetInt() and math.random() <= swapper_chance and not hasJester then
             if IsValid(pply) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Swapper")
                 pply:SetRole(ROLE_SWAPPER)
@@ -1423,10 +1476,9 @@ function SelectRoles()
 
     -- select random index in choices table
     pply, pick = GetRandomPlayer(choices)
-    -- make this guy killer if he was not one last time, or if he makes
-    -- a roll
+    -- make this guy killer if he was not one last time, or if he makes a roll
     if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_KILLER) or math.random(1, 3) == 2) then
-        if GetConVar("ttt_killer_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
+        if GetConVar("ttt_killer_enabled"):GetBool() and #choices >= GetConVar("ttt_killer_required_innos"):GetInt() and math.random() <= killer_chance and not hasKiller then
             if IsValid(pply) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Killer")
                 pply:SetRole(ROLE_KILLER)
@@ -1441,7 +1493,7 @@ function SelectRoles()
     -- select random index in choices table
     pply, pick = GetRandomPlayer(choices)
     if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_MERCENARY) or math.random(1, 3) == 2) then
-        if GetConVar("ttt_mercenary_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_mercenary_required_innos"):GetInt() and math.random() <= mercenary_chance and not hasMercenary then
+        if GetConVar("ttt_mercenary_enabled"):GetBool() and #choices >= GetConVar("ttt_mercenary_required_innos"):GetInt() and math.random() <= mercenary_chance and not hasMercenary then
             if IsValid(pply) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Mercenary")
                 pply:SetRole(ROLE_MERCENARY)
@@ -1454,7 +1506,7 @@ function SelectRoles()
     -- select random index in choices table
     pply, pick = GetRandomPlayer(choices)
     if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_PHANTOM) or math.random(1, 3) == 2) then
-        if GetConVar("ttt_phantom_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_phantom_required_innos"):GetInt() and math.random() <= phantom_chance and not hasPhantom then
+        if GetConVar("ttt_phantom_enabled"):GetBool() and #choices >= GetConVar("ttt_phantom_required_innos"):GetInt() and math.random() <= phantom_chance and not hasPhantom then
             if IsValid(pply) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Phantom")
                 pply:SetRole(ROLE_PHANTOM)
@@ -1468,7 +1520,7 @@ function SelectRoles()
     pply, pick = GetRandomPlayer(choices)
     if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_GLITCH) or math.random(1, 3) == 2) then
         -- Only spawn a glitch if we have multiple vanilla Traitors since otherwise the role doesn't do anything
-        if GetConVar("ttt_glitch_enabled"):GetInt() == 1 and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and vanilla_ts > 1 then
+        if GetConVar("ttt_glitch_enabled"):GetBool() and #choices >= GetConVar("ttt_glitch_required_innos"):GetInt() and math.random() <= glitch_chance and not hasGlitch and vanilla_ts > 1 then
             if IsValid(pply) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Glitch")
                 pply:SetRole(ROLE_GLITCH)

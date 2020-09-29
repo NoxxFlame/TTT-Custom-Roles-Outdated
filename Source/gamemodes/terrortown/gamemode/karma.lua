@@ -35,26 +35,6 @@ local config = KARMA.cv
 
 local function IsDebug() return config.debug:GetBool() end
 
-local function isTraitorTeam(ply)
-    return ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()
-end
-
-local function isJesterTeam(ply)
-    return ply:GetJester() or ply:GetSwapper()
-end
-
-local function isMonsterTeam(ply)
-    return ply:GetVampire() or ply:GetZombie()
-end
-
-local function isKiller(ply)
-    return ply:GetKiller()
-end
-
-local function isInnocent(ply)
-    return not isTraitorTeam(ply) and not isMonsterTeam(ply) and not isJesterTeam(ply) and not isKiller(ply)
-end
-
 local math = math
 
 cvars.AddChangeCallback("ttt_karma_max", function(cvar, old, new)
@@ -140,10 +120,9 @@ local function WasAvoidable(attacker, victim, dmginfo)
 end
 
 local function ShouldReduceKarma(attacker, victim)
-    local issameteam = (isTraitorTeam(attacker) and isTraitorTeam(victim)) or
-                    (isMonsterTeam(attacker) and isMonsterTeam(victim)) or
-                    (isInnocent(attacker) and isInnocent(victim))
-    return issameteam
+    return (attacker:IsTraitorTeam() and victim:IsTraitorTeam()) or
+            (attacker:IsMonsterAlly() and victim:IsMonsterAlly()) or
+            (attacker:IsInnocentTeam() and victim:IsInnocentTeam())
 end
 
 -- Handle karma change due to one player damaging another. Damage must not have
@@ -153,11 +132,11 @@ function KARMA.Hurt(attacker, victim, dmginfo)
     if not IsValid(attacker) or not IsValid(victim) then return end
     if attacker == victim then return end
     if not attacker:IsPlayer() or not victim:IsPlayer() then return end
-    if isKiller(attacker) then return end
+    if attacker:IsKiller() then return end
 
     -- Ignore excess damage
     local hurt_amount = math.min(victim:Health(), dmginfo:GetDamage())
-    if isInnocent(attacker) and isKiller(victim) then
+    if attacker:IsInnocentTeam() and victim:IsKiller() then
         local reward = KARMA.GetHurtReward(hurt_amount)
         reward = KARMA.GiveReward(attacker, reward)
 
@@ -178,7 +157,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
         if IsDebug() then
             print(Format("%s (%f) attacked %s (%f) for %d and got penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), hurt_amount, penalty))
         end
-    elseif isJesterTeam(victim) then
+    elseif victim:IsJesterTeam() then
         local penalty = hurt_amount * config.jratio:GetFloat()
         KARMA.GivePenalty(attacker, penalty, victim)
         attacker:SetCleanRound(false)
@@ -202,8 +181,9 @@ function KARMA.Killed(attacker, victim, dmginfo)
     if not IsValid(attacker) or not IsValid(victim) then return end
     if attacker == victim then return end
     if not attacker:IsPlayer() or not victim:IsPlayer() then return end
-    if isKiller(attacker) then return end
-    if isInnocent(attacker) and isKiller(victim) then
+    if attacker:IsKiller() then return end
+
+    if attacker:IsInnocentTeam() and victim:IsKiller() then
         local reward = KARMA.GetKillReward()
         reward = KARMA.GiveReward(attacker, reward)
 
@@ -225,7 +205,7 @@ function KARMA.Killed(attacker, victim, dmginfo)
         if IsDebug() then
             print(Format("%s (%f) killed %s (%f) and gets penalised for %f", attacker:Nick(), attacker:GetLiveKarma(), victim:Nick(), victim:GetLiveKarma(), penalty))
         end
-    elseif isJesterTeam(victim) then
+    elseif victim:IsJesterTeam() then
         local penalty = config.jpenalty:GetFloat()
         KARMA.GivePenalty(attacker, penalty, victim)
         attacker:SetCleanRound(false)
@@ -283,7 +263,7 @@ function KARMA.RoundIncrement()
             KARMA.GiveReward(ply, bonus)
 
             if IsDebug() then
-                print(ply, "gets roundincr", incr)
+                print(ply, "gets roundincr", bonus)
             end
         end
     end

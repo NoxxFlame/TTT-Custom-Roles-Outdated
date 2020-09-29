@@ -1,26 +1,21 @@
 function CreateFavTable()
     if not (sql.TableExists("ttt_bem_fav")) then
-        query = "CREATE TABLE ttt_bem_fav (guid TEXT, role TEXT, weapon_id TEXT)"
-        result = sql.Query(query)
+        sql.Query("CREATE TABLE ttt_bem_fav (guid TEXT, role TEXT, weapon_id TEXT)")
     else
         print("ALREADY EXISTS")
     end
 end
 
 function AddFavorite(guid, role, weapon_id)
-    query = "INSERT INTO ttt_bem_fav VALUES('" .. guid .. "','" .. role .. "','" .. weapon_id .. "')"
-    result = sql.Query(query)
+    sql.Query("INSERT INTO ttt_bem_fav VALUES('" .. guid .. "','" .. role .. "','" .. weapon_id .. "')")
 end
 
 function RemoveFavorite(guid, role, weapon_id)
-    query = "DELETE FROM ttt_bem_fav WHERE guid = '" .. guid .. "' AND role = '" .. role .. "' AND weapon_id = '" .. weapon_id .. "'"
-    result = sql.Query(query)
+    sql.Query("DELETE FROM ttt_bem_fav WHERE guid = '" .. guid .. "' AND role = '" .. role .. "' AND weapon_id = '" .. weapon_id .. "'")
 end
 
 function GetFavorites(guid, role)
-    query = "SELECT weapon_id FROM ttt_bem_fav WHERE guid = '" .. guid .. "' AND role = '" .. role .. "'"
-    result = sql.Query(query)
-    return result
+    return sql.Query("SELECT weapon_id FROM ttt_bem_fav WHERE guid = '" .. guid .. "' AND role = '" .. role .. "'")
 end
 
 -- looks for weapon id in favorites table (result of GetFavorites)

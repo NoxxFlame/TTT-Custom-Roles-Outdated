@@ -45,6 +45,8 @@ function plymeta:GetInnocentTeam() return self:GetDetective() or self:GetInnocen
 
 function plymeta:GetMonsterTeam() return self:GetZombie() or self:GetVampire() end
 
+function plymeta:GetMonsterAlly() return self:GetMonsterTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and self:GetTraitorTeam()) end
+
 function plymeta:GetJesterTeam() return self:GetJester() or self:GetSwapper() end
 
 plymeta.IsInnocent = plymeta.GetInnocent
@@ -65,6 +67,7 @@ plymeta.IsTraitorTeam = plymeta.GetTraitorTeam
 plymeta.IsInnocentTeam = plymeta.GetInnocentTeam
 plymeta.IsMonsterTeam = plymeta.GetMonsterTeam
 plymeta.IsJesterTeam = plymeta.GetJesterTeam
+plymeta.IsMonsterAlly = plymeta.GetMonsterAlly
 
 function plymeta:IsSpecial() return self:GetRole() ~= ROLE_INNOCENT end
 
@@ -116,6 +119,14 @@ function plymeta:IsActiveAssassin() return self:IsActiveRole(ROLE_ASSASSIN) end
 function plymeta:IsActiveKiller() return self:IsActiveRole(ROLE_KILLER) end
 
 function plymeta:IsActiveSpecial() return self:IsSpecial() and self:IsActive() end
+
+function plymeta:IsActiveInnocentTeam() return self:IsInnocentTeam() and self:IsActive() end
+
+function plymeta:IsActiveTraitorTeam() return self:IsTraitorTeam() and self:IsActive() end
+
+function plymeta:IsActiveMonsterTeam() return self:IsMonsterTeam() and self:IsActive() end
+
+function plymeta:IsActiveJesterTeam() return self:IsJesterTeam() and self:IsActive() end
 
 local GetRTranslation = CLIENT and LANG.GetRawTranslation or util.passthrough
 
@@ -299,4 +310,20 @@ else -- SERVER
         net.WriteUInt(act, 16)
         net.Broadcast()
     end
+end
+
+function player.IsActiveTraitorTeam(ply)
+    local is_traitor = ply:IsActiveTraitorTeam()
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        is_traitor = is_traitor or ply:IsActiveMonsterTeam()
+    end
+    return is_traitor
+end
+
+function player.IsTraitorTeam(ply)
+    local is_traitor = ply:IsTraitorTeam()
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        is_traitor = is_traitor or ply:IsMonsterTeam()
+    end
+    return is_traitor
 end

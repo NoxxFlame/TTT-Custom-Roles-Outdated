@@ -745,7 +745,7 @@ You can use your brain washing device on a corpse to revive them as a traitor.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_glitch = [[You are a Glitch! The traitors and monsters think you are one of them.
+L.info_popup_glitch = [[You are a Glitch! The traitors think you are one of them.
 Try to blend in and don't give yourself away.]]
 
 L.info_popup_jester = [[You are a Jester! You hate your life and want to die
@@ -755,17 +755,29 @@ L.info_popup_phantom = [[You are a Phantom! Try to survive and help your innocen
 You will haunt the player who kills you causing black smoke to appear.
 The haunting will then spread if other players kill your attacker.]]
 
-L.info_popup_zombie = [[You are a Zombie! Work with fellow monsters to kill all others.
+L.info_popup_zombie = [[You are a Zombie! Work with your allies to kill all others.
 
 These are your comrades:
-{monsterlist}
+{allylist}
 
 All damage you deal with guns is reduced by one half.
 Killing someone with your claws will turn them into a zombie.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_zombie_alone = [[You are a Zombie! You have no fellow monsters this round.
+L.info_popup_zombie_glitch = [[You are a Zombie! Work with your allies to kill all others.
+BUT BEWARE! There was a glitch in the system and one among
+you does not seek the same goal.
+
+These are your comrades:
+{allylist}
+
+All damage you deal with guns is reduced by one half.
+Killing someone with your claws will turn them into a zombie.
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_zombie_alone = [[You are a Zombie! You have no allies this round.
 
 Kill all others to win!
 
@@ -774,16 +786,27 @@ Killing someone with your claws will turn them into a zombie.
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_vampire = [[You are a Vampire! Work with fellow monsters to kill all others.
+L.info_popup_vampire = [[You are a Vampire! Work with your allies to kill all others.
 
 These are your comrades:
-{monsterlist}
+{allylist}
 
 You can use your fangs (left-click) to drink blood from the living and the dead to refill your health or to fade from view (right-click).
 
 Press {menukey} to receive your special equipment!]]
 
-L.info_popup_vampire_alone = [[You are a Vampire! You have no fellow monsters this round.
+L.info_popup_vampire_glitch = [[You are a Vampire! Work with your allies to kill all others.
+BUT BEWARE! There was a glitch in the system and one among
+you does not seek the same goal.
+
+These are your comrades:
+{allylist}
+
+You can use your fangs (left-click) to drink blood from the living and the dead to refill your health or to fade from view (right-click).
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_vampire_alone = [[You are a Vampire! You have no allies this round.
 
 Kill all others to win!
 

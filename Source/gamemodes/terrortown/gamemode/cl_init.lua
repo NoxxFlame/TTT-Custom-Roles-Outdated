@@ -241,7 +241,7 @@ local function ReceiveRoleList()
         if IsValid(ply) and ply.SetRole then
             ply:SetRole(role)
 
-            if ply:IsTraitor() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsZombie() then
+            if player.IsTraitorTeam(ply) then
                 ply.traitor_gvoice = false -- assume traitorchat by default
             end
         end
@@ -516,21 +516,44 @@ end)
 net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHighlightEnabled(ROLE_ZOMBIE, {ROLE_VAMPIRE})
+        local allies = {ROLE_VAMPIRE}
+        local traitors_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
+        if traitors_are_friends then
+            table.Add(allies, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST})
+        end
+
+        OnPlayerHighlightEnabled(ROLE_ZOMBIE, allies, false, traitors_are_friends)
     end)
 end)
 net.Receive("TTT_Vampire_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHighlightEnabled(ROLE_VAMPIRE, {ROLE_ZOMBIE})
+        local allies = {ROLE_ZOMBIE}
+        local traitors_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
+        if traitors_are_friends then
+            table.Add(allies, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST})
+        end
+
+        OnPlayerHighlightEnabled(ROLE_VAMPIRE, allies, false, traitors_are_friends)
     end)
 end)
 net.Receive("TTT_Traitor_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
-        OnPlayerHighlightEnabled(ROLE_TRAITOR, {ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_GLITCH}, true, true)
-        OnPlayerHighlightEnabled(ROLE_ASSASSIN, {ROLE_TRAITOR, ROLE_HYPNOTIST, ROLE_GLITCH}, true, true)
-        OnPlayerHighlightEnabled(ROLE_HYPNOTIST, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_GLITCH}, true, true)
+        local monsters_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
+        local traitor_allies = {ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_GLITCH}
+        local assassin_allies = {ROLE_TRAITOR, ROLE_HYPNOTIST, ROLE_GLITCH}
+        local hypnotist_allies = {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_GLITCH}
+        if monsters_are_friends then
+            local monsters = {ROLE_ZOMBIE, ROLE_VAMPIRE}
+            table.Add(traitor_allies, monsters)
+            table.Add(assassin_allies, monsters)
+            table.Add(hypnotist_allies, monsters)
+        end
+
+        OnPlayerHighlightEnabled(ROLE_TRAITOR, traitor_allies, true, true)
+        OnPlayerHighlightEnabled(ROLE_ASSASSIN, assassin_allies, true, true)
+        OnPlayerHighlightEnabled(ROLE_HYPNOTIST, hypnotist_allies, true, true)
     end)
 end)
 net.Receive("TTT_PlayerHighlightOff", function(len, ply)
@@ -547,7 +570,7 @@ function OnPlayerHighlightEnabled(role, alliedRoles, hideEnemies, traitorAllies)
         local jesters = {}
         for _, v in pairs(player.GetAll()) do
             if IsValid(v) and v:Alive() and not v:IsSpec() then
-                if v:GetRole() == ROLE_JESTER or v:GetRole() == ROLE_SWAPPER then
+                if v:IsJesterTeam() then
                     table.insert(jesters, v)
                 elseif v:GetRole() == role or (alliedRoles ~= nil and table.HasValue(alliedRoles, v:GetRole())) then
                     table.insert(friends, v)
@@ -558,17 +581,22 @@ function OnPlayerHighlightEnabled(role, alliedRoles, hideEnemies, traitorAllies)
             end
         end
 
-        -- Don't show enemies if we're hiding them
-        if not hideEnemies then
-            halo.Add(enemies, Color(255, 0, 0), 1, 1, 1, true, true)
-        end
-
         -- If the allies of this role are Traitors, show them in red to be thematic
         if traitorAllies then
             halo.Add(friends, Color(255, 0, 0), 1, 1, 1, true, true)
         -- Otherwise green is good
         else
             halo.Add(friends, Color(0, 255, 0), 1, 1, 1, true, true)
+        end
+
+        -- Don't show enemies if we're hiding them
+        if not hideEnemies then
+            -- If the allies of this role are Traitors, show enemies as green to be difference
+            if traitorAllies then
+                halo.Add(enemies, Color(0, 255, 0), 1, 1, 1, true, true)
+            else
+                halo.Add(enemies, Color(255, 0, 0), 1, 1, 1, true, true)
+            end
         end
 
         halo.Add(jesters, Color(255, 85, 100), 1, 1, 1, true, true)

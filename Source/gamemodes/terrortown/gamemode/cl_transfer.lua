@@ -36,12 +36,12 @@ function CreateTransferMenu(parent)
 			((
 				-- Local player is a traitor team member
 				ply:IsTraitorTeam() and
-				-- and target is a traitor team member (or a glitch)
-				(p:IsTraitorTeam() or p:IsActiveRole(ROLE_GLITCH))
+				-- and target is a traitor team member (or a glitch). Also include monsters if Monsters-as-Traitors is enabled
+				(p:IsTraitorTeam() or p:IsActiveGlitch() or (ply:IsMonsterAlly() and p:IsMonsterTeam()))
 			) or
             (
-                -- Local player is a monster and target is a monster
-                ply:IsMonsterTeam() and p:IsMonsterTeam()
+                -- Local player is a monster and target is a monster or an ally if Monsters-as-Traitors is enabled
+                ply:IsMonsterTeam() and (p:IsMonsterTeam() or (GetGlobalBool("ttt_monsters_are_traitors") and (p:IsTraitorTeam() or p:IsActiveGlitch())))
             )) then
 			dpick:AddChoice(p:Nick(), p:UniqueID())
 		end
@@ -52,7 +52,7 @@ function CreateTransferMenu(parent)
 
 	dsubmit.DoClick = function(s)
 		if selected_uid then
-			if player.GetByUniqueID(selected_uid):IsActiveRole(ROLE_GLITCH) then
+			if player.GetByUniqueID(selected_uid):IsActiveGlitch() then
 				RunConsoleCommand("ttt_fake_transfer_credits", selected_uid, "1")
 			else
 				RunConsoleCommand("ttt_transfer_credits", selected_uid, "1")

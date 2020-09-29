@@ -27,7 +27,7 @@ local function RadarScan(ply, cmd, args)
                     (not p:IsPlayer() or (p:IsPlayer() and p:IsTerror())) then
 
                     -- If the target is disguised, only show the icon for the traitor team
-                    if not p:GetNWBool("disguised", false) or ply:IsTraitorTeam() then
+                    if not p:GetNWBool("disguised", false) or player.IsTraitorTeam(ply) then
                         local pos = p:LocalToWorld(p:OBBCenter())
 
                         -- Round off, easier to send and inaccuracy does not matter

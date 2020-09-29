@@ -1,7 +1,7 @@
 function GetTraitors()
     local trs = {}
-    for k, v in ipairs(player.GetAll()) do
-        if v:GetTraitor() or v:GetHypnotist() or v:GetAssassin() then table.insert(trs, v) end
+    for _, v in ipairs(player.GetAll()) do
+        if player.IsTraitorTeam(v) then table.insert(trs, v) end
     end
 
     return trs
@@ -13,7 +13,7 @@ function CountTraitors() return #GetTraitors() end
 
 -- Send every player their role
 local function SendPlayerRoles()
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         net.Start("TTT_Role")
         net.WriteUInt(v:GetRole(), 4)
         net.Send(v)

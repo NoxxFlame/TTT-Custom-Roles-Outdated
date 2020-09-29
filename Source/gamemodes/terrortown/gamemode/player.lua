@@ -495,7 +495,7 @@ function GM:PlayerDisconnected(ply)
         SendTraitorList(GetTraitorFilter(false), nil)
 
         -- Same for confirmed traitors on innocent clients
-        SendConfirmedTraitors(GetInnocentFilter(false))
+        SendConfirmedTraitors(GetNonTraitorFilter(false))
 
         SendDetectiveList()
 
@@ -565,7 +565,7 @@ local function CheckCreditAward(victim, attacker)
     if not IsValid(attacker) or not attacker:IsPlayer() then return end
 
     -- DETECTIVE AWARD
-    if attacker:IsActiveDetective() and (victim:IsTraitor() or victim:IsHypnotist() or victim:IsVampire() or victim:IsAssassin() or victim:IsZombie() or victim:IsKiller()) then
+    if attacker:IsActiveDetective() and (victim:IsTraitorTeam() or victim:IsMonsterTeam() or victim:IsKiller()) then
         local amt = GetConVarNumber("ttt_det_credits_traitordead") or 1
         for _, ply in pairs(player.GetAll()) do
             if ply:IsActiveDetective() then
@@ -577,13 +577,13 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- TRAITOR AWARD
-    if (attacker:IsActiveTraitor() or attacker:IsActiveHypnotist() or attacker:IsActiveAssassin()) and (not (victim:IsTraitor() or victim:IsHypnotist() or victim:IsAssassin() or victim:IsSwapper())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if player.IsActiveTraitorTeam(attacker) and (not (player.IsTraitorTeam(victim) or victim:IsJesterTeam())) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local inno_alive = 0
         local inno_dead = 0
         local inno_total = 0
 
         for _, ply in pairs(player.GetAll()) do
-            if not (ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()) then
+            if not player.IsTraitorTeam(ply) then
                 if ply:IsTerror() then
                     inno_alive = inno_alive + 1
                 elseif ply:IsDeadTerror() then
@@ -610,10 +610,16 @@ local function CheckCreditAward(victim, attacker)
 
             -- If size is 0, awards are off
             if amt > 0 then
-                LANG.Msg(GetTraitorsFilter(true), "credit_tr_all", { num = amt })
+                local rf = nil
+                if GetGlobalBool("ttt_monsters_are_traitors") then
+                    rf = GetTraitorsAndMonstersFilter(true)
+                else
+                    rf = GetTraitorsFilter(true)
+                end
+                LANG.Msg(rf, "credit_tr_all", { num = amt })
 
                 for _, ply in pairs(player.GetAll()) do
-                    if ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() then
+                    if player.IsActiveTraitorTeam(ply) then
                         ply:AddCredits(amt)
                     end
                 end
@@ -625,13 +631,13 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- VAMPIRE AWARD
-    if attacker:IsActiveVampire() and (not (victim:IsVampire() or victim:IsZombie() or victim:IsSwapper())) and (not GAMEMODE.AwardedVampireCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if not GetGlobalBool("ttt_monsters_are_traitors") and attacker:IsActiveVampire() and (not (victim:IsMonsterTeam() or victim:IsJesterTeam())) and (not GAMEMODE.AwardedVampireCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local ply_alive = 0
         local ply_dead = 0
         local ply_total = 0
 
         for _, ply in pairs(player.GetAll()) do
-            if not (ply:GetVampire() or ply:GetZombie()) then
+            if not ply:IsMonsterTeam() then
                 if ply:IsTerror() then
                     ply_alive = ply_alive + 1
                 elseif ply:IsDeadTerror() then
@@ -673,13 +679,13 @@ local function CheckCreditAward(victim, attacker)
     end
 
     -- KILLER AWARD
-    if attacker:IsActiveKiller() and (not (victim:IsKiller() or victim:IsSwapper())) and (not GAMEMODE.AwardedKillerCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
+    if attacker:IsActiveKiller() and (not (victim:IsKiller() or victim:IsJesterTeam())) and (not GAMEMODE.AwardedKillerCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
         local ply_alive = 0
         local ply_dead = 0
         local ply_total = 0
 
         for _, ply in pairs(player.GetAll()) do
-            if not ply:GetKiller() then
+            if not ply:IsKiller() then
                 if ply:IsTerror() then
                     ply_alive = ply_alive + 1
                 elseif ply:IsDeadTerror() then
@@ -738,7 +744,6 @@ function FindRespawnLocation(pos)
         local t = {
             start = v,
             endpos = v,
-            filter = target,
             mins = midsize / -2,
             maxs = midsize / 2
         }
@@ -774,7 +779,7 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 
     if ply:GetNWBool("HauntedSmoke") == true then
         local phantomBody = deadPhantom.server_ragdoll or deadPhantom:GetRagdollEntity()
-        if phantomBody:IsValid() and deadPhantom:GetRole() == ROLE_PHANTOM then
+        if phantomBody:IsValid() and deadPhantom:IsPhantom() then
             deadPhantom:SpawnForRound(true)
             deadPhantom:SetPos(FindRespawnLocation(phantomBody:GetPos()) or phantomBody:GetPos())
             deadPhantom:SetEyeAngles(Angle(0, phantomBody:GetAngles().y, 0))
@@ -796,46 +801,51 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 
     local assassintarget = ""
     for _, v in pairs(player.GetAll()) do
-        if v:GetRole() == ROLE_ASSASSIN then
+        if v:IsAssassin() then
             assassintarget = v:GetNWString("AssassinTarget", "")
         end
     end
     if ply:Nick() == assassintarget then
         for _, v in pairs(player.GetAll()) do
-            if v:GetRole() == ROLE_ASSASSIN then
-                local innocents = {}
+            if v:IsAssassin() then
+                local enemies = {}
                 local detectives = {}
                 for _, p in pairs(player.GetAll()) do
                     if p:Alive() and not p:IsSpec() and p:Nick() ~= assassintarget then
-                        if p:GetRole() == ROLE_INNOCENT or p:GetRole() == ROLE_PHANTOM or p:GetRole() == ROLE_MERCENARY or p:GetRole() == ROLE_KILLER or p:GetRole() == ROLE_ZOMBIE or p:GetRole() == ROLE_VAMPIRE then
-                            table.insert(innocents, p:Nick())
-                        elseif p:GetRole() == ROLE_DETECTIVE then
+                        -- Exclude Glitch from this list so they don't get discovered immediately
+                        if p:IsInnocent() or p:IsPhantom() or p:IsMercenary() or p:IsKiller() then
+                            table.insert(enemies, p:Nick())
+                        -- Count monsters as enemies if Monsters-as-Traitors is not enabled
+                        elseif not GetGlobalBool("ttt_monsters_are_traitors") and (p:IsZombie() or p:IsVampire()) then
+                            table.insert(enemies, p:Nick())
+                        elseif p:IsDetective() then
                             table.insert(detectives, p:Nick())
                         end
                     end
                 end
-                if #innocents > 0 then
-                    v:SetNWString("AssassinTarget", innocents[math.random(#innocents)])
-                    --v:PrintMessage( HUD_PRINTTALK, "There is an innocent left")
+                if #enemies > 0 then
+                    v:SetNWString("AssassinTarget", enemies[math.random(#enemies)])
                 elseif #detectives > 0 then
                     v:SetNWString("AssassinTarget", detectives[math.random(#detectives)])
-                    --v:PrintMessage( HUD_PRINTTALK, "There is a detective left")
                 end
-                if #innocents + #detectives > 1 then
-                    v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your next target is " .. v:GetNWString("AssassinTarget", ""))
-                elseif #innocents + #detectives == 1 then
-                    v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. Your final target is " .. v:GetNWString("AssassinTarget", ""))
+
+                if #enemies + #detectives >= 1 then
+                    local targetCount
+                    if #enemies + #detectives > 1 then
+                        targetCount = "next"
+                    elseif #enemies + #detectives == 1 then
+                        targetCount = "final"
+                    end
+                    local targetMessage = "Your " .. targetCount .. " target is " .. v:GetNWString("AssassinTarget", "")
+                    v:PrintMessage(HUD_PRINTCENTER, "Target Eliminated. " .. targetMessage)
+                    v:PrintMessage(HUD_PRINTTALK, targetMessage)
                 end
             end
         end
     end
-    if attacker:IsPlayer() then
-        if attacker:GetRole() == ROLE_ASSASSIN then
-            if ply:Nick() ~= assassintarget and assassintarget ~= "" then
-                attacker:PrintMessage(HUD_PRINTCENTER, "Contract failed. You killed the wrong player.")
-                attacker:SetNWString("AssassinTarget", "")
-            end
-        end
+    if attacker:IsPlayer() and attacker:IsAssassin() and ply:Nick() ~= assassintarget and assassintarget ~= "" then
+        attacker:PrintMessage(HUD_PRINTCENTER, "Contract failed. You killed the wrong player.")
+        attacker:SetNWString("AssassinTarget", "")
     end
 
     -- Experimental: Fire a last shot if ironsighting and not headshot
@@ -908,23 +918,23 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
                         DRINKS.AddPlayerAction("death", ply)
                     end
                 elseif ply:IsTraitorTeam() then
-                    if attacker:IsInnocentTeam() or attacker:IsMonsterTeam() or attacker:IsKiller() then
-                        if GetConVar("ttt_drinking_death"):GetString() == "drink" then
-                            DRINKS.AddDrink(ply)
-                        elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
-                            DRINKS.AddShot(ply)
-                        end
-                        DRINKS.AddPlayerAction("death", ply)
-                    elseif attacker:IsTraitorTeam() then
+                    if attacker:IsTraitorTeam() or (attacker:IsMonsterTeam() and ply:IsMonsterAlly()) then
                         if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
                             DRINKS.AddDrink(attacker)
                         elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
                             DRINKS.AddShot(attacker)
                         end
                         DRINKS.AddPlayerAction("teamkill", attacker)
+                    elseif attacker:IsInnocentTeam() or attacker:IsMonsterTeam() or attacker:IsKiller() then
+                        if GetConVar("ttt_drinking_death"):GetString() == "drink" then
+                            DRINKS.AddDrink(ply)
+                        elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
+                            DRINKS.AddShot(ply)
+                        end
+                        DRINKS.AddPlayerAction("death", ply)
                     end
                 elseif ply:IsMonsterTeam() then
-                    if attacker:IsMonsterTeam() then
+                    if attacker:IsMonsterTeam() or attacker:IsMonsterAlly() then
                         if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
                             DRINKS.AddDrink(attacker)
                         elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
@@ -988,9 +998,9 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
     -- Check for T killing D or vice versa
     if IsValid(attacker) and attacker:IsPlayer() then
         local reward = 0
-        if (attacker:IsActiveTraitor() or attacker:IsActiveHypnotist() or attacker:IsActiveVampire() or attacker:IsActiveAssassin()) and ply:GetDetective() then
+        if (attacker:IsActiveTraitorTeam() or attacker:IsActiveVampire()) and ply:IsDetective() then
             reward = math.ceil(GetConVarNumber("ttt_credits_detectivekill"))
-        elseif attacker:IsActiveDetective() and (ply:GetTraitor() or ply:GetHypnotist() or ply:GetAssassin()) then
+        elseif attacker:IsActiveDetective() and (ply:IsTraitorTeam() or ply:IsVampire()) then
             reward = math.ceil(GetConVarNumber("ttt_det_credits_traitorkill"))
         end
 
@@ -1016,9 +1026,10 @@ function GM:PlayerDeath(victim, infl, attacker)
         end
         DRINKS.AddPlayerAction("suicide", victim)
     end
-    if victim:GetRole() == ROLE_PHANTOM and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
+    if victim:IsPhantom() and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
         attacker:SetNWBool("HauntedSmoke", true)
-        if attacker:GetRole() == ROLE_ASSASSIN then
+        -- Delay this message so the Assassin can see the target update message
+        if attacker:IsAssassin() then
             timer.Simple(2.5, function()
                 attacker:PrintMessage(HUD_PRINTCENTER, "You have been haunted.")
             end)
@@ -1026,7 +1037,7 @@ function GM:PlayerDeath(victim, infl, attacker)
             attacker:PrintMessage(HUD_PRINTCENTER, "You have been haunted.")
         end
         victim:PrintMessage(HUD_PRINTCENTER, "Your attacker has been haunted.")
-        for k, v in pairs(player.GetAll()) do
+        for _, v in pairs(player.GetAll()) do
             if v:IsRole(ROLE_DETECTIVE) and v:Alive() then
                 v:PrintMessage(HUD_PRINTCENTER, "The phantom has been killed.")
             end
@@ -1034,30 +1045,30 @@ function GM:PlayerDeath(victim, infl, attacker)
         deadPhantom = victim
     end
 
-    if attacker:IsPlayer() and attacker:GetRole() == ROLE_KILLER then
+    if attacker:IsPlayer() and attacker:IsKiller() then
         attacker:SetNWBool("KillerSmoke", false)
         ResetKillerKillCheckTimer()
     end
 
-    if victim:GetRole() == ROLE_SWAPPER and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
-        for k, ply in pairs(player.GetAll()) do
+    if victim:IsSwapper() and attacker:IsPlayer() and attacker ~= victim and infl:GetClass() ~= env_fire and GetRoundState() == ROUND_ACTIVE then
+        for _, ply in pairs(player.GetAll()) do
             if ply == attacker then
                 attacker:PrintMessage(HUD_PRINTCENTER, "You killed the swapper!")
             else
-                if ply:IsTraitorTeam() then
-                    if attacker:GetRole() == ROLE_TRAITOR then
+                if player.IsTraitorTeam(ply) then
+                    if attacker:IsTraitor() then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with a traitor (" .. attacker:GetName() .. ")")
-                    elseif attacker:GetRole() == ROLE_HYPNOTIST then
+                    elseif attacker:IsHypnotist() then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the hypnotist (" .. attacker:GetName() .. ")")
-                    elseif attacker:GetRole() == ROLE_ZOMBIE then
+                    elseif attacker:IsZombie() then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with a zombie (" .. attacker:GetName() .. ")")
-                    elseif attacker:GetRole() == ROLE_VAMPIRE then
+                    elseif attacker:IsVampire() then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the vampire (" .. attacker:GetName() .. ")")
-                    elseif attacker:GetRole() == ROLE_ASSASSIN then
+                    elseif attacker:IsAssassin() then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the assassin (" .. attacker:GetName() .. ")")
                     end
                 end
-                if attacker:GetRole() == ROLE_DETECTIVE then
+                if attacker:IsDetective() then
                     ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the detective (" .. attacker:GetName() .. ")")
                 end
             end
@@ -1186,39 +1197,40 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
     end
 
     -- Killers take less bullet damage
-    if dmginfo:IsBulletDamage() and ply:GetRole() == ROLE_KILLER then
+    if dmginfo:IsBulletDamage() and ply:IsKiller() then
         dmginfo:ScaleDamage(GetConVar("ttt_killer_damage_reduction"):GetFloat())
     end
 
      -- Monsters take less bullet damage
-    if dmginfo:IsBulletDamage() and ply:GetRole() == ROLE_ZOMBIE then
+    if dmginfo:IsBulletDamage() and ply:IsZombie() then
         dmginfo:ScaleDamage(GetConVar("ttt_zombie_damage_reduction"):GetFloat())
     end
-    if dmginfo:IsBulletDamage() and ply:GetRole() == ROLE_VAMPIRE then
+    if dmginfo:IsBulletDamage() and ply:IsVampire() then
         dmginfo:ScaleDamage(GetConVar("ttt_vampire_damage_reduction"):GetFloat())
     end
 
     if GetRoundState() == ROUND_ACTIVE then
-        if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER) then
+        if ply:IsJesterTeam() then
             -- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
             if dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
                 dmginfo:ScaleDamage(0)
             end
         end
 
-        if ply:IsPlayer() and dmginfo:GetAttacker():IsPlayer() then
+        local attacker = dmginfo:GetAttacker()
+        if ply:IsPlayer() and attacker:IsPlayer() then
             -- Jesters and Swappers do no damage
-            if dmginfo:GetAttacker():GetRole() == ROLE_JESTER or dmginfo:GetAttacker():GetRole() == ROLE_SWAPPER then
+            if attacker:IsJesterTeam() then
                 dmginfo:ScaleDamage(0)
             end
 
             -- Killers do less damage to encourage using the knife
-            if dmginfo:IsBulletDamage() and dmginfo:GetAttacker():GetRole() == ROLE_KILLER then
+            if dmginfo:IsBulletDamage() and attacker:IsKiller() then
                 dmginfo:ScaleDamage(GetConVar("ttt_killer_damage_scale"):GetFloat())
             end
 
             -- Zombies do less damage when using non-claw weapons
-            if dmginfo:GetAttacker():GetRole() == ROLE_ZOMBIE and dmginfo:GetAttacker():GetActiveWeapon():GetClass() ~= "weapon_zom_claws" then
+            if attacker:IsZombie() and attacker:GetActiveWeapon():GetClass() ~= "weapon_zom_claws" then
                 dmginfo:ScaleDamage(GetConVar("ttt_zombie_damage_scale"):GetFloat())
             end
         end
@@ -1268,7 +1280,8 @@ local fallsounds = {
 };
 
 function GM:OnPlayerHitGround(ply, in_water, on_floater, speed)
-    if (ply:GetRole() == ROLE_JESTER or ply:GetRole() == ROLE_SWAPPER or ply:GetRole() == ROLE_ZOMBIE) and GetRoundState() == ROUND_ACTIVE then
+    if (ply:IsJesterTeam() or ply:IsZombie()) and GetRoundState() == ROUND_ACTIVE then
+        -- Jester/Swapper and Zombie don't take fall damage
     else
         if in_water or speed < 450 or not IsValid(ply) then return end
 
@@ -1349,30 +1362,28 @@ function GM:EntityTakeDamage(ent, dmginfo)
     if SERVER and GetRoundState() == ROUND_ACTIVE then
         local assassintarget = ""
         for _, v in pairs(player.GetAll()) do
-            if v:GetRole() == ROLE_ASSASSIN then
+            if v:IsAssassin() then
                 assassintarget = v:GetNWString("AssassinTarget", "")
             end
         end
         local assassinbonus = 1
-        if dmginfo:GetAttacker():IsPlayer() then
-            if dmginfo:GetAttacker():GetRole() == ROLE_ASSASSIN and ent:IsPlayer() then
-                if ent:Nick() == assassintarget then
-                    assassinbonus = 2
-                else
-                    assassinbonus = 0.5
-                end
+        if att:IsPlayer() and att:IsAssassin() and ent:IsPlayer() then
+            if ent:Nick() == assassintarget then
+                assassinbonus = 2
+            else
+                assassinbonus = 0.5
             end
         end
 
-        if ent:IsPlayer() and (ent:GetRole() == ROLE_JESTER or ent:GetRole() == ROLE_SWAPPER) then
+        if ent:IsPlayer() and ent:IsJesterTeam() then
             -- Damage type DMG_GENERIC is "0" which doesn't seem to work with IsDamageType
-            if ((att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE))) or dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
+            if (att:IsPlayer() and att:IsZombie()) or dmginfo:IsExplosionDamage() or dmginfo:IsDamageType(DMG_BURN) or dmginfo:IsDamageType(DMG_CRUSH) or dmginfo:IsFallDamage() or dmginfo:IsDamageType(DMG_DROWN) or dmginfo:GetDamageType() == 0 or dmginfo:IsDamageType(DMG_DISSOLVE) then
                 dmginfo:ScaleDamage(0)
                 dmginfo:SetDamage(0)
             end
         -- No zombie team killing
         -- This can be funny, but it can also be used by frustrated players who didn't appreciate being zombified
-        elseif ent:IsPlayer() and ent:GetRole() == ROLE_ZOMBIE and att:IsPlayer() and (att:GetRole() == ROLE_ZOMBIE or att:GetRole() == ROLE_VAMPIRE) then
+        elseif ent:IsPlayer() and ent:IsZombie() and att:IsPlayer() and att:IsMonsterAlly() then
             dmginfo:ScaleDamage(0)
             dmginfo:SetDamage(0)
         elseif dmginfo:GetAttacker() ~= ent then
@@ -1380,7 +1391,7 @@ function GM:EntityTakeDamage(ent, dmginfo)
         end
     end
 
-    if att:IsPlayer() and (att:GetRole() == ROLE_JESTER or att:GetRole() == ROLE_SWAPPER) and GetRoundState() == ROUND_ACTIVE then
+    if att:IsPlayer() and att:IsJesterTeam() and GetRoundState() == ROUND_ACTIVE then
         dmginfo:ScaleDamage(0)
         dmginfo:SetDamage(0)
     end
@@ -1590,7 +1601,7 @@ function GM:Tick()
             end
 
             -- Run DNA Scanner think also when it is not deployed
-            if IsValid(ply.scanner_weapon) and wep ~= ply.scanner_weapon then
+            if IsValid(ply.scanner_weapon) and ply:GetActiveWeapon() ~= ply.scanner_weapon then
                 ply.scanner_weapon:Think()
             end
 
@@ -1634,7 +1645,7 @@ local function SendHighlightEvent(ply, role, enabled, onenabled, ondisabled)
 end
 
 function HandlePlayerHighlights(ply)
-    if ply:GetRole() == ROLE_KILLER then
+    if ply:IsKiller() then
         SendHighlightEvent(ply, "Killer", GetConVar("ttt_killer_vision_enable"):GetBool())
 
         -- Ensure the Killer has their knife, if its enabled
@@ -1643,7 +1654,7 @@ function HandlePlayerHighlights(ply)
             ply:Give("weapon_kil_knife")
         end
         return
-    elseif ply:GetRole() == ROLE_ZOMBIE then
+    elseif ply:IsZombie() then
         if ply.GetActiveWeapon and IsValid(ply:GetActiveWeapon()) then
             SendHighlightEvent(ply, "Zombie", GetConVar("ttt_zombie_vision_enable"):GetBool() and ply:GetActiveWeapon():GetClass() == "weapon_zom_claws",
                 -- OnEnabled
@@ -1677,7 +1688,7 @@ function HandlePlayerHighlights(ply)
             end
         end
         return
-    elseif ply:GetRole() == ROLE_VAMPIRE then
+    elseif ply:IsVampire() then
         if ply.GetActiveWeapon and IsValid(ply:GetActiveWeapon()) then
             SendHighlightEvent(ply, "Vampire", GetConVar("ttt_vampire_vision_enable"):GetBool() and ply:GetActiveWeapon():GetClass() == "weapon_vam_fangs")
         end
@@ -1753,10 +1764,10 @@ local function HandleKillerSmokeTick()
             if killerSmokeTime >= GetConVar("ttt_killer_smoke_timer"):GetInt() then
                 for _, v in pairs(player.GetAll()) do
                     if not IsValid(v) then return end
-                    if v:GetRole() == ROLE_KILLER and v:Alive() then
+                    if v:IsKiller() and v:Alive() then
                         v:SetNWBool("KillerSmoke", true)
                         v:PrintMessage(HUD_PRINTCENTER, "Your Evil is showing")
-                    elseif (v:GetRole() == ROLE_KILLER and not v:Alive()) or not HasKiller() then
+                    elseif (v:IsKiller() and not v:Alive()) or not HasKiller() then
                         timer.Remove("KillerKillCheckTimer")
                     end
                 end

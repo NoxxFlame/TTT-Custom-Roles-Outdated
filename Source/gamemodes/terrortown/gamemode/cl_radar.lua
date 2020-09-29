@@ -119,7 +119,7 @@ function RADAR:Draw(client)
     surface.SetFont("HudSelectionText")
 
     -- C4 warnings
-    if self.bombs_count ~= 0 and (client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveAssassin()) then
+    if self.bombs_count ~= 0 and player.IsActiveTraitorTeam(client) then
         surface.SetTexture(c4warn)
         surface.SetTextColor(200, 55, 55, 220)
         surface.SetDrawColor(255, 255, 255, 200)
@@ -184,8 +184,8 @@ function RADAR:Draw(client)
             end
 
             role = tgt.role
-            if client:GetTraitor() or client:GetHypnotist() or client:GetAssassin() then
-                if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN or role == ROLE_GLITCH then
+            if player.IsTraitorTeam(client) then
+                if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN or role == ROLE_GLITCH or (GetGlobalBool("ttt_monsters_are_traitors") and (role == ROLE_VAMPIRE or role == ROLE_ZOMBIE)) then
                     surface.SetDrawColor(255, 0, 0, alpha)
                     surface.SetTextColor(255, 0, 0, alpha)
                 elseif role == ROLE_JESTER or role == ROLE_SWAPPER then

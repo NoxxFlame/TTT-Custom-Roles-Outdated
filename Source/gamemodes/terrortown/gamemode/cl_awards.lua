@@ -619,8 +619,14 @@ local function TeamKiller(events, scores, players, innocents, traitors, detectiv
             kills = s.traitors
             team = num_traitors - 1
         elseif table.HasValue(zombies, id) or table.HasValue(vampires, id) then
-            kills = s.monsters
-            team = num_mon - 1
+            -- Count Traitors if Monsters-as-Traitors is enabled
+            if GetGlobalBool("ttt_monsters_are_traitors") then
+                kills = s.traitors
+                team = num_traitors - 1
+            else
+                kills = s.monsters
+                team = num_mon - 1
+            end
         -- Essentially ignore killers because they can't have a team
         elseif table.HasValue(killers, id) then
             kills = 0
@@ -640,7 +646,14 @@ local function TeamKiller(events, scores, players, innocents, traitors, detectiv
     if not nick then return nil end
 
     local was_traitor = table.HasValue(traitors, tker) or table.HasValue(hypnotists, tker) or table.HasValue(assassins, tker)
-    local was_monster = table.HasValue(zombies, tker) or table.HasValue(vampires, tker)
+    local was_monster = false
+    -- Count Monsters if Monsters-as-Traitors is enabled
+    if GetGlobalBool("ttt_monsters_are_traitors") then
+        was_traitor = was_traitor or table.HasValue(zombies, tker) or table.HasValue(vampires, tker)
+    else
+        was_monster = table.HasValue(zombies, tker) or table.HasValue(vampires, tker)
+    end
+
     local kills = (was_traitor and scores[tker].traitors > 0 and scores[tker].traitors) or (was_monster and scores[tker].monsters > 0 and scores[tker].monsters) or (scores[tker].innos > 0 and scores[tker].innos) or 0
     local award = {nick=nick, priority=kills}
     if kills == 1 then

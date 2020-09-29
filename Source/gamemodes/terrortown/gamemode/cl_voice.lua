@@ -127,7 +127,7 @@ function GM:OnPlayerChat(ply, text, teamchat, dead)
         dead = true
     end
 
-    if teamchat and (not team and not (ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin() or ply:IsDetective()) or team) then
+    if teamchat and (not team and not (player.IsTraitorTeam(ply) or ply:IsDetective()) or team) then
         teamchat = false
     end
 
@@ -392,8 +392,8 @@ end
 
 local function RadioComplete(cmd, arg)
     local c = {}
-    for k, cmd in pairs(RADIO.Commands) do
-        local rcmd = "ttt_radio " .. cmd.cmd
+    for _, com in pairs(RADIO.Commands) do
+        local rcmd = "ttt_radio " .. com.cmd
         table.insert(c, rcmd)
     end
     return c
@@ -464,20 +464,20 @@ local MutedState = nil
 
 local g_VoicePanelList = nil
 
-local function IsTraitorTeam(ply)
-    return ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()
-end
-
 -- 255 at 100
 -- 5 at 5000
 local function VoiceNotifyThink(pnl)
     if not (IsValid(pnl) and LocalPlayer() and IsValid(pnl.ply)) then return end
     if not (GetGlobalBool("ttt_locational_voice", false) and (not pnl.ply:IsSpec()) and (pnl.ply ~= LocalPlayer())) then return end
-    if IsTraitorTeam(LocalPlayer()) and IsTraitorTeam(pnl.ply) then return end
+    if player.IsActiveTraitorTeam(LocalPlayer()) and player.IsActiveTraitorTeam(pnl.ply) then return end
 
     local d = LocalPlayer():GetPos():Distance(pnl.ply:GetPos())
 
     pnl:SetAlpha(math.max(-0.1 * d + 255, 15))
+end
+
+local function IsTraitorChatting(client)
+    return player.IsActiveTraitorTeam(client) and (not client.traitor_gvoice)
 end
 
 local PlayerVoicePanels = {}
@@ -498,7 +498,7 @@ function GM:PlayerStartVoice(ply)
 
     -- Tell server this is global
     if client == ply then
-        if client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveAssassin() then
+        if player.IsActiveTraitorTeam(client) then
             if (not client:KeyDown(IN_SPEED)) and (not client:KeyDownLast(IN_SPEED)) then
                 client.traitor_gvoice = true
                 RunConsoleCommand("tvog", "1")
@@ -506,15 +506,16 @@ function GM:PlayerStartVoice(ply)
                 client.traitor_gvoice = false
                 RunConsoleCommand("tvog", "0")
             end
-        end
 
-        local hasGlitch = false
-        for _, v in pairs(player.GetAll()) do
-            if v:IsGlitch() then hasGlitch = true end
-        end
-        -- Return early so the client doesn't think they are talking
-        if not client.traitor_gvoice and hasGlitch then
-            return
+            local hasGlitch = false
+            for _, v in pairs(player.GetAll()) do
+                if v:IsGlitch() then hasGlitch = true end
+            end
+
+            -- Return early so the client doesn't think they are talking
+            if not client.traitor_gvoice and hasGlitch then
+                return
+            end
         end
 
         VOICE.SetSpeaking(true)
@@ -537,12 +538,12 @@ function GM:PlayerStartVoice(ply)
         draw.RoundedBox(4, 1, 1, w - 2, h - 2, shade)
     end
 
-    if client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveAssassin() then
+    if player.IsActiveTraitorTeam(client) then
         if ply == client then
             if not client.traitor_gvoice then
                 pnl.Color = Color(200, 20, 20, 255)
             end
-        elseif ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin() then
+        elseif player.IsActiveTraitorTeam(ply) then
             if not ply.traitor_gvoice then
                 pnl.Color = Color(200, 20, 20, 255)
             end
@@ -556,9 +557,7 @@ function GM:PlayerStartVoice(ply)
     PlayerVoicePanels[ply] = pnl
 
     -- run ear gesture
-    if not ((ply:IsActiveTraitor() or ply:IsActiveHypnotist() or ply:IsActiveAssassin()) and (not ply.traitor_gvoice)) then
-        ply:AnimPerformGesture(ACT_GMOD_IN_CHAT)
-    end
+    ply:AnimPerformGesture(ACT_GMOD_IN_CHAT)
 end
 
 local function ReceiveVoiceState()
@@ -567,7 +566,7 @@ local function ReceiveVoiceState()
 
     -- prevent glitching due to chat starting/ending across round boundary
     if GAMEMODE.round_state ~= ROUND_ACTIVE then return end
-    if (not IsValid(LocalPlayer())) or (not (LocalPlayer():IsActiveTraitor() or LocalPlayer():IsActiveHypnotist() or LocalPlayer():IsActiveAssassin())) then return end
+    if (not IsValid(LocalPlayer())) or (not player.IsActiveTraitorTeam(LocalPlayer())) then return end
 
     local ply = player.GetByID(idx)
     if IsValid(ply) then
@@ -584,7 +583,7 @@ net.Receive("TTT_TraitorVoiceState", ReceiveVoiceState)
 local function VoiceClean()
     for ply, pnl in pairs(PlayerVoicePanels) do
         if (not IsValid(pnl)) or (not IsValid(ply)) then
-            GAMEMODE:PlayerEndVoice(ply)
+            GAMEMODE:PlayerEndVoice(ply, true)
         end
     end
 end
@@ -597,7 +596,8 @@ function GM:PlayerEndVoice(ply, no_reset)
         PlayerVoicePanels[ply] = nil
     end
 
-    if IsValid(ply) and not no_reset then
+    -- Specifically check for "false" since some base classes don't pass a value
+    if IsValid(ply) and no_reset == false then
         ply.traitor_gvoice = false
     end
 
@@ -678,10 +678,6 @@ local function GetDrainRate()
     else
         return GetGlobalFloat("ttt_voice_drain_normal", 0)
     end
-end
-
-local function IsTraitorChatting(client)
-    return (client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveAssassin()) and (not client.traitor_gvoice)
 end
 
 function VOICE.Tick()

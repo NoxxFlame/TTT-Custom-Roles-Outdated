@@ -95,7 +95,7 @@ end
 util.Capitalize = string.Capitalize
 
 -- Color unpacking
-function clr(color) return color.r, color.g, color.b, color.a; end
+function UnpackColor(color) return color.r, color.g, color.b, color.a; end
 
 if CLIENT then
 	-- Is screenpos on screen?

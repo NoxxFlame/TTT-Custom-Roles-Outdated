@@ -92,7 +92,7 @@ function ENT:UseOverride(activator)
 	if IsValid(activator) and activator:IsPlayer() then
 		-- Traitors not allowed to disarm other traitor's C4 until he is dead
 		local owner = self:GetOwner()
-		if self:GetArmed() and owner ~= activator and (activator:GetTraitor() or activator:GetHypnotist() or activator:GetAssassin()) and (IsValid(owner) and owner:Alive() and owner:GetTraitor()) then
+		if self:GetArmed() and owner ~= activator and player.IsTraitorTeam(activator) and (IsValid(owner) and owner:Alive() and player.IsTraitorTeam(owner)) then
 			LANG.Msg(activator, "c4_no_disarm")
 			return
 		end
@@ -509,8 +509,8 @@ if SERVER then
 		local bomb = ents.GetByIndex(idx)
 		if IsValid(bomb) and bomb:GetClass() == "ttt_c4" and not bomb.DisarmCausedExplosion and bomb:GetArmed() then
 			if bomb:GetPos():Distance(ply:GetPos()) > 256 then
-				return
-			elseif bomb.SafeWires[wire] or ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin() or ply == bomb:GetOwner() then
+                return
+			elseif bomb.SafeWires[wire] or player.IsTraitorTeam(ply) or ply == bomb:GetOwner() then
 				LANG.Msg(ply, "c4_disarmed")
 
 				bomb:Disarm(ply)

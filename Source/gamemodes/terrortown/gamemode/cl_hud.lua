@@ -77,7 +77,7 @@ local sprint_colors = {
 -- Modified RoundedBox
 local Tex_Corner8 = surface.GetTextureID("gui/corner8")
 local function RoundedMeter(bs, x, y, w, h, color)
-    surface.SetDrawColor(clr(color))
+    surface.SetDrawColor(UnpackColor(color))
 
     surface.DrawRect(x + bs, y, w - bs * 2, h)
     surface.DrawRect(x, y + bs, bs, h - bs * 2)
@@ -351,7 +351,7 @@ local function InfoPaint(client)
 
     -- Draw round time
     local is_haste = HasteMode() and round_state == ROUND_ACTIVE
-    local is_traitor = client:IsActiveTraitor() or client:IsActiveHypnotist() or client:IsActiveZombie() or client:IsActiveVampire() or client:IsActiveAssassin() or client:IsActiveKiller()
+    local is_traitor = client:IsActiveTraitorTeam() or client:IsActiveMonsterTeam() or client:IsActiveKiller()
 
     local endtime = GetGlobalFloat("ttt_round_end", 0) - CurTime()
 
