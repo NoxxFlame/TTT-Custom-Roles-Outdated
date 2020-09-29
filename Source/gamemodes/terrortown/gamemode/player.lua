@@ -610,7 +610,13 @@ local function CheckCreditAward(victim, attacker)
 
             -- If size is 0, awards are off
             if amt > 0 then
-                LANG.Msg(GetTraitorsFilter(true), "credit_tr_all", { num = amt })
+                local rf = nil
+                if GetGlobalBool("ttt_monsters_are_traitors") then
+                    rf = GetTraitorsAndMonstersFilter(true)
+                else
+                    rf = GetTraitorsFilter(true)
+                end
+                LANG.Msg(rf, "credit_tr_all", { num = amt })
 
                 for _, ply in pairs(player.GetAll()) do
                     if player.IsActiveTraitorTeam(ply) then
