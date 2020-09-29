@@ -557,9 +557,7 @@ function GM:PlayerStartVoice(ply)
     PlayerVoicePanels[ply] = pnl
 
     -- run ear gesture
-    if not IsTraitorChatting(ply) then
-        ply:AnimPerformGesture(ACT_GMOD_IN_CHAT)
-    end
+    ply:AnimPerformGesture(ACT_GMOD_IN_CHAT)
 end
 
 local function ReceiveVoiceState()
