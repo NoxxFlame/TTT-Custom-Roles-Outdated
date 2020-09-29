@@ -918,23 +918,23 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
                         DRINKS.AddPlayerAction("death", ply)
                     end
                 elseif ply:IsTraitorTeam() then
-                    if attacker:IsInnocentTeam() or attacker:IsMonsterTeam() or attacker:IsKiller() then
-                        if GetConVar("ttt_drinking_death"):GetString() == "drink" then
-                            DRINKS.AddDrink(ply)
-                        elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
-                            DRINKS.AddShot(ply)
-                        end
-                        DRINKS.AddPlayerAction("death", ply)
-                    elseif attacker:IsTraitorTeam() then
+                    if attacker:IsTraitorTeam() or (attacker:IsMonsterTeam() and ply:IsMonsterAlly()) then
                         if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
                             DRINKS.AddDrink(attacker)
                         elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
                             DRINKS.AddShot(attacker)
                         end
                         DRINKS.AddPlayerAction("teamkill", attacker)
+                    elseif attacker:IsInnocentTeam() or attacker:IsMonsterTeam() or attacker:IsKiller() then
+                        if GetConVar("ttt_drinking_death"):GetString() == "drink" then
+                            DRINKS.AddDrink(ply)
+                        elseif GetConVar("ttt_drinking_death"):GetString() == "shot" then
+                            DRINKS.AddShot(ply)
+                        end
+                        DRINKS.AddPlayerAction("death", ply)
                     end
                 elseif ply:IsMonsterTeam() then
-                    if attacker:IsMonsterTeam() then
+                    if attacker:IsMonsterTeam() or attacker:IsMonsterAlly() then
                         if GetConVar("ttt_drinking_team_kill"):GetString() == "drink" then
                             DRINKS.AddDrink(attacker)
                         elseif GetConVar("ttt_drinking_team_kill"):GetString() == "shot" then
