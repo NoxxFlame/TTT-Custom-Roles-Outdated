@@ -226,19 +226,13 @@ function GM:PlayerSay(ply, text, team_only)
 
             table.insert(filtered, 1, "[MUMBLED]")
             return table.concat(filtered, " ")
-        elseif team_only and not team and (ply:IsTraitor() or ply:IsZombie() or ply:IsHypnotist() or ply:IsVampire() or ply:IsAssassin() or ply:IsDetective() or ply:IsJester() or ply:IsSwapper()) then
+        elseif team_only and not team and (ply:IsTraitorTeam() or ply:IsMonsterTeam() or ply:IsJesterTeam() or ply:IsDetective()) then
             local hasGlitch = false
             for _, v in pairs(player.GetAll()) do
                 if v:IsGlitch() then hasGlitch = true end
             end
 
-            local isTraitor = ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin()
-            -- Count monsters when Monsters-as-Traitors is enabled
-            if GetGlobalBool("ttt_monsters_are_traitors") then
-                isTraitor = isTraitor or ply:IsZombie() or ply:IsVampire()
-            end
-
-            if isTraitor and hasGlitch then
+            if player.IsTraitorTeam(ply) and hasGlitch then
                 ply:SendLua("chat.AddText(\"The glitch is scrambling your communications\")")
                 return ""
             else
