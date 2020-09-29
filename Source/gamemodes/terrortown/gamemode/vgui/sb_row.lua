@@ -337,8 +337,8 @@ function PANEL:UpdatePlayerData()
     self.nick:SetText(ply:Nick())
     if ply:Nick() == LocalPlayer():GetNWString("AssassinTarget", "") and GetRoundState() == ROUND_ACTIVE then
         self.nick:SetText(ply:Nick() .. " (TARGET)")
-    elseif (LocalPlayer():GetTraitor() or LocalPlayer():GetHypnotist()) and GetRoundState() == ROUND_ACTIVE then
-        for k, v in pairs(player.GetAll()) do
+    elseif player.IsTraitorTeam(LocalPlayer()) and GetRoundState() == ROUND_ACTIVE then
+        for _, v in pairs(player.GetAll()) do
             if ply:Nick() == v:GetNWString("AssassinTarget", "") then
                 self.nick:SetText(ply:Nick() .. " (" .. v:Nick() .. "'s Target)")
             end

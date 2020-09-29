@@ -52,7 +52,7 @@ function CreateTransferMenu(parent)
 
 	dsubmit.DoClick = function(s)
 		if selected_uid then
-			if player.GetByUniqueID(selected_uid):IsActiveRole(ROLE_GLITCH) then
+			if player.GetByUniqueID(selected_uid):IsActiveGlitch() then
 				RunConsoleCommand("ttt_fake_transfer_credits", selected_uid, "1")
 			else
 				RunConsoleCommand("ttt_transfer_credits", selected_uid, "1")

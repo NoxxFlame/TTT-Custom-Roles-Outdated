@@ -219,6 +219,13 @@
         "FILL",
         "sql",
         "gmod",
-        "PLAYERANIMEVENT_JUMP"
+        "PLAYERANIMEVENT_JUMP",
+        "GetFavorites",
+        "IsFavorite",
+        "CreateFavTable",
+        "RemoveFavorite",
+        "AddFavorite",
+        "C4_WIRE_COUNT",
+        "CARRY_WEIGHT_LIMIT"
     ]
 }

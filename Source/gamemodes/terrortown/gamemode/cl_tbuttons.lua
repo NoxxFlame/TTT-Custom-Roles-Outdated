@@ -20,7 +20,7 @@ function TBHUD:Clear()
 end
 
 function TBHUD:CacheEnts()
-	if IsValid(LocalPlayer()) and (LocalPlayer():IsActiveTraitor() or LocalPlayer():IsActiveHypnotist() or LocalPlayer():IsActiveAssassin()) then
+	if IsValid(LocalPlayer()) and player.IsActiveTraitorTeam(LocalPlayer()) then
 		self.buttons = {}
 		for _, ent in pairs(ents.FindByClass("ttt_traitor_button")) do
 			if IsValid(ent) then
@@ -35,7 +35,7 @@ function TBHUD:CacheEnts()
 end
 
 function TBHUD:PlayerIsFocused()
-	return IsValid(LocalPlayer()) and (LocalPlayer():IsActiveTraitor() or LocalPlayer():IsActiveHypnotist() or LocalPlayer():IsActiveAssassin()) and IsValid(self.focus_ent)
+	return IsValid(LocalPlayer()) and player.IsActiveTraitorTeam(LocalPlayer()) and IsValid(self.focus_ent)
 end
 
 function TBHUD:UseFocused()
