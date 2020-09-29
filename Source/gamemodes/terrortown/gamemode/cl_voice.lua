@@ -392,8 +392,8 @@ end
 
 local function RadioComplete(cmd, arg)
     local c = {}
-    for k, cmd in pairs(RADIO.Commands) do
-        local rcmd = "ttt_radio " .. cmd.cmd
+    for _, com in pairs(RADIO.Commands) do
+        local rcmd = "ttt_radio " .. com.cmd
         table.insert(c, rcmd)
     end
     return c
@@ -469,7 +469,7 @@ local g_VoicePanelList = nil
 local function VoiceNotifyThink(pnl)
     if not (IsValid(pnl) and LocalPlayer() and IsValid(pnl.ply)) then return end
     if not (GetGlobalBool("ttt_locational_voice", false) and (not pnl.ply:IsSpec()) and (pnl.ply ~= LocalPlayer())) then return end
-    if player.IsTraitorTeam(LocalPlayer()) and player.IsTraitorTeam(pnl.ply) then return end
+    if player.IsActiveTraitorTeam(LocalPlayer()) and player.IsActiveTraitorTeam(pnl.ply) then return end
 
     local d = LocalPlayer():GetPos():Distance(pnl.ply:GetPos())
 
