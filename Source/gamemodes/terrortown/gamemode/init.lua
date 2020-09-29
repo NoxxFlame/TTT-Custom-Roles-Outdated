@@ -907,10 +907,10 @@ function BeginRound()
     timer.Simple(2.5, ShowRoundStartPopup)
 
     timer.Create("zombieHealthRegen", 0.66, 0, function()
-        for k, v in pairs(player.GetAll()) do
+        for _, v in pairs(player.GetAll()) do
             if v:Alive() and not v:IsSpec() and v:HasEquipmentItem(EQUIP_REGEN) then
                 local hp = v:Health()
-                if hp < 100 then
+                if hp < v:GetMaxHealth() then
                     v:SetHealth(hp + 1)
                 end
             end
