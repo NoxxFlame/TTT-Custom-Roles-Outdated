@@ -20,7 +20,7 @@ function WEPS.GetClass(wep)
 end
 
 function WEPS.DisguiseToggle(ply)
-    if IsValid(ply) and (ply:IsTraitorTeam() or ply:IsActiveKiller()) then
+    if IsValid(ply) and (player.IsTraitorTeam(ply) or ply:IsActiveKiller()) then
         if not ply:GetNWBool("disguised", false) then
             RunConsoleCommand("ttt_set_disguise", "1")
         else

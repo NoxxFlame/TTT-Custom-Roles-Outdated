@@ -34,7 +34,7 @@ function DISGUISE.CreateMenu(parent)
 end
 
 function DISGUISE.Draw(client)
-    if (not client) or not (client:IsTraitorTeam() or client:IsActiveKiller()) then return end
+    if (not client) or not (player.IsTraitorTeam(client) or client:IsActiveKiller()) then return end
     if not client:GetNWBool("disguised", false) then return end
 
     surface.SetFont("TabLarge")
