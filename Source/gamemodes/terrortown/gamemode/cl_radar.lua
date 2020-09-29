@@ -184,8 +184,8 @@ function RADAR:Draw(client)
             end
 
             role = tgt.role
-            if client:GetTraitor() or client:GetHypnotist() or client:GetAssassin() then
-                if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN or role == ROLE_GLITCH then
+            if player.IsTraitorTeam(client) then
+                if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN or role == ROLE_GLITCH or (GetGlobalBool("ttt_monsters_are_traitors") and (role == ROLE_VAMPIRE or role == ROLE_ZOMBIE)) then
                     surface.SetDrawColor(255, 0, 0, alpha)
                     surface.SetTextColor(255, 0, 0, alpha)
                 elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
