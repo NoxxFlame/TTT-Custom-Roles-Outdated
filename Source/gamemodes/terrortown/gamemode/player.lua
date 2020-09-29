@@ -1055,7 +1055,7 @@ function GM:PlayerDeath(victim, infl, attacker)
             if ply == attacker then
                 attacker:PrintMessage(HUD_PRINTCENTER, "You killed the swapper!")
             else
-                if ply:IsTraitorTeam() then
+                if player.IsTraitorTeam(ply) then
                     if attacker:IsTraitor() then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with a traitor (" .. attacker:GetName() .. ")")
                     elseif attacker:IsHypnotist() then
