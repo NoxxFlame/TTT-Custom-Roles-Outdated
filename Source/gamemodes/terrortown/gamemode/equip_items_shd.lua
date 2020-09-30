@@ -250,7 +250,7 @@ function GetEquipmentItem(role, id)
 	local tbl = EquipmentItems[role]
 	if not tbl then return end
 
-	for k, v in pairs(tbl) do
+	for _, v in pairs(tbl) do
 		if v and v.id == id then
 			return v
 		end
@@ -261,4 +261,40 @@ end
 function GenerateNewEquipmentID()
 	EQUIP_MAX = EQUIP_MAX * 2
 	return EQUIP_MAX
+end
+
+local function LoadMonsterRoleEquipment(role, radar)
+    if not table.HasValue(DefaultEquipment[role], EQUIP_RADAR) then
+        table.insert(DefaultEquipment[role], EQUIP_RADAR)
+    end
+
+    if GetEquipmentItem(role, EQUIP_RADAR) == nil then
+        table.insert(EquipmentItems[role], radar)
+    end
+end
+
+local function RemoveMonsterRoleEquipment(role)
+    for i, v in ipairs(DefaultEquipment[role]) do
+        if v == EQUIP_RADAR then
+            table.remove(DefaultEquipment[role], i)
+        end
+    end
+
+    for i, v in ipairs(EquipmentItems[role]) do
+        if v.id == EQUIP_RADAR then
+            table.remove(EquipmentItems[role], i)
+        end
+    end
+end
+
+function LoadMonsterEquipment(monsters_are_traitors)
+    -- Allow Monsters to buy Radar if they are members of the Traitor team
+    if monsters_are_traitors then
+        local radar = GetEquipmentItem(ROLE_TRAITOR, EQUIP_RADAR)
+        LoadMonsterRoleEquipment(ROLE_VAMPIRE, radar)
+        LoadMonsterRoleEquipment(ROLE_ZOMBIE, radar)
+    else
+        RemoveMonsterRoleEquipment(ROLE_VAMPIRE)
+        RemoveMonsterRoleEquipment(ROLE_ZOMBIE)
+    end
 end

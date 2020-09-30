@@ -226,6 +226,7 @@
         "RemoveFavorite",
         "AddFavorite",
         "C4_WIRE_COUNT",
-        "CARRY_WEIGHT_LIMIT"
+        "CARRY_WEIGHT_LIMIT",
+        "PrintTable"
     ]
 }

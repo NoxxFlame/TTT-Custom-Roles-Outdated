@@ -149,7 +149,7 @@ local function RoundStateChange(o, n)
     end
 
     -- whatever round state we get, clear out the voice flags
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         v.traitor_gvoice = false
     end
 end
@@ -602,3 +602,8 @@ function OnPlayerHighlightEnabled(role, alliedRoles, hideEnemies, traitorAllies)
         halo.Add(jesters, Color(255, 85, 100), 1, 1, 1, true, true)
     end
 end
+
+net.Receive("TTT_LoadMonsterEquipment", function()
+    local monsters_are_traitors = net.ReadBool()
+    LoadMonsterEquipment(monsters_are_traitors)
+end)
