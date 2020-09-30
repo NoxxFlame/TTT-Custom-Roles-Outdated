@@ -524,14 +524,10 @@ local function TraitorMenuPopup()
                     slot:SetIconText(item.slot)
                     ic.slot = item.slot
 
-                    -- Credit to @Angela on the Lonely Yogs Discord for the fix!
+                    -- Credit to @Angela and @Technofrood on the Lonely Yogs Discord for the fix!
                     -- Clamp the item slot within the correct limits
                     if ic.slot ~= nil then
-                        if ic.slot > #paneltable then
-                            ic.slot = #paneltable
-                        elseif ic.slot < 1 then
-                            ic.slot = 1
-                        end
+                        ic.slot = math.Clamp(ic.slot, 1, #paneltable)
                     end
 
                     slot:SetIconProperties(COLOR_WHITE,
