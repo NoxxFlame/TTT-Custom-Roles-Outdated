@@ -59,3 +59,12 @@ See [here](CHANGES.md)
 
 # Configuration
 See [here](CONVARS.md)
+
+# FAQs
+[b]This lags everyone when I play on my peer-to-peer (aka listen, aka local) server/game[/b]
+Everyone needs to subscribe to this workshop item, not just the host. I'm not sure why that is, it's the same for every version of this addon not just mine.\
+\
+I would suggest making a workshop collection of the addons you have and then having your friends subscribe to them all.
+
+[b]How do I change X, Y, or Z?[/b]
+Check out the [Configuration](CONVARS.md) page and add the setting value you want in your server.cfg. If you don't see a setting for what you want to change, leave a comment and I'll either help you find it or try to add one.
