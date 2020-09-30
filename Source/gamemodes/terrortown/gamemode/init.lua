@@ -1360,7 +1360,10 @@ function SelectRoles()
             if IsValid(pply) and (not WasRole(prev_roles, pply, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_ZOMBIE, ROLE_VAMPIRE) or (math.random(1, 3) == 2)) then
                 print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Zombie")
                 pply:SetRole(ROLE_ZOMBIE)
+                pply:SetZombiePrime(true)
                 table.remove(choices, pick)
+                hasTraitor = true
+                hasSpecial = true
                 ts = ts + 1
             end
         end
