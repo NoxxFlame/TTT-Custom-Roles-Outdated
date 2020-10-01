@@ -438,7 +438,7 @@ end
 -- Used to be in think, now a timer
 local function WinChecker()
     hook.Add("PlayerDeath", "OnPlayerDeath", function(victim, infl, attacker)
-        if victim:GetJester() and attacker:IsPlayer() and infl:GetClass() ~= env_fire and not (attacker:GetJester() or attacker:GetSwapper()) and GetRoundState() == ROUND_ACTIVE then
+        if victim:IsJester() and attacker:IsPlayer() and infl:GetClass() ~= env_fire and (not attacker:IsJesterTeam()) and GetRoundState() == ROUND_ACTIVE then
             net.Start("TTT_JesterKiller")
             net.WriteString(attacker:Nick())
             net.WriteString(victim:Nick())
@@ -1130,19 +1130,21 @@ function GM:TTTCheckForWin()
                 traitor_alive = true
             elseif v:IsJesterTeam() then
                 jester_alive = true
-            elseif v:GetKiller() then
+            elseif v:IsKiller() then
                 killer_alive = true
             else
                 innocent_alive = true
             end
         end
 
-        if traitor_alive and innocent_alive and jester_alive then
+        if traitor_alive and innocent_alive and jesterkilled == 0 then
             return WIN_NONE --early out
         end
     end
 
-    if traitor_alive and not innocent_alive and not killer_alive and jester_alive and not monster_alive then
+    if jesterkilled == 1 then
+        return WIN_JESTER
+    elseif traitor_alive and not innocent_alive and not killer_alive and jester_alive and not monster_alive then
         return WIN_TRAITOR
     elseif traitor_alive and not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 and not monster_alive then
         return WIN_TRAITOR
@@ -1157,8 +1159,6 @@ function GM:TTTCheckForWin()
         return WIN_TRAITOR
     elseif not traitor_alive and not innocent_alive and killer_alive and not monster_alive then
         return WIN_KILLER
-    elseif not jester_alive and jesterkilled == 1 then
-        return WIN_JESTER
     elseif not traitor_alive and not innocent_alive and not killer_alive and jester_alive and monster_alive then
         return WIN_MONSTER
     elseif not traitor_alive and not innocent_alive and not killer_alive and not jester_alive and jesterkilled == 0 and monster_alive then

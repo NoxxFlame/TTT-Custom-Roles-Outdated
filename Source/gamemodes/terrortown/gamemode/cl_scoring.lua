@@ -44,6 +44,12 @@ surface.CreateFont("ScoreNicks", {
     weight = 100
 })
 
+surface.CreateFont("IconText", {
+    font = "Trebuchet24",
+    size = 24,
+    weight = 100
+})
+
 -- so much text here I'm using shorter names than usual
 local T = LANG.GetTranslation
 local PT = LANG.GetParamTranslation
@@ -479,6 +485,155 @@ function CLSCORE:AddAward(y, pw, award, dpanel)
     return y
 end
 
+local function GetRoleIconElement(icon, dpanel)
+    local roleIcon = vgui.Create("DImage", dpanel)
+    roleIcon:SetSize(32, 32)
+    roleIcon:SetImage("vgui/ttt/" .. icon .. ".png")
+    return roleIcon
+end
+
+local function GetNickLabelElement(name, dpanel)
+    local nicklbl = vgui.Create("DLabel", dpanel)
+    nicklbl:SetFont("ScoreNicks")
+    nicklbl:SetText(name)
+    nicklbl:SetTextColor(COLOR_WHITE)
+    nicklbl:SizeToContents()
+    return nicklbl
+end
+
+local function BuildJesterLabel(playerName, otherName, label)
+    return playerName .. " (" .. label .. " " .. otherName .. ")"
+end
+
+function CLSCORE:BuildPlayerList(playerList, dpanel, statusX, roleX, initialY, rowY)
+    local count = 0
+    for _, v in pairs(playerList) do
+        local roleIcon = GetRoleIconElement(v.roleIconName, dpanel)
+        local nicklbl = GetNickLabelElement(v.name, dpanel)
+        FitNicknameLabel(nicklbl, 275, function(nickname)
+            return string.sub(nickname, 0, string.len(nickname) - 4) .. "..."
+        end)
+
+        self:AddPlayerRow(dpanel, statusX, roleX, initialY + rowY * count, roleIcon, nicklbl, v.hasDisconnected, v.hasDied)
+        count = count + 1
+    end
+end
+
+function CLSCORE:BuildRoleLabel(playerList, dpanel, statusX, roleX, rowY)
+    local playerCount = #playerList
+    if playerCount == 0 then return end
+
+    local maxWidth = 600
+    local names = {}
+    local deathCount = 0
+    local disconnectCount = 0
+    local roleIcon = nil
+
+    for _, v in pairs(playerList) do
+        if roleIcon == nil then
+            roleIcon = v.roleIconName
+        end
+        if v.hasDied then
+            deathCount = deathCount + 1
+        end
+        if v.hasDisconnected then
+            disconnectCount = disconnectCount + 1
+        end
+
+        local name = v.name
+        local label = nil
+        local otherName = nil
+        if jesterkiller ~= "" and jestervictim == v.name and v.role == "jes" then
+            label = "Killed by"
+            otherName = jesterkiller
+        elseif jestervictim ~= "" and jesterkiller == v.name and v.role == "swa" then
+            label = "Killed"
+            otherName = jestervictim
+        end
+
+        if otherName ~= nil then
+            name = BuildJesterLabel(name, otherName, label)
+
+            local nickTmp = GetNickLabelElement(name, dpanel)
+
+            -- Then use the Jester/Swapper label and auto-resize until it fits
+            FitNicknameLabel(nickTmp, maxWidth, function(_, args)
+                local playerArg = args.player
+                local otherArg = args.other
+                if string.len(playerArg) > string.len(otherArg) then
+                    playerArg = string.sub(playerArg, 0, string.len(playerArg) - 4) .. "..."
+                else
+                    otherArg = string.sub(otherArg, 0, string.len(otherArg) - 4) .. "..."
+                end
+
+                return BuildJesterLabel(playerArg, otherArg, label), {player=playerArg, other=otherArg}
+            end, {player=v.name, other=otherName})
+
+            -- Save the resized text
+            name = nickTmp:GetText()
+            -- Remove the temporary label
+            nickTmp:Remove()
+
+            -- Insert this one at the beginning so it's readable as a round-over reason
+            table.insert(names, 1, name)
+        else
+            table.insert(names, name)
+        end
+    end
+
+    if disconnectCount > 0 and deathCount > 0 then
+        maxWidth = maxWidth - 30
+    end
+
+    local namesList = string.Implode(", ", names)
+    local nickLbl = GetNickLabelElement(namesList, dpanel)
+    FitNicknameLabel(nickLbl, maxWidth, function(nickname)
+        return string.sub(nickname, 0, string.len(nickname) - 4) .. "..."
+    end)
+
+    -- Show the normal disconnect icon if we have only 1 player and they disconnected
+    local singlePlayerDisconnect = playerCount == 1 and disconnectCount == 1
+    -- Show the normal death icon if we have only 1 player and they died
+    local singlePlayerDeath = playerCount == 1 and deathCount == 1
+    self:AddPlayerRow(dpanel, statusX, roleX, rowY, GetRoleIconElement(roleIcon, dpanel), nickLbl, singlePlayerDisconnect, singlePlayerDeath)
+
+    -- Add disconnect icon with count if there are disconnects and it wasn't a single player doing it
+    if disconnectCount > 0 and playerCount > 1 then
+        local disconLbl = vgui.Create("DLabel", dpanel)
+        disconLbl:SetFont("IconText")
+        disconLbl:SetText(disconnectCount)
+        disconLbl:SetTextColor(COLOR_BLACK)
+        disconLbl:SizeToContents()
+        disconLbl:SetPos(statusX - 10, rowY + 2)
+
+        local disconIcon = vgui.Create("DImage", dpanel)
+        disconIcon:SetSize(32, 32)
+        disconIcon:SetPos(statusX, rowY)
+        disconIcon:SetImage("vgui/ttt/score_disconicon.png")
+    end
+
+    -- Add death icon with count if there are deaths and it wasn't a single player doing it
+    if deathCount > 0 and playerCount > 1 then
+        local offset = 0
+        -- If there was also a disconnect, offset the icon more
+        if disconnectCount > 0 then
+            offset = 40
+        end
+
+        local deathLbl = vgui.Create("DLabel", dpanel)
+        deathLbl:SetFont("IconText")
+        deathLbl:SetText(deathCount)
+        deathLbl:SetTextColor(COLOR_BLACK)
+        deathLbl:SizeToContents()
+        deathLbl:SetPos(statusX - offset - 10, rowY + 2)
+
+        local deathIcon = vgui.Create("DImage", dpanel)
+        deathIcon:SetSize(32, 32)
+        deathIcon:SetPos(statusX - offset, rowY)
+        deathIcon:SetImage("vgui/ttt/score_skullicon.png")
+    end
+end
+
 function CLSCORE:BuildSummaryPanel(dpanel)
     local w, h = dpanel:GetSize()
 
@@ -521,15 +676,25 @@ function CLSCORE:BuildSummaryPanel(dpanel)
 
     local scores = self.Scores
     local nicks = self.Players
-    local symbols = false
-    local countI = 0
-    local countT = 0
+    local symOrLet = "let"
+    if ConVarExists("ttt_role_symbols") and GetConVar("ttt_role_symbols"):GetBool() then
+        symOrLet = "sym"
+    end
 
+    local scores_by_section = {
+        [ROLE_INNOCENT] = {},
+        [ROLE_TRAITOR] = {},
+        [ROLE_JESTER] = {},
+        [ROLE_KILLER] = {}
+    }
+
+    -- Preprocess the scores to group by board section
     for id, s in pairs(scores) do
         if id ~= -1 then
+            local playerName = nicks[id]
             local role = s.was_traitor and "tra" or (s.was_detective and "det" or (s.was_hypnotist and "hyp" or (s.was_jester and "jes" or (s.was_swapper and "swa" or (s.was_mercenary and "mer" or (s.was_glitch and "gli" or (s.was_phantom and "pha" or (s.was_zombie and "zom" or (s.was_assassin and "ass" or (s.was_vampire and "vam" or (s.was_killer and "kil" or "inn")))))))))))
 
-            if role == "swa" and jesterkillerrole >= ROLE_INNOCENT then
+            if role == "swa" and playerName == jesterkiller and jesterkillerrole >= ROLE_INNOCENT then
                 if jesterkillerrole == ROLE_INNOCENT then
                     role = "inn"
                 elseif jesterkillerrole == ROLE_TRAITOR then
@@ -560,9 +725,8 @@ function CLSCORE:BuildSummaryPanel(dpanel)
             end
 
             local foundPlayer = false
-
             for _, v in pairs(spawnedplayers) do
-                if v == nicks[id] then
+                if v == playerName then
                     foundPlayer = true
                     break
                 end
@@ -573,124 +737,77 @@ function CLSCORE:BuildSummaryPanel(dpanel)
                 local hasDisconnected = false
 
                 for _, v in pairs(revived) do
-                    if v == nicks[id] then
+                    if v == playerName then
                         dead = dead - 1
                     end
                 end
 
                 for _, v in pairs(disconnected) do
-                    if v == nicks[id] then
+                    if v == playerName then
                         hasDisconnected = true
                         break
                     end
                 end
 
-                if nicks[id] == jesterkiller and jesterkillerrole >= 0 then
+                if playerName == jesterkiller and jesterkillerrole >= ROLE_INNOCENT then
                     role = "swa"
                 end
 
-                if ConVarExists("ttt_role_symbols") then
-                    symbols = GetConVar("ttt_role_symbols"):GetBool()
-                end
-
-                local symorlet = "let"
-                if symbols then
-                    symorlet = "sym"
-                end
-
-                local washyped = false
+                local wasHyped = false
                 for _, v in pairs(hypnotised) do
                     if v == nicks[id] then
-                        washyped = true
+                        wasHyped = true
                     end
                 end
 
-                local waszomed = false
+                local wasZomed = false
                 for _, v in pairs(zombified) do
                     if v == nicks[id] then
-                        waszomed = true
+                        wasZomed = true
                     end
                 end
 
-                local wavamped = false
+                local waVamped = false
                 for _, v in pairs(vampified) do
                     if v == nicks[id] then
-                        wavamped = true
+                        waVamped = true
                     end
                 end
 
-                local roleIconName = "score_" .. symorlet .. "_" .. role
-                if washyped then
+                local roleIconName = "score_" .. symOrLet .. "_" .. role
+                if wasHyped then
                     roleIconName = roleIconName .. "_hyped"
-                elseif waszomed then
+                elseif wasZomed then
                     roleIconName = roleIconName .. "_zomed"
-                elseif wavamped then
+                elseif waVamped then
                     roleIconName = roleIconName .. "_vamped"
                 end
 
-                local roleIcon = vgui.Create("DImage", dpanel)
-                roleIcon:SetSize(32, 32)
-                roleIcon:SetImage("vgui/ttt/" .. roleIconName .. ".png")
-
-                local nicklbl = vgui.Create("DLabel", dpanel)
-                nicklbl:SetFont("ScoreNicks")
-                nicklbl:SetText(nicks[id])
-                nicklbl:SetTextColor(COLOR_WHITE)
-                nicklbl:SizeToContents()
-
-                local maxwidth = 275
-                if role == "jes" or role == "swa" or role == "kil" then
-                    maxwidth = 600
-                end
-                FitNicknameLabel(nicklbl, maxwidth, function(nickname)
-                    return string.sub(nickname, 0, string.len(nickname) - 4) .. "..."
-                end)
+                local playerInfo = {
+                    name = playerName,
+                    role = role,
+                    roleIconName = roleIconName,
+                    hasDied = dead > 0,
+                    hasDisconnected = hasDisconnected
+                }
 
                 if role == "inn" or role == "det" or role == "mer" or role == "pha" or role == "gli" then
-                    self:AddPlayerRow(dpanel, 317, 8, 96 + 33 * countI, roleIcon, nicklbl, hasDisconnected, dead)
-                    countI = countI + 1
+                    table.insert(scores_by_section[ROLE_INNOCENT], playerInfo)
                 elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" then
-                    self:AddPlayerRow(dpanel, 666, 357, 96 + 33 * countT, roleIcon, nicklbl, hasDisconnected, dead)
-                    countT = countT + 1
+                    table.insert(scores_by_section[ROLE_TRAITOR], playerInfo)
                 elseif role == "jes" or role == "swa" then
-                    if jesterkiller ~= "" and role == "jes" then
-                        nicklbl:SetText(nicklbl:GetText() .. " (Killed by " .. jesterkiller .. ")")
-                        nicklbl:SizeToContents()
-
-                        FitNicknameLabel(nicklbl, maxwidth, function(_, args)
-                            local player = args.player
-                            local other = args.other
-                            if string.len(player) > string.len(other) then
-                                player = string.sub(player, 0, string.len(player) - 4) .. "..."
-                            else
-                                other = string.sub(other, 0, string.len(other) - 4) .. "..."
-                            end
-
-                            return player .. " (Killed by " .. other .. ")", {player=player, other=other}
-                        end, {player=nicks[id], other=jesterkiller})
-                    elseif jestervictim ~= "" and role == "swa" then
-                        nicklbl:SetText(nicklbl:GetText() .. " (Killed " .. jestervictim .. ")")
-                        nicklbl:SizeToContents()
-
-                        FitNicknameLabel(nicklbl, maxwidth, function(_, args)
-                            local player = args.player
-                            local other = args.other
-                            if string.len(player) > string.len(other) then
-                                player = string.sub(player, 0, string.len(player) - 4) .. "..."
-                            else
-                                other = string.sub(other, 0, string.len(other) - 4) .. "..."
-                            end
-
-                            return player .. " (Killed " .. other .. ")", {player=player, other=other}
-                        end, {player=nicks[id], other=jestervictim})
-                    end
-                    self:AddPlayerRow(dpanel, 666, 8, 433, roleIcon, nicklbl, hasDisconnected, dead)
+                    table.insert(scores_by_section[ROLE_JESTER], playerInfo)
                 elseif role == "kil" then
-                    self:AddPlayerRow(dpanel, 666, 8, 473, roleIcon, nicklbl, hasDisconnected, dead)
+                    table.insert(scores_by_section[ROLE_KILLER], playerInfo)
                 end
             end
         end
     end
+
+    self:BuildPlayerList(scores_by_section[ROLE_INNOCENT], dpanel, 317, 8, 96, 33)
+    self:BuildPlayerList(scores_by_section[ROLE_TRAITOR], dpanel, 666, 357, 96, 33)
+    self:BuildRoleLabel(scores_by_section[ROLE_JESTER], dpanel, 666, 8, 433)
+    self:BuildRoleLabel(scores_by_section[ROLE_KILLER], dpanel, 666, 8, 473)
 end
 
 function CLSCORE:BuildHilitePanel(dpanel)
@@ -865,7 +982,7 @@ function CLSCORE:ShowPanel()
     dpanel:SetKeyboardInputEnabled(false)
 end
 
-function CLSCORE:AddPlayerRow(dpanel, statusX, roleX, y, roleIcon, nicklbl, hasDisconnected, dead)
+function CLSCORE:AddPlayerRow(dpanel, statusX, roleX, y, roleIcon, nicklbl, hasDisconnected, hasDied)
     roleIcon:SetPos(roleX, y)
     nicklbl:SetPos(roleX + 38, y - 2)
     if hasDisconnected then
@@ -873,7 +990,7 @@ function CLSCORE:AddPlayerRow(dpanel, statusX, roleX, y, roleIcon, nicklbl, hasD
         disconIcon:SetSize(32, 32)
         disconIcon:SetPos(statusX, y)
         disconIcon:SetImage("vgui/ttt/score_disconicon.png")
-    elseif dead > 0 then
+    elseif hasDied then
         local skullIcon = vgui.Create("DImage", dpanel)
         skullIcon:SetSize(32, 32)
         skullIcon:SetPos(statusX, y)
