@@ -68,7 +68,7 @@
 - Changed role spawning to not do hidden math to determine role chance. Uses the CVars values directly instead.
 
 # Fixes
-- Fixed conflicts with certain buyable weapons (like the Time Manipulator). Thanks Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord!
-- Fixed traitor voice chat so regular vanilla Traitors can do global chat (by using the "Sprint (Walk quickly)" keybind) like the other traitor roles
-- Fixed compatibility with Dead Ringer weapon so that Detectives who use the Dead Ringer don't have their target icon ("D" over their head) visible when they should be cloaked
+- Fixed conflicts with certain buyable weapons (like the Time Manipulator). Thanks Angela and Technofrood from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord!
+- Fixed traitor voice chat so regular vanilla Traitors can do global chat (or traitor-only chat by using the "Sprint (Walk quickly)" keybind) like the other traitor roles
+- Fixed compatibility with [Dead Ringer](https://steamcommunity.com/sharedfiles/filedetails/?id=810154456) weapon so that Detectives who use it don't have their target icon ("D" over their head) visible when they should be cloaked
 - Fixed various other errors
