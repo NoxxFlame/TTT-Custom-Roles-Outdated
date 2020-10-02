@@ -112,6 +112,8 @@ multijump_default_power          1 // Multiplier for the jump-power when multi j
 multijump_can_jump_while_falling 1 // Whether the player should be able to multi-jump if they didn't jump to begin with
 ```
 
+Thanks to [KarlOfDuty](https://github.com/KarlOfDuty) for his original version of this document, [here](https://github.com/KarlOfDuty/TTT-Custom-Roles/blob/patch-1/README.md).
+
 # Role Weapon Shop
 
 In TTT some roles have shops where they are allowed to purchase weapons. Given the prevalence of custom weapons from the workshop, the ability to add more weapons to each role's shop has been added.

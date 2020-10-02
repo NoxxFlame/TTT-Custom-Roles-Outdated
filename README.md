@@ -43,7 +43,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 - [Fresh Garry](https://steamcommunity.com/id/Fresh_Garry) for the ['TTT Sprint'](https://steamcommunity.com/sharedfiles/filedetails/?id=933056549) mod which was used as the base for this mods sprinting mechanics.
 - [Willox](https://steamcommunity.com/id/willox) for the ['Double Jump!'](https://steamcommunity.com/sharedfiles/filedetails/?id=284538302) mod.
 - Kommandos, Lix3, FunCheetah, B1andy413, Cooliew, The_Samarox, Arack12 and Aspirin for helping Noxx test.
-- Angela from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for the fix for some traitor weapon incompatibilities.
+- Angela and Technofrood from the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for the fix for some traitor weapon incompatibilities.
 - Alex and other members of the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for using my versions of these addons and helping me fix and improve them.
 - u/ToXiN_reddit on Reddit for suggesting disallowing multi-jump if you didn't originally jump.
 - [GengarDC](https://steamcommunity.com/id/GengarDC) for his [TTT_Double_Jump_Nerfed](https://steamcommunity.com/sharedfiles/filedetails/?id=1962801891) mod whose functionality was integrated via a setting.
