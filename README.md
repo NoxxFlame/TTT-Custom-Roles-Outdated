@@ -62,6 +62,9 @@ See [here](CHANGES.md)
 See [here](CONVARS.md)
 
 # FAQs
+**Do I need the other version of Custom Roles or Town of Terror as well?**\
+No, you should only use one addon that adds roles. That means only this version of Custom Roles, no Town of Terror, no TT2, etc.
+
 **This lags everyone when I play on my peer-to-peer (aka listen, aka local) server/game**\
 Everyone needs to subscribe to this workshop item, not just the host. I'm not sure why that is, it's the same for every version of this addon not just mine.\
 \
