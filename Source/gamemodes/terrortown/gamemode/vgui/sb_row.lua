@@ -387,17 +387,18 @@ end
 
 function PANEL:LayoutColumns()
     local cx = self:GetWide()
-    for k, v in ipairs(self.cols) do
+    for _, v in ipairs(self.cols) do
         v:SizeToContents()
         cx = cx - v.Width
         v:SetPos(cx - v:GetWide() / 2, (SB_ROW_HEIGHT - v:GetTall()) / 2)
     end
 
-    self.tag:SizeToContents()
     cx = cx - 90
-    self.tag:SetPos(cx - self.tag:GetWide() / 2, (SB_ROW_HEIGHT - self.tag:GetTall()) / 2)
-
     self.sresult:SetPos(cx - 8, (SB_ROW_HEIGHT - 16) / 2)
+
+    self.tag:SizeToContents()
+    cx = cx - 120
+    self.tag:SetPos(cx - self.tag:GetWide() / 2, (SB_ROW_HEIGHT - self.tag:GetTall()) / 2)
 end
 
 function PANEL:PerformLayout()
