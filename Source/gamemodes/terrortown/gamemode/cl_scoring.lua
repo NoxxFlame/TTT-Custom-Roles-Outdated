@@ -694,7 +694,8 @@ function CLSCORE:BuildSummaryPanel(dpanel)
             local playerName = nicks[id]
             local role = s.was_traitor and "tra" or (s.was_detective and "det" or (s.was_hypnotist and "hyp" or (s.was_jester and "jes" or (s.was_swapper and "swa" or (s.was_mercenary and "mer" or (s.was_glitch and "gli" or (s.was_phantom and "pha" or (s.was_zombie and "zom" or (s.was_assassin and "ass" or (s.was_vampire and "vam" or (s.was_killer and "kil" or "inn")))))))))))
 
-            if role == "swa" and playerName == jesterkiller and jesterkillerrole >= ROLE_INNOCENT then
+            -- Convert the original swapper to their new role
+            if s.was_swapper and jesterkillerrole >= ROLE_INNOCENT then
                 if jesterkillerrole == ROLE_INNOCENT then
                     role = "inn"
                 elseif jesterkillerrole == ROLE_TRAITOR then
@@ -749,6 +750,7 @@ function CLSCORE:BuildSummaryPanel(dpanel)
                     end
                 end
 
+                -- Convert the person who killed the original Swapper to a swapper role
                 if playerName == jesterkiller and jesterkillerrole >= ROLE_INNOCENT then
                     role = "swa"
                 end
