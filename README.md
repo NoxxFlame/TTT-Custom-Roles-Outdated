@@ -72,3 +72,12 @@ I would suggest making a workshop collection of the addons you have and then hav
 
 **How do I change X, Y, or Z?**\
 Check out the [Configuration](CONVARS.md) page and add the setting value you want in your server.cfg. If you don't see a setting for what you want to change, leave a comment and I'll either help you find it or try to add one.
+
+**How do I make a Detective spawn every round?**\
+Set the following settings:\
+\
+_ttt_detective_min_players_ 1\
+_ttt_detective_pct_ 1\
+\
+Also if you want ONLY one detective, set:\
+_ttt_detective_max_ 1
