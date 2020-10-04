@@ -217,7 +217,11 @@ function GM:PostDrawTranslucentRenderables()
                     if v:IsTraitorTeam() or v:IsGlitch() then
                         ShowTraitorIcon(v, pos, dir)
                     elseif v:IsJesterTeam() then
-                        render.SetMaterial(indicator_matjes)
+                        local v_material = indicator_matjes
+                        if GetGlobalBool("ttt_traitors_know_swapper") and v:IsSwapper() then
+                            v_material = indicator_matswa
+                        end
+                        render.SetMaterial(v_material)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     -- If Monsters-as-Traitors is enabled and the target is a Monster, show icons
                     elseif client:IsMonsterAlly() and v:IsMonsterTeam() then
@@ -230,7 +234,11 @@ function GM:PostDrawTranslucentRenderables()
                     if v:IsMonsterTeam() then
                         ShowMonsterIcon(v, pos, dir)
                     elseif v:IsJesterTeam() then
-                        render.SetMaterial(indicator_matjes)
+                        local v_material = indicator_matjes
+                        if GetGlobalBool("ttt_monsters_know_swapper") and v:IsSwapper() then
+                            v_material = indicator_matswa
+                        end
+                        render.SetMaterial(v_material)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     -- Since Zombie and Vampire were already handled above, this will only cover the traitor team and only if Monsters-as-Traitors is enabled
                     elseif GetGlobalBool("ttt_monsters_are_traitors") and (v:IsTraitorTeam() or v:IsGlitch()) then
@@ -241,7 +249,11 @@ function GM:PostDrawTranslucentRenderables()
                     end
                 elseif client:IsKiller() then
                     if v:IsJesterTeam() then
-                        render.SetMaterial(indicator_matjes)
+                        local v_material = indicator_matjes
+                        if GetGlobalBool("ttt_killers_know_swapper") and v:IsSwapper() then
+                            v_material = indicator_matswa
+                        end
+                        render.SetMaterial(v_material)
                         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                     elseif showkillicon then
                         render.SetMaterial(indicator_mat_target)
@@ -392,6 +404,11 @@ function GM:HUDDrawTargetID()
     local minimal = minimalist:GetBool()
     local hint = (not minimal) and (ent.TargetIDHint or ClassHint[cls])
 
+    local hide_roles = false
+    if ConVarExists("ttt_hide_role") then
+        hide_roles = GetConVar("ttt_hide_role"):GetBool()
+    end
+
     if ent:IsPlayer() and ent:Alive() then
         text = ent:Nick()
         client.last_id = ent
@@ -424,44 +441,62 @@ function GM:HUDDrawTargetID()
             target_swapper = ent:IsSwapper()
             target_killer = ent:IsKiller()
         end
-        if client:IsTraitorTeam() and GetRoundState() == ROUND_ACTIVE then
-            target_glitch = ent:IsGlitch()
-            if client:IsTraitor() then
-                target_fellow_traitor = ent:IsTraitor() or target_glitch
-            else
-                target_traitor = ent:IsTraitor() or target_glitch
-            end
-            target_hypnotist = ent:IsHypnotist()
-            target_assassin = ent:IsAssassin()
-            target_jester = ent:IsJesterTeam()
-
-            -- Show monster icons if Monsters-as-Traitors is enabled
-            if client:IsMonsterAlly() and ent:IsMonsterTeam() then
-                target_vampire = ent:IsVampire()
-                target_zombie = ent:IsZombie()
-            end
-        end
-        if client:IsMonsterTeam() and GetRoundState() == ROUND_ACTIVE then
-            if client:IsZombie() then
-                target_fellow_zombie = ent:IsZombie()
-            else
-                target_zombie = ent:IsZombie()
-            end
-            target_vampire = ent:IsVampire()
-
-            -- Show traitor icons if Monsters-as-Traitors is enabled
-            if GetGlobalBool("ttt_monsters_are_traitors") then
+        if not hide_roles and GetRoundState() == ROUND_ACTIVE then
+            if client:IsTraitorTeam() then
                 target_glitch = ent:IsGlitch()
-                target_traitor = ent:IsTraitor() or target_glitch
+                if client:IsTraitor() then
+                    target_fellow_traitor = ent:IsTraitor() or target_glitch
+                else
+                    target_traitor = ent:IsTraitor() or target_glitch
+                end
                 target_hypnotist = ent:IsHypnotist()
                 target_assassin = ent:IsAssassin()
-            end
-        end
-        if client:IsAssassin() and GetRoundState() == ROUND_ACTIVE then
-            target_current_target = (ent:Nick() == client:GetNWString("AssassinTarget", ""))
-        end
+                if GetGlobalBool("ttt_traitors_know_swapper") then
+                    target_jester = ent:IsJester()
+                    target_swapper = ent:IsSwapper()
+                else
+                    target_jester = ent:IsJesterTeam()
+                end
 
-        target_detective = GetRoundState() > ROUND_PREP and ent:IsDetective()
+                -- Show monster icons if Monsters-as-Traitors is enabled
+                if client:IsMonsterAlly() and ent:IsMonsterTeam() then
+                    target_vampire = ent:IsVampire()
+                    target_zombie = ent:IsZombie()
+                end
+            elseif client:IsMonsterTeam() then
+                if client:IsZombie() then
+                    target_fellow_zombie = ent:IsZombie()
+                else
+                    target_zombie = ent:IsZombie()
+                end
+                target_vampire = ent:IsVampire()
+                if GetGlobalBool("ttt_monsters_know_swapper") then
+                    target_jester = ent:IsJester()
+                    target_swapper = ent:IsSwapper()
+                else
+                    target_jester = ent:IsJesterTeam()
+                end
+
+                -- Show traitor icons if Monsters-as-Traitors is enabled
+                if GetGlobalBool("ttt_monsters_are_traitors") then
+                    target_glitch = ent:IsGlitch()
+                    target_traitor = ent:IsTraitor() or target_glitch
+                    target_hypnotist = ent:IsHypnotist()
+                    target_assassin = ent:IsAssassin()
+                end
+            elseif client:IsAssassin() then
+                target_current_target = (ent:Nick() == client:GetNWString("AssassinTarget", ""))
+            elseif client:IsKiller() then
+                if GetGlobalBool("ttt_killers_know_swapper") then
+                    target_jester = ent:IsJester()
+                    target_swapper = ent:IsSwapper()
+                else
+                    target_jester = ent:IsJesterTeam()
+                end
+            end
+
+            target_detective = ent:IsDetective()
+        end
     elseif cls == "prop_ragdoll" then
         -- only show this if the ragdoll has a nick, else it could be a mattress
         if CORPSE.GetPlayerNick(ent, false) == false then return end

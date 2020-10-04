@@ -97,6 +97,9 @@ ttt_all_search_postround              1 // Whether to allow anyone to search bod
 ttt_player_set_model_on_initial_spawn 1 // Whether to set a player's model when they first join the server. Set to false if your players are not enforcing their custom player models.
 ttt_player_set_model_on_new_round     1 // Whether to set a player's model when they spawn on each new round. Set to false if your players are not enforcing their custom player models.
 ttt_player_set_model_on_respawn       1 // Whether to set a player's model when they are respawned. Set to false if your players are not enforcing their custom player models.
+ttt_traitors_know_swapper             0 // Whether the Traitors are told when a member of the Jester team is really a Swapper
+ttt_monsters_know_swapper             0 // Whether the Monsters are told when a member of the Jester team is really a Swapper
+ttt_killers_know_swapper              0 // Whether the Killer is told when a member of the Jester team is really a Swapper
 
 // Sprint
 ttt_sprint_enabled              1    // Whether to enable sprinting. NOTE: Disabling sprinting doesn't hide the bar on the client UI but it will never change from being 100% full

@@ -177,6 +177,9 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
         if ply:IsTraitorTeam() or ply:IsGlitch() then
             return GetTraitorTeamColor(ply)
         elseif ply:IsJesterTeam() then
+            if GetGlobalBool("ttt_traitors_know_swapper") and ply:IsSwapper() then
+                return rolecolor.swapper
+            end
             return rolecolor.jester
         -- If Monsters-as-Traitors is enabled and the target is a Monster, show their colors
         elseif client:IsMonsterAlly() and ply:IsMonsterTeam() then
@@ -186,6 +189,9 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
         if ply:IsMonsterTeam() then
             return GetMonsterTeamColor(ply)
         elseif ply:IsJesterTeam() then
+            if GetGlobalBool("ttt_monsters_know_swapper") and ply:IsSwapper() then
+                return rolecolor.swapper
+            end
             return rolecolor.jester
         -- Since Zombie and Vampire were already handled above, this will only cover the traitor team and only if Monsters-as-Traitors is enabled
         elseif GetGlobalBool("ttt_monsters_are_traitors") and (ply:IsTraitorTeam() or ply:IsGlitch()) then
@@ -193,6 +199,9 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
         end
     elseif client:IsKiller() then
         if ply:IsJesterTeam() then
+            if GetGlobalBool("ttt_killers_know_swapper") and ply:IsSwapper() then
+                return rolecolor.swapper
+            end
             return rolecolor.jester
         end
     end

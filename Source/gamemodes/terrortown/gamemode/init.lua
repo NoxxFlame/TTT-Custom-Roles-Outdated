@@ -162,6 +162,9 @@ CreateConVar("ttt_vampire_damage_reduction", "0.8", FCVAR_ARCHIVE + FCVAR_REPLIC
 CreateConVar("ttt_vampire_fang_timer", "5", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_vampire_fang_heal", "50", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_vampire_fang_overheal", "25", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_traitors_know_swapper", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_monsters_know_swapper", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
+CreateConVar("ttt_killers_know_swapper", "0", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 
 CreateConVar("ttt_use_weapon_spawn_scripts", "1")
 CreateConVar("ttt_weapon_spawn_count", "0")
@@ -361,6 +364,9 @@ function GM:SyncGlobals()
     SetGlobalBool("ttt_shop_hypnotist_sync", GetConVar("ttt_shop_hypnotist_sync"):GetBool())
 
     SetGlobalBool("ttt_monsters_are_traitors", GetConVar("ttt_monsters_are_traitors"):GetBool())
+    SetGlobalBool("ttt_traitors_know_swapper", GetConVar("ttt_traitors_know_swapper"):GetBool())
+    SetGlobalBool("ttt_monsters_know_swapper", GetConVar("ttt_monsters_know_swapper"):GetBool())
+    SetGlobalBool("ttt_killers_know_swapper", GetConVar("ttt_killers_know_swapper"):GetBool())
 
     SetGlobalBool("ttt_karma_beta", GetConVar("ttt_karma_beta"):GetBool())
 

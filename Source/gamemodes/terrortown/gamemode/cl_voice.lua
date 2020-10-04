@@ -30,6 +30,8 @@ local function RoleChatRecv()
     if not IsValid(sender) then return end
 
     local text = net.ReadString()
+    local client = LocalPlayer()
+    if not IsValid(client) then return end
 
     if role == ROLE_TRAITOR then
         chat.AddText(Color(255, 0, 0),
@@ -80,8 +82,19 @@ local function RoleChatRecv()
             ": " .. text)
 
     elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
+        local role_name
+        -- Show Swapper name if the client's role is allowed to know the difference between Jester and Swapper
+        if role == ROLE_SWAPPER and
+            ((player.IsTraitorTeam(client) and GetGlobalBool("ttt_traitors_know_swapper")) or
+             (client:IsMonsterTeam() and GetGlobalBool("ttt_monsters_know_swapper")) or
+             (client:IsKiller() and GetGlobalBool("ttt_killers_know_swapper"))) then
+            role_name = GetTranslation("swapper")
+        else
+            role_name = GetTranslation("jester")
+        end
+
         chat.AddText(Color(159, 0, 211),
-            Format("(%s) ", string.upper(GetTranslation("jester"))),
+            Format("(%s) ", string.upper(role_name)),
             Color(170, 70, 200),
             sender:Nick(),
             Color(255, 255, 255),
