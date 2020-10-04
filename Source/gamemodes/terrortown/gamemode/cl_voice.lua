@@ -84,10 +84,12 @@ local function RoleChatRecv()
     elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
         local role_name
         -- Show Swapper name if the client's role is allowed to know the difference between Jester and Swapper
+        -- Also show the Swapper name if the local player is the one who said the text and any of the "ttt_*_know_swapper" settings are enabled
         if role == ROLE_SWAPPER and
             ((player.IsTraitorTeam(client) and GetGlobalBool("ttt_traitors_know_swapper")) or
              (client:IsMonsterTeam() and GetGlobalBool("ttt_monsters_know_swapper")) or
-             (client:IsKiller() and GetGlobalBool("ttt_killers_know_swapper"))) then
+             (client:IsKiller() and GetGlobalBool("ttt_killers_know_swapper")) or
+             (sender == client and (GetGlobalBool("ttt_traitors_know_swapper") or GetGlobalBool("ttt_monsters_know_swapper") or GetGlobalBool("ttt_killers_know_swapper")))) then
             role_name = GetTranslation("swapper")
         else
             role_name = GetTranslation("jester")
