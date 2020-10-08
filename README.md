@@ -84,4 +84,4 @@ Also if you want ONLY one detective, set:\
 _ttt_detective_max_ 1
 
 # Workshop
-Click [here](https://steamcommunity.com/sharedfiles/filedetails/?id=2045444087) to view the workshop page in your browser or [here](steam://openurl/steamcommunity.com/sharedfiles/filedetails/?id=2045444087) in Steam.
+Click [here](https://steamcommunity.com/sharedfiles/filedetails/?id=2045444087) to view the workshop page in your browser or copy/paste this to open it in Steam: steam://openurl/steamcommunity.com/sharedfiles/filedetails/?id=2045444087
