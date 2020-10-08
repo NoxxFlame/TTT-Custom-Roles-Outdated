@@ -54,6 +54,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 See [here](CHANGES.md)
 
 # Conflicts
+- Any other addon that adds roles such as Town of Terror, TTT2, or the original version of Custom Roles for TTT. There is no reason to use more than one role addon so remove all the ones you don't want.
 - [Better Equipment Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=878772496) - This has its functionality built in
 - [TTT Damage Logs](https://github.com/Tommy228/tttdamagelogs) - Possibly only conflicts with version 3.1 but I have not personally tested it
 - [TTT DeadRinger](https://steamcommunity.com/sharedfiles/filedetails/?id=2045444087) - Overrides several scripts that are core to TTT that this also overrides (notably, the scoreboard and client initialization). As a workaround, you can use [this version](https://steamcommunity.com/sharedfiles/filedetails/?id=810154456) instead.
