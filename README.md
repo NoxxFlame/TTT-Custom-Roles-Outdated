@@ -48,7 +48,7 @@ Goal: Work on your own to win the round by playing your role carefully\
 - Kobus and Alex of the [Lonely Yogs](https://lonely-yogs.co.uk/) Discord for creating some new icons.
 - u/ToXiN_reddit on Reddit for suggesting disallowing multi-jump if you didn't originally jump.
 - [GengarDC](https://steamcommunity.com/id/GengarDC) for his [TTT_Double_Jump_Nerfed](https://steamcommunity.com/sharedfiles/filedetails/?id=1962801891) mod whose functionality was integrated via a setting.
-- [KuMaGR](https://steamcommunity.com/id/kuma96) for his [TTT Glowing Traitors](https://steamcommunity.com/sharedfiles/filedetails/?id=690007939) mod which was the basis for idea behind the Traitor team highlight feature.
+- [KuMaGR](https://steamcommunity.com/id/kuma96) for his [TTT Glowing Traitors](https://steamcommunity.com/sharedfiles/filedetails/?id=690007939) mod which was the basis for the idea behind the Traitor team highlight feature.
 
 # Changes from the Original Version
 See [here](CHANGES.md)
