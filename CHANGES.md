@@ -7,6 +7,7 @@
   - Allowing transferring of credits
   - Adding setting to allow Assassin and/or Hypnotist to buy all Traitor weapons in their shop. See [Configuration](CONVARS.md).
 - Added ability to show outlines around other members of the traitor team (including the Glitch). See [Configuration](CONVARS.md).
+- Added new Detraitor role -- an evil and sneaky Detective. See [Configuration](CONVARS.md) to enable.
 
 ## Assassin
 - Added ability to show "Kill" icon over target's head. See [Configuration](CONVARS.md) to enable.

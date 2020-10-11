@@ -35,6 +35,8 @@ if CLIENT then
             role = "an assassin"
         elseif role == ROLE_KILLER then
             role = "a killer"
+        elseif role == ROLE_DETRAITOR then
+            role = "a detraitor"
         else
             role = "innocent"
         end

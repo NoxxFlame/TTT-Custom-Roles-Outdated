@@ -74,7 +74,7 @@ local function IconForInfoType(t, data)
             eq_armor = "armor",
             eq_radar = "radar",
             eq_disg = "disguise",
-            role = { [ROLE_TRAITOR] = "sym_tra", [ROLE_DETECTIVE] = "sym_det", [ROLE_MERCENARY] = "sym_mer", [ROLE_HYPNOTIST] = "sym_hyp", [ROLE_GLITCH] = "sym_gli", [ROLE_JESTER] = "sym_jes", [ROLE_PHANTOM] = "sym_pha", [ROLE_ZOMBIE] = "sym_zom", [ROLE_VAMPIRE] = "sym_vam", [ROLE_SWAPPER] = "sym_swa", [ROLE_ASSASSIN] = "sym_ass", [ROLE_KILLER] = "sym_kil", [ROLE_INNOCENT] = "sym_inn" },
+            role = { [ROLE_TRAITOR] = "sym_tra", [ROLE_DETECTIVE] = "sym_det", [ROLE_MERCENARY] = "sym_mer", [ROLE_HYPNOTIST] = "sym_hyp", [ROLE_GLITCH] = "sym_gli", [ROLE_JESTER] = "sym_jes", [ROLE_PHANTOM] = "sym_pha", [ROLE_ZOMBIE] = "sym_zom", [ROLE_VAMPIRE] = "sym_vam", [ROLE_SWAPPER] = "sym_swa", [ROLE_ASSASSIN] = "sym_ass", [ROLE_KILLER] = "sym_kil", [ROLE_INNOCENT] = "sym_inn", [ROLE_DETRAITOR] = "sym_der" },
             c4 = "code",
             dmg = DmgToMat,
             wep = WeaponToIcon,
@@ -91,7 +91,7 @@ local function IconForInfoType(t, data)
             eq_armor = "armor",
             eq_radar = "radar",
             eq_disg = "disguise",
-            role = { [ROLE_TRAITOR] = "let_tra", [ROLE_DETECTIVE] = "let_det", [ROLE_MERCENARY] = "let_mer", [ROLE_HYPNOTIST] = "let_hyp", [ROLE_GLITCH] = "let_gli", [ROLE_JESTER] = "let_jes", [ROLE_PHANTOM] = "let_pha", [ROLE_ZOMBIE] = "let_zom", [ROLE_VAMPIRE] = "let_vam", [ROLE_SWAPPER] = "let_swa", [ROLE_ASSASSIN] = "let_ass", [ROLE_KILLER] = "let_kil", [ROLE_INNOCENT] = "let_inn" },
+            role = { [ROLE_TRAITOR] = "let_tra", [ROLE_DETECTIVE] = "let_det", [ROLE_MERCENARY] = "let_mer", [ROLE_HYPNOTIST] = "let_hyp", [ROLE_GLITCH] = "let_gli", [ROLE_JESTER] = "let_jes", [ROLE_PHANTOM] = "let_pha", [ROLE_ZOMBIE] = "let_zom", [ROLE_VAMPIRE] = "let_vam", [ROLE_SWAPPER] = "let_swa", [ROLE_ASSASSIN] = "let_ass", [ROLE_KILLER] = "let_kil", [ROLE_INNOCENT] = "let_inn", [ROLE_DETRAITOR] = "let_der" },
             c4 = "code",
             dmg = DmgToMat,
             wep = WeaponToIcon,
@@ -158,6 +158,8 @@ function PreprocSearch(raw)
                 search[t].text = T("search_role_a")
             elseif d == ROLE_KILLER then
                 search[t].text = T("search_role_k")
+            elseif d == ROLE_DETRAITOR then
+                search[t].text = T("search_role_dr")
             else
                 search[t].text = T("search_role_i")
             end

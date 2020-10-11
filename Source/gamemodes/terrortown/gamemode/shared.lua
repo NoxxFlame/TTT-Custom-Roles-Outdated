@@ -25,22 +25,24 @@ ROLE_VAMPIRE = 9
 ROLE_SWAPPER = 10
 ROLE_ASSASSIN = 11
 ROLE_KILLER = 12
+ROLE_DETRAITOR = 13
 
 -- Role colors
 ROLE_COLORS = {
-	[ROLE_INNOCENT] = Color(55, 170, 50, 255),
-	[ROLE_TRAITOR] = Color(180, 50, 40, 255),
-	[ROLE_DETECTIVE] = Color(50, 60, 180, 255),
-	[ROLE_MERCENARY] = Color(245, 200, 0, 255),
-	[ROLE_JESTER] = Color(180, 23, 253, 255),
-	[ROLE_PHANTOM] = Color(82, 226, 255, 255),
-	[ROLE_HYPNOTIST] = Color(255, 80, 235, 255),
-	[ROLE_GLITCH] = Color(245, 106, 0, 255),
-	[ROLE_ZOMBIE] = Color(69, 97, 0, 255),
-	[ROLE_VAMPIRE] = Color(45, 45, 45, 255),
-	[ROLE_SWAPPER] = Color(111, 0, 255, 255),
-	[ROLE_ASSASSIN] = Color(112, 50, 0, 255),
-	[ROLE_KILLER] = Color(50, 0, 70, 255)
+    [ROLE_INNOCENT] = Color(55, 170, 50, 255),
+    [ROLE_TRAITOR] = Color(180, 50, 40, 255),
+    [ROLE_DETECTIVE] = Color(50, 60, 180, 255),
+    [ROLE_MERCENARY] = Color(245, 200, 0, 255),
+    [ROLE_JESTER] = Color(180, 23, 253, 255),
+    [ROLE_PHANTOM] = Color(82, 226, 255, 255),
+    [ROLE_HYPNOTIST] = Color(255, 80, 235, 255),
+    [ROLE_GLITCH] = Color(245, 106, 0, 255),
+    [ROLE_ZOMBIE] = Color(69, 97, 0, 255),
+    [ROLE_VAMPIRE] = Color(45, 45, 45, 255),
+    [ROLE_SWAPPER] = Color(111, 0, 255, 255),
+    [ROLE_ASSASSIN] = Color(112, 50, 0, 255),
+    [ROLE_KILLER] = Color(50, 0, 70, 255),
+    [ROLE_DETRAITOR] = Color(112, 27, 140, 255)
 }
 ROLE_COLORS_DARK = {
     [ROLE_INNOCENT] = Color(60, 160, 50, 155),
@@ -55,24 +57,26 @@ ROLE_COLORS_DARK = {
     [ROLE_VAMPIRE] = Color(35, 35, 35, 200),
     [ROLE_SWAPPER] = Color(111, 0, 255, 100),
     [ROLE_ASSASSIN] = Color(112, 50, 0, 155),
-    [ROLE_KILLER] = Color(50, 0, 70, 200)
+    [ROLE_KILLER] = Color(50, 0, 70, 200),
+    [ROLE_DETRAITOR] = Color(112, 27, 140, 200)
 }
 
 -- Role strings
 ROLE_STRINGS = {
-	[ROLE_TRAITOR] = "traitor",
-	[ROLE_INNOCENT] = "innocent",
-	[ROLE_DETECTIVE] = "detective",
-	[ROLE_MERCENARY] = "mercenary",
-	[ROLE_HYPNOTIST] = "hypnotist",
-	[ROLE_GLITCH] = "glitch",
-	[ROLE_JESTER] = "jester",
-	[ROLE_PHANTOM] = "phantom",
-	[ROLE_ZOMBIE] = "zombie",
-	[ROLE_VAMPIRE] = "vampire",
-	[ROLE_SWAPPER] = "swapper",
-	[ROLE_ASSASSIN] = "assassin",
-	[ROLE_KILLER] = "killer"
+    [ROLE_TRAITOR] = "traitor",
+    [ROLE_INNOCENT] = "innocent",
+    [ROLE_DETECTIVE] = "detective",
+    [ROLE_MERCENARY] = "mercenary",
+    [ROLE_HYPNOTIST] = "hypnotist",
+    [ROLE_GLITCH] = "glitch",
+    [ROLE_JESTER] = "jester",
+    [ROLE_PHANTOM] = "phantom",
+    [ROLE_ZOMBIE] = "zombie",
+    [ROLE_VAMPIRE] = "vampire",
+    [ROLE_SWAPPER] = "swapper",
+    [ROLE_ASSASSIN] = "assassin",
+    [ROLE_KILLER] = "killer",
+    [ROLE_DETRAITOR] = "detraitor"
 };
 
 -- Game event log defs
@@ -161,197 +165,208 @@ TEAM_TERROR = 1
 TEAM_SPEC = TEAM_SPECTATOR
 
 function GM:CreateTeams()
-	team.SetUp(TEAM_TERROR, "Terrorists", Color(0, 200, 0, 255), false)
-	team.SetUp(TEAM_SPEC, "Spectators", Color(200, 200, 0, 255), true)
+    team.SetUp(TEAM_TERROR, "Terrorists", Color(0, 200, 0, 255), false)
+    team.SetUp(TEAM_SPEC, "Spectators", Color(200, 200, 0, 255), true)
 
-	-- Not that we use this, but feels good
-	team.SetSpawnPoint(TEAM_TERROR, "info_player_deathmatch")
-	team.SetSpawnPoint(TEAM_SPEC, "info_player_deathmatch")
+    -- Not that we use this, but feels good
+    team.SetSpawnPoint(TEAM_TERROR, "info_player_deathmatch")
+    team.SetSpawnPoint(TEAM_SPEC, "info_player_deathmatch")
 end
 
 -- Everyone's model
 local ttt_playermodels = {
-	Model("models/player/phoenix.mdl"),
-	Model("models/player/arctic.mdl"),
-	Model("models/player/guerilla.mdl"),
-	Model("models/player/leet.mdl")
+    Model("models/player/phoenix.mdl"),
+    Model("models/player/arctic.mdl"),
+    Model("models/player/guerilla.mdl"),
+    Model("models/player/leet.mdl")
 };
 
 function GetRandomPlayerModel()
-	return table.Random(ttt_playermodels)
+    return table.Random(ttt_playermodels)
 end
 
 local ttt_playercolors = {
-	all = {
-		COLOR_WHITE,
-		COLOR_BLACK,
-		COLOR_GREEN,
-		COLOR_DGREEN,
-		COLOR_RED,
-		COLOR_YELLOW,
-		COLOR_LGRAY,
-		COLOR_BLUE,
-		COLOR_NAVY,
-		COLOR_PINK,
-		COLOR_OLIVE,
-		COLOR_ORANGE
-	},
-	serious = {
-		COLOR_WHITE,
-		COLOR_BLACK,
-		COLOR_NAVY,
-		COLOR_LGRAY,
-		COLOR_DGREEN,
-		COLOR_OLIVE
-	}
+    all = {
+        COLOR_WHITE,
+        COLOR_BLACK,
+        COLOR_GREEN,
+        COLOR_DGREEN,
+        COLOR_RED,
+        COLOR_YELLOW,
+        COLOR_LGRAY,
+        COLOR_BLUE,
+        COLOR_NAVY,
+        COLOR_PINK,
+        COLOR_OLIVE,
+        COLOR_ORANGE
+    },
+    serious = {
+        COLOR_WHITE,
+        COLOR_BLACK,
+        COLOR_NAVY,
+        COLOR_LGRAY,
+        COLOR_DGREEN,
+        COLOR_OLIVE
+    }
 };
 
 CreateConVar("ttt_playercolor_mode", "1")
 function GM:TTTPlayerColor(model)
-	local mode = GetConVarNumber("ttt_playercolor_mode") or 0
-	if mode == 1 then
-		return table.Random(ttt_playercolors.serious)
-	elseif mode == 2 then
-		return table.Random(ttt_playercolors.all)
-	elseif mode == 3 then
-		-- Full randomness
-		return Color(math.random(0, 255), math.random(0, 255), math.random(0, 255))
-	end
-	-- No coloring
-	return COLOR_WHITE
+    local mode = GetConVarNumber("ttt_playercolor_mode") or 0
+    if mode == 1 then
+        return table.Random(ttt_playercolors.serious)
+    elseif mode == 2 then
+        return table.Random(ttt_playercolors.all)
+    elseif mode == 3 then
+        -- Full randomness
+        return Color(math.random(0, 255), math.random(0, 255), math.random(0, 255))
+    end
+    -- No coloring
+    return COLOR_WHITE
 end
 
 -- Kill footsteps on player and client
 function GM:PlayerFootstep(ply, pos, foot, sound, volume, rf)
-	if IsValid(ply) and (ply:Crouching() or ply:GetMaxSpeed() < 150 or ply:IsSpec()) then
-		-- do not play anything, just prevent normal sounds from playing
-		return true
-	end
+    if IsValid(ply) and (ply:Crouching() or ply:GetMaxSpeed() < 150 or ply:IsSpec()) then
+        -- do not play anything, just prevent normal sounds from playing
+        return true
+    end
 end
 
 -- Predicted move speed changes
 function GM:Move(ply, mv)
-	if ply:IsTerror() then
-		local basemul = 1
-		local slowed = false
-		-- Slow down ironsighters
-		local wep = ply:GetActiveWeapon()
-		if IsValid(wep) and wep.GetIronsights and wep:GetIronsights() then
-			basemul = 120 / 220
-			slowed = true
-		end
-		local mul = hook.Call("TTTPlayerSpeedModifier", GAMEMODE, ply, slowed, mv) or 1
-		mul = basemul * mul
-		mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * mul)
-		mv:SetMaxSpeed(mv:GetMaxSpeed() * mul)
-	end
+    if ply:IsTerror() then
+        local basemul = 1
+        local slowed = false
+        -- Slow down ironsighters
+        local wep = ply:GetActiveWeapon()
+        if IsValid(wep) and wep.GetIronsights and wep:GetIronsights() then
+            basemul = 120 / 220
+            slowed = true
+        end
+        local mul = hook.Call("TTTPlayerSpeedModifier", GAMEMODE, ply, slowed, mv) or 1
+        mul = basemul * mul
+        mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * mul)
+        mv:SetMaxSpeed(mv:GetMaxSpeed() * mul)
+    end
 end
 
 -- Weapons and items that come with TTT. Weapons that are not in this list will
 -- get a little marker on their icon if they're buyable, showing they are custom
 -- and unique to the server.
 DefaultEquipment = {
-	-- traitor-buyable by default
-	[ROLE_TRAITOR] = {
-		"weapon_ttt_c4",
-		"weapon_ttt_flaregun",
-		"weapon_ttt_knife",
-		"weapon_ttt_phammer",
-		"weapon_ttt_push",
-		"weapon_ttt_radio",
-		"weapon_ttt_sipistol",
-		"weapon_ttt_teleport",
-		"weapon_ttt_decoy",
-		"weapon_ttt_health_station",
-		EQUIP_ARMOR,
-		EQUIP_RADAR,
-		EQUIP_DISGUISE
-	},
-	-- detective-buyable by default
-	[ROLE_DETECTIVE] = {
-		"weapon_ttt_binoculars",
-		"weapon_ttt_defuser",
-		"weapon_ttt_health_station",
-		"weapon_ttt_stungun",
-		"weapon_ttt_cse",
-		"weapon_ttt_teleport",
-		EQUIP_ARMOR,
-		EQUIP_RADAR
-	},
-	[ROLE_MERCENARY] = {
-		"weapon_ttt_health_station",
-		"weapon_ttt_teleport",
-		"weapon_ttt_confgrenade",
-		"weapon_ttt_m16",
-		"weapon_ttt_smokegrenade",
-		"weapon_zm_mac10",
-		"weapon_zm_molotov",
-		"weapon_zm_pistol",
-		"weapon_zm_revolver",
-		"weapon_zm_rifle",
-		"weapon_zm_shotgun",
-		"weapon_zm_sledge",
-		"weapon_ttt_glock",
-		EQUIP_ARMOR,
-		EQUIP_RADAR
-	},
-	[ROLE_HYPNOTIST] = {
-		EQUIP_ARMOR,
-		EQUIP_RADAR,
-		EQUIP_DISGUISE,
-		"weapon_ttt_health_station"
-	},
-	[ROLE_VAMPIRE] = {
-		EQUIP_ARMOR,
-		"weapon_ttt_health_station"
-	},
-	[ROLE_ASSASSIN] = {
-		EQUIP_ARMOR,
-		EQUIP_RADAR,
-		EQUIP_DISGUISE,
-		"weapon_ttt_health_station"
-	},
-	[ROLE_ZOMBIE] = {
-		EQUIP_ARMOR,
-		EQUIP_SPEED,
-		EQUIP_REGEN
-	},
-	[ROLE_KILLER] = {
-		"weapon_ttt_health_station",
-		"weapon_ttt_teleport",
-		"weapon_ttt_confgrenade",
-		"weapon_ttt_m16",
-		"weapon_ttt_smokegrenade",
-		"weapon_zm_mac10",
-		"weapon_zm_molotov",
-		"weapon_zm_pistol",
-		"weapon_zm_revolver",
-		"weapon_zm_rifle",
-		"weapon_zm_shotgun",
-		"weapon_zm_sledge",
-		"weapon_ttt_glock",
-		EQUIP_ARMOR,
-		EQUIP_RADAR,
-		EQUIP_DISGUISE
-	},
-	-- non-buyable
-	[ROLE_NONE] = {
-		"weapon_ttt_confgrenade",
-		"weapon_ttt_m16",
-		"weapon_ttt_smokegrenade",
-		"weapon_ttt_unarmed",
-		"weapon_ttt_wtester",
-		"weapon_tttbase",
-		"weapon_tttbasegrenade",
-		"weapon_zm_carry",
-		"weapon_zm_improvised",
-		"weapon_zm_mac10",
-		"weapon_zm_molotov",
-		"weapon_zm_pistol",
-		"weapon_zm_revolver",
-		"weapon_zm_rifle",
-		"weapon_zm_shotgun",
-		"weapon_zm_sledge",
-		"weapon_ttt_glock"
-	}
+    -- traitor-buyable by default
+    [ROLE_TRAITOR] = {
+        "weapon_ttt_c4",
+        "weapon_ttt_flaregun",
+        "weapon_ttt_knife",
+        "weapon_ttt_phammer",
+        "weapon_ttt_push",
+        "weapon_ttt_radio",
+        "weapon_ttt_sipistol",
+        "weapon_ttt_teleport",
+        "weapon_ttt_decoy",
+        "weapon_ttt_health_station",
+        EQUIP_ARMOR,
+        EQUIP_RADAR,
+        EQUIP_DISGUISE
+    },
+    -- detective-buyable by default
+    [ROLE_DETECTIVE] = {
+        "weapon_ttt_binoculars",
+        "weapon_ttt_defuser",
+        "weapon_ttt_health_station",
+        "weapon_ttt_stungun",
+        "weapon_ttt_cse",
+        "weapon_ttt_teleport",
+        EQUIP_ARMOR,
+        EQUIP_RADAR
+    },
+    -- detraitor-buyable by default
+    [ROLE_DETRAITOR] = {
+        "weapon_ttt_binoculars",
+        "weapon_ttt_defuser",
+        "weapon_ttt_health_station",
+        "weapon_ttt_stungun",
+        "weapon_ttt_cse",
+        "weapon_ttt_teleport",
+        EQUIP_ARMOR,
+        EQUIP_RADAR
+    },
+    [ROLE_MERCENARY] = {
+        "weapon_ttt_health_station",
+        "weapon_ttt_teleport",
+        "weapon_ttt_confgrenade",
+        "weapon_ttt_m16",
+        "weapon_ttt_smokegrenade",
+        "weapon_zm_mac10",
+        "weapon_zm_molotov",
+        "weapon_zm_pistol",
+        "weapon_zm_revolver",
+        "weapon_zm_rifle",
+        "weapon_zm_shotgun",
+        "weapon_zm_sledge",
+        "weapon_ttt_glock",
+        EQUIP_ARMOR,
+        EQUIP_RADAR
+    },
+    [ROLE_HYPNOTIST] = {
+        EQUIP_ARMOR,
+        EQUIP_RADAR,
+        EQUIP_DISGUISE,
+        "weapon_ttt_health_station"
+    },
+    [ROLE_VAMPIRE] = {
+        EQUIP_ARMOR,
+        "weapon_ttt_health_station"
+    },
+    [ROLE_ASSASSIN] = {
+        EQUIP_ARMOR,
+        EQUIP_RADAR,
+        EQUIP_DISGUISE,
+        "weapon_ttt_health_station"
+    },
+    [ROLE_ZOMBIE] = {
+        EQUIP_ARMOR,
+        EQUIP_SPEED,
+        EQUIP_REGEN
+    },
+    [ROLE_KILLER] = {
+        "weapon_ttt_health_station",
+        "weapon_ttt_teleport",
+        "weapon_ttt_confgrenade",
+        "weapon_ttt_m16",
+        "weapon_ttt_smokegrenade",
+        "weapon_zm_mac10",
+        "weapon_zm_molotov",
+        "weapon_zm_pistol",
+        "weapon_zm_revolver",
+        "weapon_zm_rifle",
+        "weapon_zm_shotgun",
+        "weapon_zm_sledge",
+        "weapon_ttt_glock",
+        EQUIP_ARMOR,
+        EQUIP_RADAR,
+        EQUIP_DISGUISE
+    },
+    -- non-buyable
+    [ROLE_NONE] = {
+        "weapon_ttt_confgrenade",
+        "weapon_ttt_m16",
+        "weapon_ttt_smokegrenade",
+        "weapon_ttt_unarmed",
+        "weapon_ttt_wtester",
+        "weapon_tttbase",
+        "weapon_tttbasegrenade",
+        "weapon_zm_carry",
+        "weapon_zm_improvised",
+        "weapon_zm_mac10",
+        "weapon_zm_molotov",
+        "weapon_zm_pistol",
+        "weapon_zm_revolver",
+        "weapon_zm_rifle",
+        "weapon_zm_shotgun",
+        "weapon_zm_sledge",
+        "weapon_ttt_glock"
+    }
 };

@@ -5,6 +5,7 @@ local L = LANG.CreateLanguage("English")
 --- General text used in various places
 L.traitor = "Traitor"
 L.detective = "Detective"
+L.detraitor = "Detraitor"
 L.mercenary = "Mercenary"
 L.hypnotist = "Hypnotist"
 L.glitch = "Glitch"
@@ -65,15 +66,16 @@ L.body_found = "{finder} found the body of {victim}. {role}"
 -- The {role} in body_found will be replaced by one of the following:
 L.body_found_t = "They were a Traitor!"
 L.body_found_d = "They were a Detective."
+L.body_found_dr = "They were a Detraitor!"
 L.body_found_m = "They were a Mercenary."
-L.body_found_h = "They were a Hypnotist."
+L.body_found_h = "They were a Hypnotist!"
 L.body_found_g = "They were a Glitch."
 L.body_found_j = "They were a Jester."
 L.body_found_p = "They were a Phantom."
 L.body_found_z = "They were a Zombie."
 L.body_found_v = "They were a Vampire."
 L.body_found_s = "They were a Swapper."
-L.body_found_a = "They were an Assassin."
+L.body_found_a = "They were an Assassin!"
 L.body_found_k = "They were a Killer."
 L.body_found_i = "They were Innocent."
 
@@ -201,16 +203,17 @@ L.search_nick = "This is the body of {player}."
 
 L.search_role_t = "This person was a Traitor!"
 L.search_role_d = "This person was a Detective."
-L.search_role_m = "This person was a Mercenary"
-L.search_role_h = "This person was a Hypnotist"
-L.search_role_g = "This person was a Glitch"
-L.search_role_j = "This person was a Jester"
-L.search_role_p = "This person was a Phantom"
-L.search_role_z = "This person was a Zombie"
-L.search_role_v = "This person was a Vampire"
-L.search_role_s = "This person was a Swapper"
-L.search_role_a = "This person was an Assassin"
-L.search_role_k = "This person was a Killer"
+L.search_role_dr = "This person was a Detraitor!"
+L.search_role_m = "This person was a Mercenary."
+L.search_role_h = "This person was a Hypnotist!"
+L.search_role_g = "This person was a Glitch."
+L.search_role_j = "This person was a Jester."
+L.search_role_p = "This person was a Phantom."
+L.search_role_z = "This person was a Zombie."
+L.search_role_v = "This person was a Vampire."
+L.search_role_s = "This person was a Swapper."
+L.search_role_a = "This person was an Assassin!"
+L.search_role_k = "This person was a Killer."
 L.search_role_i = "This person was Innocent."
 
 L.search_words = "Something tells you some of this person's last words were: '{lastwords}'"
@@ -646,6 +649,7 @@ L.target_zombie = "ZOMBIE"
 L.target_jester = "JESTER"
 L.target_swapper = "SWAPPER"
 L.target_killer = "KILLER"
+L.target_detraitor = "DETRAITOR"
 L.target_fellow_traitor = "FELLOW TRAITOR"
 L.target_fellow_zombie = "FELLOW ZOMBIE"
 L.target_current_target = "CURRENT TARGET"
@@ -695,44 +699,30 @@ L.info_popup_mercenary = [[You are a Mercenary! Try to survive and help your inn
 
 Press {menukey} to receive your equipment!]]
 
-L.info_popup_hypnotist = [[You are a Hypnotist! Work with fellow traitors to kill all others.
-
-These are your comrades:
-{traitorlist}
-
-You can use your brain washing device on a corpse to revive them as a traitor.
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_hypnotist_assassin = [[You are a Hypnotist! Work with fellow traitors to kill all others.
-
-These are your comrades:
-{traitorlist}
+L.info_popup_assassin_comrade = [[
 The following comrade is an assassin:
-{assassinlist}
+{assassinlist}]]
 
-You can use your brain washing device on a corpse to revive them as a traitor.
+L.info_popup_hypnotist_comrade = [[
+The following comrade is a hypnotist:
+{hypnotistlist}]]
 
-Press {menukey} to receive your special equipment!]]
+L.info_popup_detraitor_comrade = [[
+The following comrade is a detraitor:
+{detraitorlist}]]
 
-L.info_popup_hypnotist_glitch = [[You are a Hypnotist! Work with fellow traitors to kill all others.
+L.info_popup_hypnotist_start = [[You are a Hypnotist! Work with fellow traitors to kill all others.
+
+These are your comrades:
+{traitorlist}]]
+
+L.info_popup_hypnotist_start_glitch = [[You are a Hypnotist! Work with fellow traitors to kill all others.
 BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
 
 These may or may not be your comrades:
-{traitorlist}
+{traitorlist}]]
 
-You can use your brain washing device on a corpse to revive them as a traitor.
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_hypnotist_assassin_glitch = [[You are a Hypnotist! Work with fellow traitors to kill all others.
-BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
-
-These may or may not be your comrades:
-{traitorlist}
-The following comrade is an assassin:
-{assassinlist}
-
+L.info_popup_hypnotist_end = [[
 You can use your brain washing device on a corpse to revive them as a traitor.
 
 Press {menukey} to receive your special equipment!]]
@@ -742,6 +732,86 @@ L.info_popup_hypnotist_alone = [[You are a Hypnotist! You have no fellow traitor
 Kill all others to win!
 
 You can use your brain washing device on a corpse to revive them as a traitor.
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_assassin_start = [[You are an Assassin! Work with fellow traitors to kill all others.
+
+These are your comrades:
+{traitorlist}]]
+
+L.info_popup_assassin_start_glitch = [[You are an Assassin! Work with fellow traitors to kill all others.
+BUT BEWARE! There was a glitch in the system and one among
+you does not seek the same goal.
+
+These may or may not be your comrades:
+{traitorlist}]]
+
+L.info_popup_assassin_end = [[
+Your first target is:
+{assassintarget}
+
+You will deal double damage to your target and half damage
+to all other players. But take care as killing the wrong
+player will result in you losing your double damage bonus.
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_assassin_alone = [[You are an Assassin! You have no fellow traitors this round.
+
+Kill all others to win!
+
+Your first target is:
+{assassintarget}
+
+You will deal double damage to your target and half damage
+to all other players. But take care as killing the wrong
+player will result in you losing your double damage bonus.
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_traitor_start = [[You are a TRAITOR! Work with fellow traitors to kill all others.
+But take care, or your treason may be discovered...
+
+These are your comrades:
+{traitorlist}]]
+
+L.info_popup_traitor_start_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
+BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
+
+These may or may not be your comrades:
+{traitorlist}]]
+
+L.info_popup_traitor_end = [[
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_traitor_alone = [[You are a TRAITOR! You have no fellow traitors this round.
+
+Kill all others to win!
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_detraitor_start = [[You are a Detraitor! Work with fellow traitors to kill all others.
+
+These are your comrades:
+{traitorlist}]]
+
+L.info_popup_detraitor_start_glitch = [[You are a Detraitor! Work with fellow traitors to kill all others.
+BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
+
+These may or may not be your comrades:
+{traitorlist}]]
+
+L.info_popup_detraitor_end = [[
+You appear as a Detective to innocents and have access to their equipment.
+
+Press {menukey} to receive your special equipment!]]
+
+L.info_popup_detraitor_alone = [[You are a Detraitor! You have no fellow traitors this round.
+
+Kill all others to win!
+
+You appear as a Detective to innocents and have access to their equipment.
 
 Press {menukey} to receive your special equipment!]]
 
@@ -818,172 +888,9 @@ L.info_popup_swapper = [[You are a Swapper! You deal no damage, however
 if anyone kills you they will die instead and
 you take their role and can join the fight.]]
 
-L.info_popup_assassin = [[You are an Assassin! Work with fellow traitors to kill all others.
-
-These are your comrades:
-{traitorlist}
-
-Your first target is:
-{assassintarget}
-
-You will deal double damage to your target and half damage
-to all other players. But take care as killing the wrong
-player will result in you losing your double damage bonus.
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_assassin_hypnotist = [[You are an Assassin! Work with fellow traitors to kill all others.
-
-These are your comrades:
-{traitorlist}
-The following comrade is a hypnotist:
-{hypnotistlist}
-
-Your first target is:
-{assassintarget}
-
-You will deal double damage to your target and half damage
-to all other players. But take care as killing the wrong
-player will result in you losing your double damage bonus.
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_assassin_glitch = [[You are an Assassin! Work with fellow traitors to kill all others.
-BUT BEWARE! There was a glitch in the system and one among
-you does not seek the same goal.
-
-These may or may not be your comrades:
-{traitorlist}
-
-Your first target is:
-{assassintarget}
-
-You will deal double damage to your target and half damage
-to all other players. But take care as killing the wrong
-player will result in you losing your double damage bonus.
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_assassin_hypnotist_glitch = [[You are an Assassin! Work with fellow traitors to kill all others.
-BUT BEWARE! There was a glitch in the system and one among
-you does not seek the same goal.
-
-These may or may not be your comrades:
-{traitorlist}
-The following comrade is a hypnotist:
-{hypnotistlist}
-
-Your first target is:
-{assassintarget}
-
-You will deal double damage to your target and half damage
-to all other players. But take care as killing the wrong
-player will result in you losing your double damage bonus.
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_assassin_alone = [[You are an Assassin! You have no fellow traitors this round.
-
-Kill all others to win!
-
-Your first target is:
-{assassintarget}
-
-You will deal double damage to your target and half damage
-to all other players. But take care as killing the wrong
-player will result in you losing your double damage bonus.
-
-Press {menukey} to receive your special equipment!]]
-
 L.info_popup_killer = [[You are a Killer! Try to kill everyone and be the last one standing!
 
 Press {menukey} to receive your equipment!]]
-
-L.info_popup_traitor_alone = [[You are a TRAITOR! You have no fellow traitors this round.
-
-Kill all others to win!
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-But take care, or your treason may be discovered...
-
-These are your comrades:
-{traitorlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_hypnotist = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-But take care, or your treason may be discovered...
-
-These are your comrades:
-{traitorlist}
-The following comrade is a hypnotist:
-{hypnotistlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_hypnotist_assassin = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-But take care, or your treason may be discovered...
-
-These are your comrades:
-{traitorlist}
-The following comrade is a hypnotist:
-{hypnotistlist}
-The following comrade is an assassin:
-{assassinlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_assassin = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-But take care, or your treason may be discovered...
-
-These are your comrades:
-{traitorlist}
-The following comrade is an assassin:
-{assassinlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
-
-These may or may not be your comrades:
-{traitorlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_hypnotist_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
-
-These may or may not be your comrades:
-{traitorlist}
-The following comrade is a hypnotist:
-{hypnotistlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_assassin_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
-
-These may or may not be your comrades:
-{traitorlist}
-The following comrade is an assassin:
-{assassinlist}
-
-Press {menukey} to receive your special equipment!]]
-
-L.info_popup_traitor_hypnotist_assassin_glitch = [[You are a TRAITOR! Work with fellow traitors to kill all others.
-BUT BEWARE! There was a glitch in the system and one among you does not seek the same goal.
-
-These may or may not be your comrades:
-{traitorlist}
-The following comrade is a hypnotist:
-{hypnotistlist}
-The following comrade is an assassin:
-{assassinlist}
-
-Press {menukey} to receive your special equipment!]]
 
 --- Various other text
 L.name_kick = "A player was automatically kicked for changing their name during a round."

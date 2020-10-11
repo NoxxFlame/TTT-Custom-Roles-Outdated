@@ -5,7 +5,7 @@ SWEP.HoldType = "normal"
 if CLIENT then
 	SWEP.PrintName = "unarmed_name"
 	SWEP.Slot = 5
-	
+
 	SWEP.ViewModelFOV = 10
 end
 
@@ -25,7 +25,7 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = "none"
 
 SWEP.Kind = WEAPON_UNARMED
-SWEP.InLoadoutFor = { ROLE_INNOCENT, ROLE_TRAITOR, ROLE_DETECTIVE, ROLE_MERCENARY, ROLE_GLITCH, ROLE_HYPNOTIST, ROLE_PHANTOM, ROLE_JESTER, ROLE_ZOMBIE, ROLE_VAMPIRE, ROLE_SWAPPER, ROLE_ASSASSIN, ROLE_KILLER }
+SWEP.InLoadoutFor = { ROLE_INNOCENT, ROLE_TRAITOR, ROLE_DETRAITOR, ROLE_DETECTIVE, ROLE_MERCENARY, ROLE_GLITCH, ROLE_HYPNOTIST, ROLE_PHANTOM, ROLE_JESTER, ROLE_ZOMBIE, ROLE_VAMPIRE, ROLE_SWAPPER, ROLE_ASSASSIN, ROLE_KILLER }
 
 SWEP.AllowDelete = false
 SWEP.AllowDrop = false
@@ -56,9 +56,9 @@ function SWEP:Deploy()
 	if SERVER and IsValid(self:GetOwner()) then
 		self:GetOwner():DrawViewModel(false)
 	end
-	
+
 	self:DrawShadow(false)
-	
+
 	return true
 end
 

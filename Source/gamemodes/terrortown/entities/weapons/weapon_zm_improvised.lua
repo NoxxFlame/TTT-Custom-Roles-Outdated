@@ -34,7 +34,7 @@ SWEP.Secondary.Delay = 5
 
 SWEP.Kind = WEAPON_MELEE
 SWEP.WeaponID = AMMO_CROWBAR
-SWEP.InLoadoutFor = { ROLE_INNOCENT, ROLE_TRAITOR, ROLE_DETECTIVE, ROLE_MERCENARY, ROLE_GLITCH, ROLE_HYPNOTIST, ROLE_PHANTOM, ROLE_JESTER, ROLE_ZOMBIE, ROLE_VAMPIRE, ROLE_SWAPPER, ROLE_ASSASSIN }
+SWEP.InLoadoutFor = { ROLE_INNOCENT, ROLE_TRAITOR, ROLE_DETRAITOR, ROLE_DETECTIVE, ROLE_MERCENARY, ROLE_GLITCH, ROLE_HYPNOTIST, ROLE_PHANTOM, ROLE_JESTER, ROLE_ZOMBIE, ROLE_VAMPIRE, ROLE_SWAPPER, ROLE_ASSASSIN }
 
 SWEP.NoSights = true
 SWEP.IsSilent = true
@@ -46,7 +46,6 @@ SWEP.AllowDelete = false -- never removed for weapon reduction
 SWEP.AllowDrop = true
 
 local sound_single = Sound("Weapon_Crowbar.Single")
-local sound_open = Sound("DoorHandles.Unlocked3")
 
 if SERVER then
 	CreateConVar("ttt_crowbar_unlocks", "1", FCVAR_ARCHIVE)

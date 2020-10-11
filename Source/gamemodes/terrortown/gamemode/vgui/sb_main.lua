@@ -385,7 +385,7 @@ function PANEL:ApplySchemeSettings()
     local highlight_color = Color(175, 175, 175, 255)
     local default_color = COLOR_WHITE
 
-    for k, v in pairs(self.cols) do
+    for _, v in pairs(self.cols) do
         v:SetFont("treb_small")
         if sorting == v.HeadingIdentifier then
             v:SetTextColor(highlight_color)
@@ -394,7 +394,7 @@ function PANEL:ApplySchemeSettings()
         end
     end
 
-    for k, v in pairs(self.sort_headers) do
+    for _, v in pairs(self.sort_headers) do
         v:SetFont("treb_small")
         if sorting == v.HeadingIdentifier then
             v:SetTextColor(highlight_color)

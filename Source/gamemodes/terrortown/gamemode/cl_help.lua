@@ -189,13 +189,13 @@ cvars.AddChangeCallback("ttt_mute_team_check", MuteTeamCallback)
 --- Tutorial
 
 local imgpath = "vgui/ttt/tutorial/tut%02d"
-local tutorial_pages = 18
+local tutorial_pages = 19
 
 local function GetImagePath(idx)
     local image_path = Format(imgpath, idx)
 
     -- Show the Traitor version of the Zombie and Vampire images if Monsters-as-Traitors is enabled
-    if (idx == 14 or idx == 15) and GetGlobalBool("ttt_monsters_are_traitors") then
+    if (idx == 15 or idx == 16) and GetGlobalBool("ttt_monsters_are_traitors") then
         image_path = image_path .. "_t"
     end
 

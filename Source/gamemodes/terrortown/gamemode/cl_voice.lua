@@ -15,13 +15,22 @@ local function LastWordsRecv()
 
     chat.AddText(Color(150, 150, 150),
         Format("(%s) ", string.upper(GetTranslation("last_words"))),
-        was_detective and Color(50, 200, 255) or Color(0, 200, 0),
+        was_detective and ROLE_COLORS[ROLE_DETECTIVE] or ROLE_COLORS[ROLE_INNOCENT],
         nick,
         COLOR_WHITE,
         ": " .. words)
 end
 
 net.Receive("TTT_LastWordsMsg", LastWordsRecv)
+
+local function AddRoleText(role, rolename, nick, text)
+    chat.AddText(ROLE_COLORS[role],
+        Format("(%s) ", string.upper(GetTranslation(rolename))),
+        ROLE_COLORS[role],
+        nick,
+        COLOR_WHITE,
+        ": " .. text)
+end
 
 local function RoleChatRecv()
     -- virtually always our role, but future equipment might allow listening in
@@ -33,55 +42,7 @@ local function RoleChatRecv()
     local client = LocalPlayer()
     if not IsValid(client) then return end
 
-    if role == ROLE_TRAITOR then
-        chat.AddText(Color(255, 0, 0),
-            Format("(%s) ", string.upper(GetTranslation("traitor"))),
-            Color(255, 100, 100),
-            sender:Nick(),
-            Color(255, 255, 255),
-            ": " .. text)
-
-    elseif role == ROLE_ZOMBIE then
-        chat.AddText(Color(69, 97, 0),
-            Format("(%s) ", string.upper(GetTranslation("zombie"))),
-            Color(100, 120, 40),
-            sender:Nick(),
-            Color(255, 255, 255),
-            ": " .. text)
-
-    elseif role == ROLE_HYPNOTIST then
-        chat.AddText(Color(255, 93, 223),
-            Format("(%s) ", string.upper(GetTranslation("hypnotist"))),
-            Color(255, 150, 235),
-            sender:Nick(),
-            Color(255, 255, 255),
-            ": " .. text)
-
-    elseif role == ROLE_VAMPIRE then
-        chat.AddText(Color(45, 45, 45),
-            Format("(%s) ", string.upper(GetTranslation("vampire"))),
-            Color(100, 100, 100),
-            sender:Nick(),
-            Color(255, 255, 255),
-            ": " .. text)
-
-    elseif role == ROLE_ASSASSIN then
-        chat.AddText(Color(112, 50, 0),
-            Format("(%s) ", string.upper(GetTranslation("assassin"))),
-            Color(140, 95, 60),
-            sender:Nick(),
-            Color(255, 255, 255),
-            ": " .. text)
-
-    elseif role == ROLE_DETECTIVE then
-        chat.AddText(Color(0, 0, 255),
-            Format("(%s) ", string.upper(GetTranslation("detective"))),
-            Color(100, 100, 255),
-            sender:Nick(),
-            Color(255, 255, 255),
-            ": " .. text)
-
-    elseif role == ROLE_JESTER or role == ROLE_SWAPPER then
+    if role == ROLE_JESTER or role == ROLE_SWAPPER then
         local role_name
         -- Show Swapper name if the client's role is allowed to know the difference between Jester and Swapper
         -- Also show the Swapper name if the local player is the one who said the text and any of the "ttt_*_know_swapper" settings are enabled
@@ -95,12 +56,9 @@ local function RoleChatRecv()
             role_name = GetTranslation("jester")
         end
 
-        chat.AddText(Color(159, 0, 211),
-            Format("(%s) ", string.upper(role_name)),
-            Color(170, 70, 200),
-            sender:Nick(),
-            Color(255, 255, 255),
-            ": " .. text)
+        AddRoleText(role, role_name, sender:Nick(), text)
+    else
+        AddRoleText(role, ROLE_STRINGS[role], sender:Nick(), text)
     end
 end
 
@@ -122,16 +80,16 @@ end
 
 -- Detectives have a blue name, in both chat and radio messages
 local function AddDetectiveText(ply, text)
-    chat.AddText(Color(0, 0, 255),
+    chat.AddText(ROLE_COLORS[ROLE_DETECTIVE],
         ply:Nick(),
-        Color(255, 255, 255),
+        COLOR_WHITE,
         ": " .. text)
 end
 
 function GM:OnPlayerChat(ply, text, teamchat, dead)
     if not IsValid(ply) then return BaseClass.OnPlayerChat(self, ply, text, teamchat, dead) end
 
-    if ply:IsActiveDetective() then
+    if ply:IsActiveDetective() or ply:IsActiveDetraitor() then
         AddDetectiveText(ply, text)
         return true
     end
@@ -565,7 +523,7 @@ function GM:PlayerStartVoice(ply)
         end
     end
 
-    if ply:IsActiveDetective() then
+    if ply:IsActiveDetective() or ply:IsActiveDetraitor() then
         pnl.Color = Color(20, 20, 200, 255)
     end
 
@@ -688,7 +646,7 @@ local function GetDrainRate()
     local ply = LocalPlayer()
     if (not IsValid(ply)) or ply:IsSpec() then return 0 end
 
-    if ply:IsAdmin() or ply:IsDetective() then
+    if ply:IsAdmin() or ply:IsDetective() or ply:IsDetraitor() then
         return GetGlobalFloat("ttt_voice_drain_admin", 0)
     else
         return GetGlobalFloat("ttt_voice_drain_normal", 0)

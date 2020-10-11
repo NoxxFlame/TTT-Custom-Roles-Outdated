@@ -112,7 +112,7 @@ end
 -- Return true if a traitor could have easily avoided the damage/death
 local function WasAvoidable(attacker, victim, dmginfo)
     local infl = dmginfo:GetInflictor()
-    if attacker:IsTraitor() and victim:IsTraitor() and IsValid(infl) and infl.Avoidable then
+    if player.IsTraitorTeam(attacker) and player.IsTraitorTeam(victim) and IsValid(infl) and infl.Avoidable then
         return true
     end
 

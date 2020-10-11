@@ -55,7 +55,7 @@ local function RoleChatMsg(sender, role, msg)
     net.WriteString(msg)
 
     local monstersAsTraitors = GetGlobalBool("ttt_monsters_are_traitors")
-    if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN then
+    if role == ROLE_TRAITOR or role == ROLE_HYPNOTIST or role == ROLE_ASSASSIN or role == ROLE_DETRAITOR then
         net.Send(monstersAsTraitors and GetTraitorsAndMonstersFilter() or GetTraitorsFilter())
     elseif role == ROLE_VAMPIRE or role == ROLE_ZOMBIE then
         net.Send(monstersAsTraitors and GetTraitorsAndMonstersFilter() or GetMonstersFilter())
@@ -90,7 +90,7 @@ function GetTraitorFilter(alive_only)
 end
 
 function GetDetectiveFilter(alive_only)
-    return GetPlayerFilter(function(p) return p:IsDetective() and (not alive_only or p:IsTerror()) end)
+    return GetPlayerFilter(function(p) return (p:IsDetective() or p:IsDetraitor()) and (not alive_only or p:IsTerror()) end)
 end
 
 function GetMercenaryFilter(alive_only)

@@ -23,6 +23,7 @@ CLSCORE.VampireIDs = {}
 CLSCORE.SwapperIDs = {}
 CLSCORE.AssassinIDs = {}
 CLSCORE.KillerIDs = {}
+CLSCORE.DetraitorIDs = {}
 CLSCORE.Players = {}
 CLSCORE.StartTime = 0
 CLSCORE.Panel = nil
@@ -392,7 +393,7 @@ function CLSCORE:BuildScorePanel(dpanel)
 
     for id, s in pairs(scores) do
         if id ~= -1 then
-            local was_traitor = s.was_traitor or s.was_assassin or s.was_hypnotist
+            local was_traitor = s.was_traitor or s.was_assassin or s.was_hypnotist or s.was_detraitor
             local was_monster = false
             -- Count Monsters if Monsters-as-Traitors is enabled
             if GetGlobalBool("ttt_monsters_are_traitors") then
@@ -401,7 +402,7 @@ function CLSCORE:BuildScorePanel(dpanel)
                 was_monster = s.was_zombie or s.was_vampire
             end
             local was_innocent = s.was_innocent or s.was_detective or s.was_phantom or s.was_mercenary or s.was_glitch
-            local role = was_traitor and T("traitor") or (s.was_detective and T("detective") or (s.was_hypnotist and T("hypnotist") or (s.was_mercenary and T("mercenary") or (s.was_jester and T("jester") or (s.was_phantom and T("phantom") or (s.was_glitch and T("glitch") or (s.was_zombie and T("zombie") or (s.was_vampire and T("vampire") or (s.was_swapper and T("swapper") or (s.was_assassin and T("assassin") or (s.was_killer and T("killer") or T("innocent"))))))))))))
+            local role = s.was_traitor and T("traitor") or (s.was_detective and T("detective") or (s.was_hypnotist and T("hypnotist") or (s.was_mercenary and T("mercenary") or (s.was_jester and T("jester") or (s.was_phantom and T("phantom") or (s.was_glitch and T("glitch") or (s.was_zombie and T("zombie") or (s.was_vampire and T("vampire") or (s.was_swapper and T("swapper") or (s.was_assassin and T("assassin") or (s.was_killer and T("killer") or (s.was_detraitor and T("detraitor") or T("innocent")))))))))))))
 
             local surv = ""
             if s.deaths > 0 then
@@ -692,7 +693,7 @@ function CLSCORE:BuildSummaryPanel(dpanel)
     for id, s in pairs(scores) do
         if id ~= -1 then
             local playerName = nicks[id]
-            local role = s.was_traitor and "tra" or (s.was_detective and "det" or (s.was_hypnotist and "hyp" or (s.was_jester and "jes" or (s.was_swapper and "swa" or (s.was_mercenary and "mer" or (s.was_glitch and "gli" or (s.was_phantom and "pha" or (s.was_zombie and "zom" or (s.was_assassin and "ass" or (s.was_vampire and "vam" or (s.was_killer and "kil" or "inn")))))))))))
+            local role = s.was_traitor and "tra" or (s.was_detective and "det" or (s.was_hypnotist and "hyp" or (s.was_jester and "jes" or (s.was_swapper and "swa" or (s.was_mercenary and "mer" or (s.was_glitch and "gli" or (s.was_phantom and "pha" or (s.was_zombie and "zom" or (s.was_assassin and "ass" or (s.was_vampire and "vam" or (s.was_killer and "kil" or (s.was_detraitor and "der" or "inn"))))))))))))
 
             -- Convert the original swapper to their new role
             if s.was_swapper and jesterkillerrole >= ROLE_INNOCENT then
@@ -722,6 +723,8 @@ function CLSCORE:BuildSummaryPanel(dpanel)
                     role = "ass"
                 elseif jesterkillerrole == ROLE_KILLER then
                     role = "kil"
+                elseif jesterkillerrole == ROLE_DETRAITOR then
+                    role = "der"
                 end
             end
 
@@ -795,7 +798,7 @@ function CLSCORE:BuildSummaryPanel(dpanel)
 
                 if role == "inn" or role == "det" or role == "mer" or role == "pha" or role == "gli" then
                     table.insert(scores_by_section[ROLE_INNOCENT], playerInfo)
-                elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" then
+                elseif role == "tra" or role == "hyp" or role == "zom" or role == "vam" or role == "ass" or role == "der" then
                     table.insert(scores_by_section[ROLE_TRAITOR], playerInfo)
                 elseif role == "jes" or role == "swa" then
                     table.insert(scores_by_section[ROLE_JESTER], playerInfo)
@@ -832,7 +835,7 @@ function CLSCORE:BuildHilitePanel(dpanel)
     local roundtime = endtime - self.StartTime
 
     local numply = table.Count(self.Players)
-    local numtr = table.Count(self.TraitorIDs) + table.Count(self.HypnotistIDs) + table.Count(self.AssassinIDs)
+    local numtr = table.Count(self.TraitorIDs) + table.Count(self.HypnotistIDs) + table.Count(self.AssassinIDs) + table.Count(self.DetraitorIDs)
 
     local bg = vgui.Create("ColoredBox", dpanel)
     bg:SetColor(Color(50, 50, 50, 255))
@@ -887,7 +890,7 @@ function CLSCORE:BuildHilitePanel(dpanel)
     -- priority/interestingness
     local award_choices = {}
     for _, afn in pairs(AWARDS) do
-        local a = afn(self.Events, self.Scores, self.Players, self.InnocentIDs, self.TraitorIDs, self.DetectiveIDs, self.MercenaryIDs, self.HypnotistIDs, self.GlitchIDs, self.JesterIDs, self.PhantomIDs, self.ZombieIDs, self.VampireIDs, self.SwapperIDs, self.AssassinIDs, self.KillerIDs)
+        local a = afn(self.Events, self.Scores, self.Players, self.InnocentIDs, self.TraitorIDs, self.DetectiveIDs, self.MercenaryIDs, self.HypnotistIDs, self.GlitchIDs, self.JesterIDs, self.PhantomIDs, self.ZombieIDs, self.VampireIDs, self.SwapperIDs, self.AssassinIDs, self.KillerIDs, self.DetraitorIDs)
         if ValidAward(a) then
             table.insert(award_choices, a)
         end
@@ -1060,6 +1063,7 @@ function CLSCORE:Reset()
     self.SwapperIDs = {}
     self.AssassinIDs = {}
     self.KillerIDs = {}
+    self.DetraitorIDs = {}
     self.Players = {}
     self.RoundStarted = 0
 
@@ -1082,6 +1086,7 @@ function CLSCORE:Init(events)
     local swapper = nil
     local assassin = nil
     local killer = nil
+    local detraitor = nil
     for _, e in pairs(events) do
         if e.id == EVENT_GAME and e.state == ROUND_ACTIVE then
             starttime = e.t
@@ -1099,6 +1104,7 @@ function CLSCORE:Init(events)
             swapper = e.swapper_ids
             assassin = e.assassin_ids
             killer = e.killer_ids
+            detraitor = e.detraitor_ids
         end
 
         if starttime and traitors then
@@ -1131,9 +1137,10 @@ function CLSCORE:Init(events)
         HandleRoleChange(swapper, role, ROLE_SWAPPER, uid)
         HandleRoleChange(assassin, role, ROLE_ASSASSIN, uid)
         HandleRoleChange(killer, role, ROLE_KILLER, uid)
+        HandleRoleChange(detraitor, role, ROLE_DETRAITOR, uid)
     end
 
-    scores = ScoreEventLog(events, scores, innocents, traitors, detectives, hypnotist, mercenary, jester, phantom, glitch, zombie, vampire, swapper, assassin, killer)
+    scores = ScoreEventLog(events, scores, innocents, traitors, detectives, hypnotist, mercenary, jester, phantom, glitch, zombie, vampire, swapper, assassin, killer, detraitor)
 
     self.Players = nicks
     self.Scores = scores
@@ -1150,6 +1157,7 @@ function CLSCORE:Init(events)
     self.SwapperIDs = swapper
     self.AssassinIDs = assassin
     self.KillerIDs = killer
+    self.DetraitorIDs = detraitor
     self.StartTime = starttime
     self.Events = events
 end

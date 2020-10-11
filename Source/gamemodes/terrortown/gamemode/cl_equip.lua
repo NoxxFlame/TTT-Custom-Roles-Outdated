@@ -32,13 +32,25 @@ local BuyableWeapons = {
     [ROLE_TRAITOR] = {},
     [ROLE_ASSASSIN] = {},
     [ROLE_HYPNOTIST] = {},
-    [ROLE_KILLER] = {}
+    [ROLE_KILLER] = {},
+    [ROLE_DETRAITOR] = {}
 }
 
 net.Receive("TTT_BuyableWeapon_Detective", function()
     for _, v in pairs(net.ReadTable()) do
         if not table.HasValue(BuyableWeapons[ROLE_DETECTIVE], v) then
             table.insert(BuyableWeapons[ROLE_DETECTIVE], v)
+        end
+        -- Detraitor can use all Detective weapons too
+        if not table.HasValue(BuyableWeapons[ROLE_DETRAITOR], v) then
+            table.insert(BuyableWeapons[ROLE_DETRAITOR], v)
+        end
+    end
+end)
+net.Receive("TTT_BuyableWeapon_Detraitor", function()
+    for _, v in pairs(net.ReadTable()) do
+        if not table.HasValue(BuyableWeapons[ROLE_DETRAITOR], v) then
+            table.insert(BuyableWeapons[ROLE_DETRAITOR], v)
         end
     end
 end)
@@ -165,6 +177,11 @@ function GetEquipmentForRole(role)
                     not table.HasValue(v.CanBuy, role) and
                     -- and vanilla traitors CAN buy this weapon, let this player buy it too
                     table.HasValue(v.CanBuy, ROLE_TRAITOR) then
+                    table.insert(v.CanBuy, role)
+                end
+
+                -- If the player is a detraitor they should have all the weapons of a detective
+                if role == ROLE_DETRAITOR and not table.HasValue(v.CanBuy, role) and table.HasValue(v.CanBuy, ROLE_DETECTIVE) then
                     table.insert(v.CanBuy, role)
                 end
 
@@ -748,7 +765,7 @@ concommand.Add("ttt_cl_traitorpopup_close", ForceCloseTraitorMenu)
 
 function GM:OnContextMenuOpen()
     local r = GetRoundState()
-    if r == ROUND_ACTIVE and not (LocalPlayer():GetTraitor() or LocalPlayer():GetDetective() or LocalPlayer():GetMercenary() or LocalPlayer():GetZombie() or LocalPlayer():GetHypnotist() or LocalPlayer():GetVampire() or LocalPlayer():GetAssassin() or LocalPlayer():GetKiller()) then
+    if r == ROUND_ACTIVE and not player.HasBuyMenu(LocalPlayer()) then
         return
     elseif r == ROUND_POST or r == ROUND_PREP then
         CLSCORE:Toggle()

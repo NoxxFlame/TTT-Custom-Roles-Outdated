@@ -492,10 +492,16 @@ function GM:PlayerDisconnected(ply)
 
     if GetRoundState() ~= ROUND_PREP then
         -- Keep traitor entindices in sync on traitor clients
-        SendTraitorList(GetTraitorFilter(false), nil)
+        SendTraitorList(GetTraitorsFilter(false))
+        SendHypnotistList(GetTraitorsFilter(false))
+        SendAssassinList(GetTraitorsFilter(false))
+        SendDetraitorList(GetTraitorsFilter(false))
 
         -- Same for confirmed traitors on innocent clients
-        SendConfirmedTraitors(GetNonTraitorFilter(false))
+        SendConfirmedTraitorList(GetNonTraitorFilter(false))
+        SendConfirmedHypnotistList(GetNonTraitorFilter(false))
+        SendConfirmedAssassinList(GetNonTraitorFilter(false))
+        SendConfirmedDetraitorList(GetNonTraitorFilter(false))
 
         SendDetectiveList()
 
@@ -1069,9 +1075,12 @@ function GM:PlayerDeath(victim, infl, attacker)
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the vampire (" .. attacker:GetName() .. ")")
                     elseif attacker:IsAssassin() then
                         ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the assassin (" .. attacker:GetName() .. ")")
+                    elseif attacker:IsDetraitor() then
+                        ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the detraitor (" .. attacker:GetName() .. ")")
+                    elseif attacker:IsDetective() then
+                        ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the detective (" .. attacker:GetName() .. ")")
                     end
-                end
-                if attacker:IsDetective() then
+                elseif attacker:IsDetective() or attacker:IsDetraitor() then
                     ply:PrintMessage(HUD_PRINTCENTER, "The swapper (" .. victim:GetName() .. ") has swapped with the detective (" .. attacker:GetName() .. ")")
                 end
             end

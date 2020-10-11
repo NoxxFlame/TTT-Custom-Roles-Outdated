@@ -75,6 +75,7 @@ local function GetTextForLocalPlayer()
         local traitors = {}
         local hypnotists = {}
         local assassins = {}
+        local detraitors = {}
         local glitches = {}
         for _, ply in pairs(player.GetAll()) do
             if ply:IsTraitor() then
@@ -85,6 +86,9 @@ local function GetTextForLocalPlayer()
             elseif ply:IsAssassin() then
                 table.insert(traitors, ply)
                 table.insert(assassins, ply)
+            elseif ply:IsDetraitor() then
+                table.insert(traitors, ply)
+                table.insert(detraitors, ply)
             elseif ply:IsGlitch() then
                 table.insert(traitors, ply)
                 table.insert(glitches, ply)
@@ -98,43 +102,58 @@ local function GetTextForLocalPlayer()
             assassintarget = string.rep(" ", 42) .. client:GetNWString("AssassinTarget", "")
         end
 
-        local type = (client:IsHypnotist() and "hypnotist") or (client:IsAssassin() and "assassin") or "traitor"
+        local type = (client:IsHypnotist() and "hypnotist") or (client:IsAssassin() and "assassin") or (client:IsDetraitor() and "detraitor") or "traitor"
         local text
         if #traitors > 1 then
             local traitorlabel = "info_popup_" .. type
-            local traitorlist = ""
+            local startlabel = traitorlabel .. "_start"
+            if #glitches > 0 then
+                startlabel = startlabel .. "_glitch"
+            end
 
+            local traitorlist = ""
             for _, ply in pairs(traitors) do
                 if ply ~= client then
                     traitorlist = traitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                 end
             end
 
-            local hypnotistlist = ""
+            text = GetPTranslation(startlabel, { traitorlist = traitorlist })
+
             if #hypnotists > 0 and not client:IsHypnotist() then
+                local hypnotistlist = ""
                 for _, ply in pairs(hypnotists) do
                     if ply ~= client then
                         hypnotistlist = hypnotistlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                     end
                 end
-                traitorlabel = traitorlabel .. "_hypnotist"
+
+                text = text .. GetPTranslation("info_popup_hypnotist_comrade", { hypnotistlist = hypnotistlist })
             end
 
-            local assassinlist = ""
             if #assassins > 0 and not client:IsAssassin() then
+                local assassinlist = ""
                 for _, ply in pairs(assassins) do
                     if ply ~= client then
                         assassinlist = assassinlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
                     end
                 end
-                traitorlabel = traitorlabel .. "_assassin"
+
+                text = text .. GetPTranslation("info_popup_assassin_comrade", { assassinlist = assassinlist })
             end
 
-            if #glitches > 0 then
-                traitorlabel = traitorlabel .. "_glitch"
+            if #detraitors > 0 and not client:IsDetraitor() then
+                local detraitorlist = ""
+                for _, ply in pairs(detraitors) do
+                    if ply ~= client then
+                        detraitorlist = detraitorlist .. string.rep(" ", 42) .. ply:Nick() .. "\n"
+                    end
+                end
+
+                text = text .. GetPTranslation("info_popup_detraitor_comrade", { detraitorlist = detraitorlist })
             end
 
-            text = GetPTranslation(traitorlabel, { menukey = menukey, traitorlist = traitorlist, hypnotistlist = hypnotistlist, assassinlist = assassinlist, assassintarget = assassintarget })
+            text = text .. GetPTranslation(traitorlabel .. "_end", { menukey = menukey, assassintarget = assassintarget })
         else
             text = GetPTranslation("info_popup_" .. type .. "_alone", { menukey = menukey, assassintarget = assassintarget })
         end

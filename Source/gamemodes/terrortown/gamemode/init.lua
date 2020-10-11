@@ -80,6 +80,7 @@ CreateConVar("ttt_detective_max", "32", FCVAR_ARCHIVE)
 CreateConVar("ttt_detective_min_players", "8", FCVAR_ARCHIVE)
 CreateConVar("ttt_detective_karma_min", "600", FCVAR_ARCHIVE)
 
+CreateConVar("ttt_detraitor_enabled", "0", FCVAR_ARCHIVE)
 CreateConVar("ttt_mercenary_enabled", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_hypnotist_enabled", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_glitch_enabled", "1", FCVAR_ARCHIVE)
@@ -91,6 +92,7 @@ CreateConVar("ttt_swapper_enabled", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_assassin_enabled", "1", FCVAR_ARCHIVE)
 CreateConVar("ttt_killer_enabled", "1", FCVAR_ARCHIVE)
 
+CreateConVar("ttt_detraitor_chance", "0.2", FCVAR_ARCHIVE)
 CreateConVar("ttt_zombie_chance", "0.1", FCVAR_ARCHIVE)
 CreateConVar("ttt_hypnotist_chance", "0.2", FCVAR_ARCHIVE)
 CreateConVar("ttt_vampire_chance", "0.2", FCVAR_ARCHIVE)
@@ -102,6 +104,7 @@ CreateConVar("ttt_jester_chance", "0.25", FCVAR_ARCHIVE)
 CreateConVar("ttt_swapper_chance", "0.25", FCVAR_ARCHIVE)
 CreateConVar("ttt_killer_chance", "0.25", FCVAR_ARCHIVE)
 
+CreateConVar("ttt_detraitor_required_traitors", "2", FCVAR_ARCHIVE)
 CreateConVar("ttt_mercenary_required_innos", "2", FCVAR_ARCHIVE)
 CreateConVar("ttt_hypnotist_required_traitors", "2", FCVAR_ARCHIVE)
 CreateConVar("ttt_glitch_required_innos", "2", FCVAR_ARCHIVE)
@@ -137,6 +140,7 @@ CreateConVar("ttt_asn_credits_starting", "0", FCVAR_ARCHIVE)
 CreateConVar("ttt_hyp_credits_starting", "0", FCVAR_ARCHIVE)
 CreateConVar("ttt_zom_credits_starting", "0", FCVAR_ARCHIVE)
 CreateConVar("ttt_vam_credits_starting", "0", FCVAR_ARCHIVE)
+CreateConVar("ttt_der_credits_starting", "2", FCVAR_ARCHIVE)
 
 CreateConVar("ttt_detective_search_only", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
 CreateConVar("ttt_all_search_postround", "1", FCVAR_ARCHIVE + FCVAR_REPLICATED)
@@ -252,6 +256,7 @@ util.AddNetworkString("TTT_Vampire_PlayerHighlightOn")
 util.AddNetworkString("TTT_Traitor_PlayerHighlightOn")
 util.AddNetworkString("TTT_PlayerHighlightOff")
 util.AddNetworkString("TTT_BuyableWeapon_Detective")
+util.AddNetworkString("TTT_BuyableWeapon_Detraitor")
 util.AddNetworkString("TTT_BuyableWeapon_Mercenary")
 util.AddNetworkString("TTT_BuyableWeapon_Vampire")
 util.AddNetworkString("TTT_BuyableWeapon_Zombie")
@@ -1016,8 +1021,8 @@ function LogScore(type)
         roleStats = util.JSONToTable(file.Read("stats/roleStats.txt", "DATA"))
     end
 
-    local roundRoles = { false, false, false, false, false, false, false, false, false, false, false, false }
-    local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer" }
+    local roundRoles = { false, false, false, false, false, false, false, false, false, false, false, false, false }
+    local roleNames = { "Innocent", "Traitor", "Detective", "Mercenary", "Jester", "Phantom", "Hypnotist", "Glitch", "Zombie", "Vampire", "Swapper", "Assassin", "Killer", "Detraitor" }
 
     for _, v in pairs(player.GetAll()) do
         local traitor_win = type == WIN_TRAITOR and v:IsTraitorTeam()
@@ -1229,7 +1234,8 @@ function SelectRoles()
         [ROLE_VAMPIRE] = {},
         [ROLE_SWAPPER] = {},
         [ROLE_ASSASSIN] = {},
-        [ROLE_KILLER] = {}
+        [ROLE_KILLER] = {},
+        [ROLE_DETRAITOR] = {}
     };
 
     if not GAMEMODE.LastRole then GAMEMODE.LastRole = {} end
@@ -1253,6 +1259,7 @@ function SelectRoles()
     local monster_count = GetMonsterCount(choice_count)
     local det_count = GetDetectiveCount(choice_count)
 
+    local detraitor_chance = GetConVar("ttt_detraitor_chance"):GetFloat()
     local zombie_chance = GetConVar("ttt_zombie_chance"):GetFloat()
     local vampire_chance = GetConVar("ttt_vampire_chance"):GetFloat()
     local hypnotist_chance = GetConVar("ttt_hypnotist_chance"):GetFloat()
@@ -1286,6 +1293,7 @@ function SelectRoles()
     local hasPhantom = false
     local hasGlitch = false
     local hasKiller = false
+    local hasDetraitor = false
 
     print("-----CHECKING EXTERNALLY CHOSEN ROLES-----")
     for _, v in pairs(player.GetAll()) do
@@ -1304,6 +1312,10 @@ function SelectRoles()
                     vanilla_ts = vanilla_ts + 1
                     hasTraitor = true
                     print(v:Nick() .. " (" .. v:SteamID() .. ") - Traitor")
+                elseif role == ROLE_DETRAITOR then
+                    ts = ts + 1
+                    hasDetraitor = true
+                    print(v:Nick() .. " (" .. v:SteamID() .. ") - Detraitor")
                 elseif role == ROLE_ZOMBIE then
                     ms = ms + 1
                     hasMonster = true
@@ -1379,14 +1391,18 @@ function SelectRoles()
             local pply, pick = GetRandomPlayer(choices)
 
             -- Handle previous role logic, paying attention to whether monsters are traitors
-            local wasTraitor = WasRole(prev_roles, pply, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST)
+            local wasTraitor = WasRole(prev_roles, pply, ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_DETRAITOR)
             if GetGlobalBool("ttt_monsters_are_traitors") then
                 wasTraitor = wasTraitor or WasRole(prev_roles, pply, ROLE_ZOMBIE, ROLE_VAMPIRE)
             end
 
             -- make this guy traitor if he was not one last time, or if he makes a roll
             if IsValid(pply) and (not wasTraitor or math.random(1, 3) == 2) then
-                if ts >= GetConVar("ttt_hypnotist_required_traitors"):GetInt() and GetConVar("ttt_hypnotist_enabled"):GetBool() and math.random() <= hypnotist_chance and not hasSpecial then
+                if ts >= GetConVar("ttt_detraitor_required_traitors"):GetInt() and GetConVar("ttt_detraitor_enabled"):GetBool() and math.random() <= detraitor_chance and ds == 0 and not hasDetraitor then
+                    print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Detraitor")
+                    pply:SetRole(ROLE_DETRAITOR)
+                    hasDetraitor = true
+                elseif ts >= GetConVar("ttt_hypnotist_required_traitors"):GetInt() and GetConVar("ttt_hypnotist_enabled"):GetBool() and math.random() <= hypnotist_chance and not hasSpecial then
                     print(pply:Nick() .. " (" .. pply:SteamID() .. ") - Hypnotist")
                     pply:SetRole(ROLE_HYPNOTIST)
                     hasSpecial = true
@@ -1440,7 +1456,7 @@ function SelectRoles()
     -- traitor, so becoming detective does not mean you lost a chance to be
     -- traitor
     local min_karma = GetConVarNumber("ttt_detective_karma_min") or 0
-    while ds < det_count and #choices > 0 do
+    while not hasDetraitor and ds < det_count and #choices > 0 do
         -- sometimes we need all remaining choices to be detective to fill the
         -- roles up, this happens more often with a lot of detective-deniers
         if #choices <= (det_count - ds) then
@@ -1587,7 +1603,7 @@ concommand.Add("ttt_roundrestart", ForceRoundRestart)
 
 -- If this logic or the list of roles who can buy is changed, it must also be updated in weaponry.lua and cl_equip.lua
 function ReadRoleEquipment()
-    local rolenames = { "Detective", "Mercenary", "Vampire", "Zombie", "Traitor", "Assassin", "Hypnotist", "Killer" }
+    local rolenames = { "Detective", "Detraitor", "Mercenary", "Vampire", "Zombie", "Traitor", "Assassin", "Hypnotist", "Killer" }
     for _, role in pairs(rolenames) do
         local rolefiles, _ = file.Find("roleweapons/" .. role:lower() .. "/*.txt", "DATA")
         local roleweapons = { }

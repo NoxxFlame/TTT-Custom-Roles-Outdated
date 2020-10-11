@@ -225,6 +225,7 @@ local function ReceiveRole()
     elseif client:IsSwapper() then MsgN("SWAPPER")
     elseif client:IsAssassin() then MsgN("ASSASSIN")
     elseif client:IsKiller() then MsgN("KILLER")
+    elseif client:IsDetraitor() then MsgN("DETRAITOR")
     else MsgN("INNOCENT")
     end
 end
@@ -519,7 +520,7 @@ net.Receive("TTT_Zombie_PlayerHighlightOn", function(len, ply)
         local allies = {ROLE_VAMPIRE}
         local traitors_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
         if traitors_are_friends then
-            table.Add(allies, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST})
+            table.Add(allies, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_DETRAITOR})
         end
 
         OnPlayerHighlightEnabled(ROLE_ZOMBIE, allies, false, traitors_are_friends)
@@ -531,7 +532,7 @@ net.Receive("TTT_Vampire_PlayerHighlightOn", function(len, ply)
         local allies = {ROLE_ZOMBIE}
         local traitors_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
         if traitors_are_friends then
-            table.Add(allies, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST})
+            table.Add(allies, {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_DETRAITOR})
         end
 
         OnPlayerHighlightEnabled(ROLE_VAMPIRE, allies, false, traitors_are_friends)
@@ -541,19 +542,22 @@ net.Receive("TTT_Traitor_PlayerHighlightOn", function(len, ply)
     hook.Add("PreDrawHalos", "AddPlayerHighlights", function()
         showHighlights = true
         local monsters_are_friends = GetGlobalBool("ttt_monsters_are_traitors")
-        local traitor_allies = {ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_GLITCH}
-        local assassin_allies = {ROLE_TRAITOR, ROLE_HYPNOTIST, ROLE_GLITCH}
-        local hypnotist_allies = {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_GLITCH}
+        local traitor_allies = {ROLE_ASSASSIN, ROLE_HYPNOTIST, ROLE_GLITCH, ROLE_DETRAITOR}
+        local assassin_allies = {ROLE_TRAITOR, ROLE_HYPNOTIST, ROLE_GLITCH, ROLE_DETRAITOR}
+        local hypnotist_allies = {ROLE_TRAITOR, ROLE_ASSASSIN, ROLE_GLITCH, ROLE_DETRAITOR}
+        local detraitor_allies = {ROLE_TRAITOR, ROLE_HYPNOTIST, ROLE_ASSASSIN, ROLE_GLITCH}
         if monsters_are_friends then
             local monsters = {ROLE_ZOMBIE, ROLE_VAMPIRE}
             table.Add(traitor_allies, monsters)
             table.Add(assassin_allies, monsters)
             table.Add(hypnotist_allies, monsters)
+            table.Add(detraitor_allies, monsters)
         end
 
         OnPlayerHighlightEnabled(ROLE_TRAITOR, traitor_allies, true, true)
         OnPlayerHighlightEnabled(ROLE_ASSASSIN, assassin_allies, true, true)
         OnPlayerHighlightEnabled(ROLE_HYPNOTIST, hypnotist_allies, true, true)
+        OnPlayerHighlightEnabled(ROLE_DETRAITOR, detraitor_allies, true, true)
     end)
 end)
 net.Receive("TTT_PlayerHighlightOff", function(len, ply)

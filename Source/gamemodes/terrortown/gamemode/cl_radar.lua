@@ -130,12 +130,12 @@ function RADAR:Draw(client)
     end
 
     -- Corpse calls
-    if client:IsActiveDetective() and #self.called_corpses then
+    if (client:IsActiveDetective() or client:IsActiveDetraitor()) and #self.called_corpses then
         surface.SetTexture(det_beacon)
         surface.SetTextColor(255, 255, 255, 240)
         surface.SetDrawColor(255, 255, 255, 230)
 
-        for k, corpse in pairs(self.called_corpses) do
+        for _, corpse in pairs(self.called_corpses) do
             DrawTarget(corpse, 16, 0.5)
         end
     end
@@ -194,12 +194,15 @@ function RADAR:Draw(client)
                 elseif role == -1 then
                     surface.SetDrawColor(150, 150, 150, alpha)
                     surface.SetTextColor(150, 150, 150, alpha)
+                elseif role == ROLE_DETRAITOR then
+                    surface.SetDrawColor(112, 27, 140, alpha)
+                    surface.SetTextColor(112, 27, 140, alpha)
                 else
                     surface.SetDrawColor(0, 255, 0, alpha)
                     surface.SetTextColor(0, 255, 0, alpha)
                 end
             else
-                if role == ROLE_DETECTIVE then
+                if role == ROLE_DETECTIVE or role == ROLE_DETRAITOR then
                     surface.SetDrawColor(0, 0, 255, alpha)
                     surface.SetTextColor(0, 0, 255, alpha)
                 else

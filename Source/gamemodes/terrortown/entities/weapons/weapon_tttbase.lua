@@ -167,7 +167,7 @@ if CLIENT then
                 255 * bright,
                 255 * bright,
                 255 * alpha)
-        elseif (client.IsTraitor and client:IsTraitor()) or (client.IsAssassin and client:IsAssassin()) or (client.IsHypnotist and client:IsHypnotist()) or (client.IsVampire and client:IsVampire()) or (client.IsZombie and client:IsZombie()) or (client.IsKiller and client:IsKiller()) then
+        elseif (client.IsTraitor and client:IsTraitor()) or (client.IsAssassin and client:IsAssassin()) or (client.IsHypnotist and client:IsHypnotist()) or (client.IsVampire and client:IsVampire()) or (client.IsZombie and client:IsZombie()) or (client.IsKiller and client:IsKiller()) or (client.IsDetraitor and client:IsDetraitor()) then
             surface.SetDrawColor(255 * bright,
                 50 * bright,
                 50 * bright,

@@ -18,7 +18,7 @@ local T = LANG.GetTranslation
 local PT = LANG.GetParamTranslation
 
 local function GetRoleName(s)
-    return s.role == ROLE_TRAITOR and T("traitor") or (s.role == ROLE_DETECTIVE and T("detective") or (s.role == ROLE_HYPNOTIST and T("hypnotist") or (s.role == ROLE_MERCENARY and T("mercenary") or (s.role == ROLE_JESTER and T("jester") or (s.role == ROLE_PHANTOM and T("phantom") or (s.role == ROLE_GLITCH and T("glitch") or (s.role == ROLE_ZOMBIE and T("zombie") or (s.role == ROLE_VAMPIRE and T("vampire") or (s.role == ROLE_SWAPPER and T("swapper") or (s.role == ROLE_ASSASSIN and T("assassin") or (s.role == ROLE_KILLER and T("killer") or T("innocent"))))))))))))
+    return T(ROLE_STRINGS[s.role])
 end
 
 -- a common pattern
@@ -35,7 +35,7 @@ local function FindHighest(tbl)
    return m_id, m_num
 end
 
-local function FirstSuicide(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function FirstSuicide(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
    local fs = nil
    local fnum = 0
    for k, e in pairs(events) do
@@ -68,7 +68,7 @@ local function FirstSuicide(events, scores, players, innocents, traitors, detect
    end
 end
 
-local function ExplosiveGrant(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function ExplosiveGrant(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
    local bombers = {}
    for k, e in pairs(events) do
       if e.id == EVENT_KILL and is_dmg(e.dmg.t, DMG_BLAST) then
@@ -98,7 +98,7 @@ local function ExplosiveGrant(events, scores, players, innocents, traitors, dete
    return nil
 end
 
-local function ExplodedSelf(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function ExplodedSelf(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
    for k, e in pairs(events) do
       if e.id == EVENT_KILL and is_dmg(e.dmg.t, DMG_BLAST) and e.att.sid == e.vic.sid then
          return {title=T("aw_exp2_title"), text=T("aw_exp2_text"), nick=e.vic.ni, priority=math.random(1, 4)}
@@ -108,7 +108,7 @@ local function ExplodedSelf(events, scores, players, innocents, traitors, detect
    return nil
 end
 
-local function FirstBlood(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function FirstBlood(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     for _, e in pairs(events) do
         if e.id == EVENT_KILL and e.att.sid ~= e.vic.sid and e.att.sid ~= -1 then
             local award = {nick=e.att.ni}
@@ -142,7 +142,7 @@ local function FirstBlood(events, scores, players, innocents, traitors, detectiv
     end
 end
 
-local function AllKills(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function AllKills(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     -- see if there is one killer responsible for all kills of either team
 
     local tr_killers = {}
@@ -162,7 +162,7 @@ local function AllKills(events, scores, players, innocents, traitors, detectives
     if #tr_killers == 1 then
         local id = tr_killers[1]
         -- Don't celebrate team killers
-        if not table.HasValue(traitors, id) and not table.HasValue(hypnotists, id) and not table.HasValue(assassins, id) then
+        if not table.HasValue(traitors, id) and not table.HasValue(hypnotists, id) and not table.HasValue(assassins, id) and not table.HasValue(detraitors, id) then
             local killer = players[id]
             if not killer then return nil end
 
@@ -197,10 +197,10 @@ local function AllKills(events, scores, players, innocents, traitors, detectives
     return nil
 end
 
-local function NumKills_Traitor(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function NumKills_Traitor(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local trs = {}
     for id, s in pairs(scores) do
-        if table.HasValue(traitors, id) then
+        if table.HasValue(traitors, id) or table.HasValue(hypnotists, id) or table.HasValue(assassins, id) or table.HasValue(detraitors, id) then
             if s.innos > 0 or s.monsters > 0 or s.killers > 0 then
                 table.insert(trs, id)
             end
@@ -233,7 +233,7 @@ local function NumKills_Traitor(events, scores, players, innocents, traitors, de
     end
 end
 
-local function NumKills_Inno(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function NumKills_Inno(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local ins = {}
     for id, s in pairs(scores) do
         if not table.HasValue(traitors, id) then
@@ -267,7 +267,7 @@ local function NumKills_Inno(events, scores, players, innocents, traitors, detec
     end
 end
 
-local function FallDeath(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function FallDeath(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     for _, e in pairs(events) do
         if e.id == EVENT_KILL and is_dmg(e.dmg.t, DMG_FALL) then
             if e.att.ni ~= "" then
@@ -281,7 +281,7 @@ local function FallDeath(events, scores, players, innocents, traitors, detective
     return nil
 end
 
-local function FallKill(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function FallKill(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     for _, e in pairs(events) do
         if e.id == EVENT_KILL and is_dmg(e.dmg.t, DMG_CRUSH) and is_dmg(e.dmg.t, DMG_PHYSGUN) then
             if e.att.ni ~= "" then
@@ -291,7 +291,7 @@ local function FallKill(events, scores, players, innocents, traitors, detectives
     end
 end
 
-local function Headshots(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function Headshots(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local hs = {}
     for _, e in pairs(events) do
         if e.id == EVENT_KILL and e.dmg.h and is_dmg(e.dmg.t, DMG_BULLET) then
@@ -344,7 +344,7 @@ local function UsedAmmoMost(events, ammotype)
     return {sid=m_id, kills=m_num}
 end
 
-local function CrowbarUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function CrowbarUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_CROWBAR)
     if not most then return nil end
 
@@ -367,7 +367,7 @@ local function CrowbarUser(events, scores, players, innocents, traitors, detecti
     return award
 end
 
-local function PistolUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function PistolUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_PISTOL)
     if not most then return nil end
 
@@ -390,7 +390,7 @@ local function PistolUser(events, scores, players, innocents, traitors, detectiv
     return award
 end
 
-local function ShotgunUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function ShotgunUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_SHOTGUN)
     if not most then return nil end
 
@@ -413,7 +413,7 @@ local function ShotgunUser(events, scores, players, innocents, traitors, detecti
     return award
 end
 
-local function RifleUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function RifleUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_RIFLE)
     if not most then return nil end
 
@@ -436,7 +436,7 @@ local function RifleUser(events, scores, players, innocents, traitors, detective
     return award
 end
 
-local function DeagleUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function DeagleUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_DEAGLE)
     if not most then return nil end
 
@@ -460,7 +460,7 @@ local function DeagleUser(events, scores, players, innocents, traitors, detectiv
     return award
 end
 
-local function MAC10User(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function MAC10User(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_MAC10)
     if not most then return nil end
 
@@ -483,7 +483,7 @@ local function MAC10User(events, scores, players, innocents, traitors, detective
     return award
 end
 
-local function SilencedPistolUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function SilencedPistolUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_SIPISTOL)
     if not most then return nil end
 
@@ -505,7 +505,7 @@ local function SilencedPistolUser(events, scores, players, innocents, traitors, 
     return award
 end
 
-local function KnifeUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function KnifeUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_KNIFE)
     if not most then return nil end
 
@@ -538,7 +538,7 @@ local function KnifeUser(events, scores, players, innocents, traitors, detective
     return award
 end
 
-local function FlareUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function FlareUser(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_FLARE)
     if not most then return nil end
 
@@ -560,7 +560,7 @@ local function FlareUser(events, scores, players, innocents, traitors, detective
     return award
 end
 
-local function M249User(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function M249User(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_M249)
     if not most then return nil end
 
@@ -582,7 +582,7 @@ local function M249User(events, scores, players, innocents, traitors, detectives
     return award
 end
 
-local function M16User(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function M16User(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local most = UsedAmmoMost(events, AMMO_M16)
     if not most then return nil end
 
@@ -604,8 +604,8 @@ local function M16User(events, scores, players, innocents, traitors, detectives,
     return award
 end
 
-local function TeamKiller(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
-    local num_traitors = table.Count(traitors) + table.Count(hypnotists) + table.Count(assassins)
+local function TeamKiller(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
+    local num_traitors = table.Count(traitors) + table.Count(hypnotists) + table.Count(assassins) + table.Count(detraitors)
     local num_inno = table.Count(innocents) + table.Count(detectives) + table.Count(mercenaries) + table.Count(glitches) + table.Count(phantoms)
     local num_mon = table.Count(zombies) + table.Count(vampires)
 
@@ -615,7 +615,7 @@ local function TeamKiller(events, scores, players, innocents, traitors, detectiv
     for id, s in pairs(scores) do
         local kills = s.innos
         local team = num_inno - 1
-        if table.HasValue(traitors, id) or table.HasValue(hypnotists, id) or table.HasValue(assassins, id) then
+        if table.HasValue(traitors, id) or table.HasValue(hypnotists, id) or table.HasValue(assassins, id) or table.HasValue(detraitors, id) then
             kills = s.traitors
             team = num_traitors - 1
         elseif table.HasValue(zombies, id) or table.HasValue(vampires, id) then
@@ -645,7 +645,7 @@ local function TeamKiller(events, scores, players, innocents, traitors, detectiv
     local nick = players[tker]
     if not nick then return nil end
 
-    local was_traitor = table.HasValue(traitors, tker) or table.HasValue(hypnotists, tker) or table.HasValue(assassins, tker)
+    local was_traitor = table.HasValue(traitors, tker) or table.HasValue(hypnotists, tker) or table.HasValue(assassins, tker) or table.HasValue(detraitors, tker)
     local was_monster = false
     -- Count Monsters if Monsters-as-Traitors is enabled
     if GetGlobalBool("ttt_monsters_are_traitors") then
@@ -687,7 +687,7 @@ local function TeamKiller(events, scores, players, innocents, traitors, detectiv
     return award
 end
 
-local function Burner(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function Burner(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local brn = {}
     for _, e in pairs(events) do
         if e.id == EVENT_KILL and is_dmg(e.dmg.t, DMG_BURN) then
@@ -723,7 +723,7 @@ local function Burner(events, scores, players, innocents, traitors, detectives, 
     return award
 end
 
-local function Coroner(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function Coroner(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local finders = {}
     for _, e in pairs(events) do
         if e.id == EVENT_BODYFOUND then
@@ -758,7 +758,7 @@ local function Coroner(events, scores, players, innocents, traitors, detectives,
     return award
 end
 
-local function CreditFound(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function CreditFound(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local finders = {}
     for _, e in pairs(events) do
         if e.id == EVENT_CREDITFOUND then
@@ -787,7 +787,7 @@ local function CreditFound(events, scores, players, innocents, traitors, detecti
     return award
 end
 
-local function TimeOfDeath(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers)
+local function TimeOfDeath(events, scores, players, innocents, traitors, detectives, mercenaries, hypnotists, glitches, jesters, phantoms, zombies, vampires, swappers, assassins, killers, detraitors)
     local near = 10
     local time_near_start = CLSCORE.StartTime + near
     local time_near_end   = nil

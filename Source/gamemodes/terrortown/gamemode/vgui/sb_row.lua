@@ -101,7 +101,8 @@ local rolecolor = {
     vampire = Color(70, 70, 70, 30),
     swapper = Color(111, 0, 255, 30),
     assassin = Color(112, 50, 0, 30),
-    killer = Color(60, 0, 80, 30)
+    killer = Color(60, 0, 80, 30),
+    detraitor = Color(112, 27, 140, 255)
 }
 
 function GM:TTTScoreboardColorForPlayer(ply)
@@ -122,6 +123,8 @@ local function GetTraitorTeamColor(ply)
         return rolecolor.jester
     elseif ply:IsAssassin() then
         return rolecolor.assassin
+    elseif ply:IsDetraitor() then
+        return rolecolor.detraitor
     else
         return rolecolor.traitor
     end
@@ -163,6 +166,8 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
             return rolecolor.phantom
         elseif ply:IsKiller() then
             return rolecolor.killer
+        elseif ply:IsDetraitor() then
+            return rolecolor.detraitor
         else
             return rolecolor.innocent
         end
@@ -204,6 +209,9 @@ function GM:TTTScoreboardRowColorForPlayer(ply)
             end
             return rolecolor.jester
         end
+    -- Detraitor looks like a detective to anyone who doens't know any better
+    elseif ply:IsDetraitor() then
+        return rolecolor.detective
     end
 
     return rolecolor.default
@@ -263,6 +271,8 @@ function PANEL:Paint(width, height)
         rolestr = "jes"
     elseif c == rolecolor.swapper then
         rolestr = "swa"
+    elseif c == rolecolor.detraitor then
+        rolestr = "der"
     elseif c == rolecolor.killer then
         rolestr = "kil"
     end

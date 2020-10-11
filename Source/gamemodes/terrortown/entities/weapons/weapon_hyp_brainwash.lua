@@ -171,11 +171,11 @@ if SERVER then
         local ply = bodyply(body)
         local credits = CORPSE.GetCredits(body, 0) or 0
 
-        if ply:IsTraitor() and CORPSE.GetFound(body, false) == true then
+        if player.IsTraitorTeam(ply) and CORPSE.GetFound(body, false) == true then
             local plys = {}
 
             for _, v in pairs(player.GetAll()) do
-                if not v:IsTraitor() then
+                if not player.IsTraitorTeam(v) then
                     table.insert(plys, v)
                 end
             end

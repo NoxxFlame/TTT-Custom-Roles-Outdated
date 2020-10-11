@@ -38,7 +38,7 @@ end
 
 local function SendRoleList(role, ply_or_rf, pred)
     local role_ids = {}
-    for k, v in pairs(player.GetAll()) do
+    for _, v in pairs(player.GetAll()) do
         if v:IsRole(role) then
             if not pred or (pred and pred(v)) then
                 table.insert(role_ids, v:EntIndex())
@@ -49,9 +49,15 @@ local function SendRoleList(role, ply_or_rf, pred)
     SendRoleListMessage(role, role_ids, ply_or_rf)
 end
 
+local function SendConfirmedRoleList(role, ply_or_rf)
+    SendRoleList(role, ply_or_rf, function(p) return p:GetNWBool("body_searched") end)
+end
+
 -- Tell traitors about other traitors
 
 function SendTraitorList(ply_or_rf) SendRoleList(ROLE_TRAITOR, ply_or_rf) end
+
+function SendDetraitorList(ply_or_rf) SendRoleList(ROLE_DETRAITOR, ply_or_rf) end
 
 function SendDetectiveList(ply_or_rf) SendRoleList(ROLE_DETECTIVE, ply_or_rf) end
 
@@ -77,14 +83,23 @@ function SendKillerList(ply_or_rf) SendRoleList(ROLE_KILLER, ply_or_rf) end
 
 function SendInnocentList(ply_or_rf) SendRoleList(ROLE_INNOCENT, ply_or_rf) end
 
-function SendConfirmedTraitors(ply_or_rf)
-    SendTraitorList(ply_or_rf, function(p) return p:GetNWBool("body_searched") end)
-end
+function SendConfirmedTraitorList(ply_or_rf) SendConfirmedRoleList(ROLE_TRAITOR, ply_or_rf) end
+
+function SendConfirmedHypnotistList(ply_or_rf) SendConfirmedRoleList(ROLE_HYPNOTIST, ply_or_rf) end
+
+function SendConfirmedAssassinList(ply_or_rf) SendConfirmedRoleList(ROLE_ASSASSIN, ply_or_rf) end
+
+function SendConfirmedDetraitorList(ply_or_rf) SendConfirmedRoleList(ROLE_DETRAITOR, ply_or_rf) end
+
+function SendConfirmedZombieList(ply_or_rf) SendConfirmedRoleList(ROLE_ZOMBIE, ply_or_rf) end
+
+function SendConfirmedVampireList(ply_or_rf) SendConfirmedRoleList(ROLE_VAMPIRE, ply_or_rf) end
 
 function SendFullStateUpdate()
     SendPlayerRoles()
     SendInnocentList()
     SendTraitorList()
+    SendDetraitorList()
     SendDetectiveList()
     SendMercenaryList()
     SendHypnotistList()
@@ -106,12 +121,14 @@ function SendRoleReset(ply_or_rf)
     net.WriteUInt(ROLE_INNOCENT, 4)
 
     net.WriteUInt(#plys, 8)
-    for k, v in pairs(plys) do
+    for _, v in pairs(plys) do
         net.WriteUInt(v:EntIndex() - 1, 7)
     end
 
-    if ply_or_rf then net.Send(ply_or_rf)
-    else net.Broadcast()
+    if ply_or_rf then
+        net.Send(ply_or_rf)
+    else
+        net.Broadcast()
     end
 end
 
@@ -120,24 +137,33 @@ local function request_rolelist(ply)
     -- Client requested a state update. Note that the client can only use this
     -- information after entities have been initialised (e.g. in InitPostEntity).
     if GetRoundState() ~= ROUND_WAIT then
-
         SendRoleReset(ply)
         SendDetectiveList(ply)
         SendMercenaryList(ply)
-        SendHypnotistList(ply)
         SendGlitchList(ply)
         SendJesterList(ply)
         SendPhantomList(ply)
-        SendZombieList(ply)
-        SendVampireList(ply)
         SendSwapperList(ply)
-        SendAssassinList(ply)
         SendKillerList(ply)
 
-        if ply:IsTraitor() then
-            SendTraitorList(ply)
+        if GetGlobalBool("ttt_monsters_are_traitors") and ply:IsTraitorTeam() then
+            SendZombieList(ply)
+            SendVampireList(ply)
         else
-            SendConfirmedTraitors(ply)
+            SendConfirmedZombieList(ply)
+            SendConfirmedVampireList(ply)
+        end
+
+        if ply:IsTraitorTeam() then
+            SendTraitorList(ply)
+            SendHypnotistList(ply)
+            SendAssassinList(ply)
+            SendDetraitorList(ply)
+        else
+            SendConfirmedTraitorList(ply)
+            SendConfirmedHypnotistList(ply)
+            SendConfirmedAssassinList(ply)
+            SendConfirmedDetraitorList(ply)
         end
     end
 end
@@ -205,6 +231,30 @@ local function force_traitor(ply)
 end
 
 concommand.Add("ttt_force_traitor", force_traitor, nil, nil, FCVAR_CHEAT)
+
+local function force_detraitor(ply)
+    ply:SetRoleAndBroadcast(ROLE_DETRAITOR)
+    ply:SetMaxHealth(100)
+    ply:SetHealth(100)
+    ply:AddCredits(GetConVarNumber("ttt_der_credits_starting"))
+    if ply:HasWeapon("weapon_hyp_brainwash") then
+        ply:StripWeapon("weapon_hyp_brainwash")
+    end
+    if ply:HasWeapon("weapon_vam_fangs") then
+        ply:StripWeapon("weapon_vam_fangs")
+    end
+    if ply:HasWeapon("weapon_zom_claws") then
+        ply:StripWeapon("weapon_zom_claws")
+    end
+    if ply:HasWeapon("weapon_kil_knife") then
+        ply:StripWeapon("weapon_kil_knife")
+    end
+    ply:Give("weapon_zm_improvised")
+
+    SendFullStateUpdate()
+end
+
+concommand.Add("ttt_force_detraitor", force_detraitor, nil, nil, FCVAR_CHEAT)
 
 local function force_detective(ply)
     ply:SetRoleAndBroadcast(ROLE_DETECTIVE)

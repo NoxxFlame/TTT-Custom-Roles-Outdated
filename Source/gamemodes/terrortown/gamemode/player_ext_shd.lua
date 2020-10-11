@@ -17,6 +17,8 @@ function plymeta:GetTraitor() return self:GetRole() == ROLE_TRAITOR end
 
 function plymeta:GetDetective() return self:GetRole() == ROLE_DETECTIVE end
 
+function plymeta:GetDetraitor() return self:GetRole() == ROLE_DETRAITOR end
+
 function plymeta:GetMercenary() return self:GetRole() == ROLE_MERCENARY end
 
 function plymeta:GetHypnotist() return self:GetRole() == ROLE_HYPNOTIST end
@@ -39,7 +41,7 @@ function plymeta:GetAssassin() return self:GetRole() == ROLE_ASSASSIN end
 
 function plymeta:GetKiller() return self:GetRole() == ROLE_KILLER end
 
-function plymeta:GetTraitorTeam() return self:GetTraitor() or self:GetAssassin() or self:GetHypnotist() end
+function plymeta:GetTraitorTeam() return self:GetTraitor() or self:GetAssassin() or self:GetHypnotist() or self:GetDetraitor() end
 
 function plymeta:GetInnocentTeam() return self:GetDetective() or self:GetInnocent() or self:GetMercenary() or self:GetPhantom() or self:GetGlitch() end
 
@@ -52,6 +54,7 @@ function plymeta:GetJesterTeam() return self:GetJester() or self:GetSwapper() en
 plymeta.IsInnocent = plymeta.GetInnocent
 plymeta.IsTraitor = plymeta.GetTraitor
 plymeta.IsDetective = plymeta.GetDetective
+plymeta.IsDetraitor = plymeta.GetDetraitor
 plymeta.IsMercenary = plymeta.GetMercenary
 plymeta.IsHypnotist = plymeta.GetHypnotist
 plymeta.IsGlitch = plymeta.GetGlitch
@@ -97,6 +100,8 @@ function plymeta:IsActiveInnocent() return self:IsActiveRole(ROLE_INNOCENT) end
 function plymeta:IsActiveTraitor() return self:IsActiveRole(ROLE_TRAITOR) end
 
 function plymeta:IsActiveDetective() return self:IsActiveRole(ROLE_DETECTIVE) end
+
+function plymeta:IsActiveDetraitor() return self:IsActiveRole(ROLE_DETRAITOR) end
 
 function plymeta:IsActiveMercenary() return self:IsActiveRole(ROLE_MERCENARY) end
 
@@ -310,6 +315,16 @@ else -- SERVER
         net.WriteUInt(act, 16)
         net.Broadcast()
     end
+end
+
+function player.HasBuyMenu(ply, active)
+    if not IsValid(ply) then return false end
+    local hasMenu = ply:IsTraitor() or ply:IsHypnotist() or ply:IsAssassin() or ply:IsDetraitor() or
+            ply:IsDetective() or ply:IsMercenary() or
+            ply:IsZombie() or ply:IsVampire() or
+            ply:IsKiller()
+    -- Second parameter is optional so make sure it's actually "true"
+    return hasMenu and ((not (active == true)) or ply:IsActive())
 end
 
 function player.IsActiveTraitorTeam(ply)

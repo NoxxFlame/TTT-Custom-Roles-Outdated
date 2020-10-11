@@ -475,7 +475,7 @@ end
 
 function SWEP:PinRagdoll()
     if not pin_rag:GetBool() then return end
-    if (not self:GetOwner():IsTraitor()) and (not pin_rag_inno:GetBool()) then return end
+    if (not player.IsTraitorTeam(self:GetOwner())) and (not pin_rag_inno:GetBool()) then return end
 
     local rag = self.EntHolding
     local ply = self:GetOwner()

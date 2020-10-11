@@ -47,7 +47,8 @@ local bg_colors = {
     vampire = Color(45, 45, 45, 200),
     swapper = Color(111, 0, 255, 200),
     assassin = Color(112, 50, 0, 200),
-    killer = Color(50, 0, 70, 200)
+    killer = Color(50, 0, 70, 200),
+    detraitor = Color(50, 0, 70, 200)
 };
 
 local health_colors = {
@@ -150,30 +151,32 @@ local function DrawBg(x, y, width, height, client)
         col = bg_colors.noround
     elseif hide_role then
         col = bg_colors.hidden
-    elseif client:GetTraitor() then
+    elseif client:IsTraitor() then
         col = bg_colors.traitor
-    elseif client:GetDetective() then
+    elseif client:IsDetective() then
         col = bg_colors.detective
-    elseif client:GetMercenary() then
+    elseif client:IsMercenary() then
         col = bg_colors.mercenary
-    elseif client:GetHypnotist() then
+    elseif client:IsHypnotist() then
         col = bg_colors.hypnotist
-    elseif client:GetGlitch() then
+    elseif client:IsGlitch() then
         col = bg_colors.glitch
-    elseif client:GetJester() then
+    elseif client:IsJester() then
         col = bg_colors.jester
-    elseif client:GetPhantom() then
+    elseif client:IsPhantom() then
         col = bg_colors.phantom
-    elseif client:GetZombie() then
+    elseif client:IsZombie() then
         col = bg_colors.zombie
-    elseif client:GetVampire() then
+    elseif client:IsVampire() then
         col = bg_colors.vampire
-    elseif client:GetSwapper() then
+    elseif client:IsSwapper() then
         col = bg_colors.swapper
-    elseif client:GetAssassin() then
+    elseif client:IsAssassin() then
         col = bg_colors.assassin
-    elseif client:GetKiller() then
+    elseif client:IsKiller() then
         col = bg_colors.killer
+    elseif client:IsDetraitor() then
+        col = bg_colors.detraitor
     end
 
     draw.RoundedBoxEx(8, x, y, tw, th, col, true, false, false, true)

@@ -30,6 +30,7 @@ local indicator_mattra_noz = Material("vgui/ttt/sprite_let_tra_noz")
 local indicator_matjes_noz = Material("vgui/ttt/sprite_let_jes_noz")
 local indicator_mathyp_noz = Material("vgui/ttt/sprite_let_hyp_noz")
 local indicator_matinn_noz = Material("vgui/ttt/sprite_let_inn_noz")
+local indicator_matder_noz = Material("vgui/ttt/sprite_let_der_noz")
 local indicator_matdet_noz = Material("vgui/ttt/sprite_let_det_noz")
 local indicator_matgli_noz = Material("vgui/ttt/sprite_let_gli_noz")
 local indicator_matpha_noz = Material("vgui/ttt/sprite_let_pha_noz")
@@ -43,6 +44,7 @@ local indicator_mattra = Material("vgui/ttt/sprite_let_tra")
 local indicator_matjes = Material("vgui/ttt/sprite_let_jes")
 local indicator_mathyp = Material("vgui/ttt/sprite_let_hyp")
 local indicator_matinn = Material("vgui/ttt/sprite_let_inn")
+local indicator_matder = Material("vgui/ttt/sprite_let_der")
 local indicator_matdet = Material("vgui/ttt/sprite_let_det")
 local indicator_matgli = Material("vgui/ttt/sprite_let_gli")
 local indicator_matpha = Material("vgui/ttt/sprite_let_pha")
@@ -67,6 +69,9 @@ local function ShowTraitorIcon(ply, pos, dir)
         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
     elseif ply:IsAssassin() then
         render.SetMaterial(indicator_matass_noz)
+        render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+    elseif ply:IsDetraitor() then
+        render.SetMaterial(indicator_matder_noz)
         render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
     end
 end
@@ -99,6 +104,7 @@ function GM:PostDrawTranslucentRenderables()
         indicator_matjes_noz = Material("vgui/ttt/sprite_sym_jes_noz")
         indicator_mathyp_noz = Material("vgui/ttt/sprite_sym_hyp_noz")
         indicator_matinn_noz = Material("vgui/ttt/sprite_sym_inn_noz")
+        indicator_matder_noz = Material("vgui/ttt/sprite_sym_der_noz")
         indicator_matdet_noz = Material("vgui/ttt/sprite_sym_det_noz")
         indicator_matgli_noz = Material("vgui/ttt/sprite_sym_gli_noz")
         indicator_matpha_noz = Material("vgui/ttt/sprite_sym_pha_noz")
@@ -112,6 +118,7 @@ function GM:PostDrawTranslucentRenderables()
         indicator_matjes = Material("vgui/ttt/sprite_sym_jes")
         indicator_mathyp = Material("vgui/ttt/sprite_sym_hyp")
         indicator_matinn = Material("vgui/ttt/sprite_sym_inn")
+        indicator_matder = Material("vgui/ttt/sprite_sym_der")
         indicator_matdet = Material("vgui/ttt/sprite_sym_det")
         indicator_matgli = Material("vgui/ttt/sprite_sym_gli")
         indicator_matpha = Material("vgui/ttt/sprite_sym_pha")
@@ -127,6 +134,7 @@ function GM:PostDrawTranslucentRenderables()
         indicator_matjes_noz = Material("vgui/ttt/sprite_let_jes_noz")
         indicator_mathyp_noz = Material("vgui/ttt/sprite_let_hyp_noz")
         indicator_matinn_noz = Material("vgui/ttt/sprite_let_inn_noz")
+        indicator_matder_noz = Material("vgui/ttt/sprite_let_der_noz")
         indicator_matdet_noz = Material("vgui/ttt/sprite_let_det_noz")
         indicator_matgli_noz = Material("vgui/ttt/sprite_let_gli_noz")
         indicator_matpha_noz = Material("vgui/ttt/sprite_let_pha_noz")
@@ -140,6 +148,7 @@ function GM:PostDrawTranslucentRenderables()
         indicator_matjes = Material("vgui/ttt/sprite_let_jes")
         indicator_mathyp = Material("vgui/ttt/sprite_let_hyp")
         indicator_matinn = Material("vgui/ttt/sprite_let_inn")
+        indicator_matder = Material("vgui/ttt/sprite_let_der")
         indicator_matdet = Material("vgui/ttt/sprite_let_det")
         indicator_matgli = Material("vgui/ttt/sprite_let_gli")
         indicator_matpha = Material("vgui/ttt/sprite_let_pha")
@@ -169,7 +178,8 @@ function GM:PostDrawTranslucentRenderables()
                 (client:IsAssassin() and GetGlobalBool("ttt_assassin_show_target_icon") and client:GetNWString("AssassinTarget") == v:GetName())
 
             -- Don't show the detective icon for the roles that have "KILL" above everyone's head
-            if v:IsDetective() and not showkillicon then
+            -- Also, if show the detective icon if the target is a detratior and the client is not a traitor
+            if (v:IsDetective() or (not player.IsTraitorTeam(client) and v:IsDetraitor())) and not showkillicon then
                 render.SetMaterial(indicator_matdet)
                 render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
             end
@@ -209,6 +219,9 @@ function GM:PostDrawTranslucentRenderables()
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                 elseif v:IsKiller() then
                     render.SetMaterial(indicator_matkil)
+                    render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
+                elseif v:IsDetraitor() then
+                    render.SetMaterial(indicator_matder)
                     render.DrawQuadEasy(pos, dir, 8, 8, indicator_col, 180)
                 end
             end
@@ -385,6 +398,7 @@ function GM:HUDDrawTargetID()
     local target_jester = false
     local target_swapper = false
     local target_killer = false
+    local target_detraitor = false
     local target_fellow_traitor = false
     local target_fellow_zombie = false
     local target_current_target = false
@@ -440,6 +454,7 @@ function GM:HUDDrawTargetID()
             target_jester = ent:IsJester()
             target_swapper = ent:IsSwapper()
             target_killer = ent:IsKiller()
+            target_detraitor = ent:IsDetraitor()
         end
         if not hide_roles and GetRoundState() == ROUND_ACTIVE then
             if client:IsTraitorTeam() then
@@ -451,6 +466,7 @@ function GM:HUDDrawTargetID()
                 end
                 target_hypnotist = ent:IsHypnotist()
                 target_assassin = ent:IsAssassin()
+                target_detraitor = ent:IsDetraitor()
                 if GetGlobalBool("ttt_traitors_know_swapper") then
                     target_jester = ent:IsJester()
                     target_swapper = ent:IsSwapper()
@@ -483,6 +499,7 @@ function GM:HUDDrawTargetID()
                     target_traitor = ent:IsTraitor() or target_glitch
                     target_hypnotist = ent:IsHypnotist()
                     target_assassin = ent:IsAssassin()
+                    target_detraitor = ent:IsDetraitor()
                 end
             elseif client:IsAssassin() then
                 target_current_target = (ent:Nick() == client:GetNWString("AssassinTarget", ""))
@@ -495,7 +512,7 @@ function GM:HUDDrawTargetID()
                 end
             end
 
-            target_detective = ent:IsDetective()
+            target_detective = ent:IsDetective() or ent:IsDetraitor()
         end
     elseif cls == "prop_ragdoll" then
         -- only show this if the ragdoll has a nick, else it could be a mattress
@@ -520,11 +537,13 @@ function GM:HUDDrawTargetID()
 
     local w, h = 0, 0 -- text width/height, reused several times
 
-    if target_innocent or target_detective or target_glitch or target_mercenary or target_phantom or target_traitor or target_assassin or target_hypnotist or target_vampire or target_zombie or target_jester or target_swapper or target_killer or target_fellow_traitor or target_fellow_zombie then
+    if target_innocent or target_detective or target_glitch or target_mercenary or target_phantom or target_traitor or target_assassin or target_hypnotist or target_vampire or target_zombie or target_jester or target_swapper or target_killer or target_fellow_traitor or target_fellow_zombie or target_detraitor then
         surface.SetTexture(ring_tex)
 
         if target_innocent then
             surface.SetDrawColor(0, 255, 0, 200)
+        elseif target_detraitor then
+            surface.SetDrawColor(112, 27, 140, 200)
         elseif target_detective then
             surface.SetDrawColor(0, 0, 255, 200)
         elseif target_glitch and client:IsDetective() then
@@ -642,6 +661,9 @@ function GM:HUDDrawTargetID()
     elseif target_innocent then
         text = L.target_innocent
         clr = Color(0, 255, 0, 200)
+    elseif target_detraitor then
+        text = L.target_detraitor
+        clr = Color(112, 27, 140, 200)
     elseif target_detective then
         text = L.target_detective
         clr = Color(0, 0, 255, 200)
@@ -687,7 +709,7 @@ function GM:HUDDrawTargetID()
 	elseif target_fellow_zombie then
 		text = L.target_fellow_zombie
 		clr = Color(69, 97, 0, 200)
-	elseif target_corpse and (client:IsActiveDetective() or client:IsActiveTraitor() or client:IsActiveMercenary() or client:IsActiveZombie() or client:IsActiveVampire() or client:IsActiveHypnotist() or client:IsActiveAssassin() or client:IsActiveKiller()) and CORPSE.GetCredits(ent, 0) > 0 then
+	elseif target_corpse and player.HasBuyMenu(client, true) and CORPSE.GetCredits(ent, 0) > 0 then
 		text = L.target_credits
 		clr = COLOR_YELLOW
 	end

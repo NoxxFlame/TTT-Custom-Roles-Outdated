@@ -53,7 +53,8 @@ local function GetLoadoutWeapons(r)
 			[ROLE_VAMPIRE] = {},
 			[ROLE_SWAPPER] = {},
 			[ROLE_ASSASSIN] = {},
-			[ROLE_KILLER] = {}
+			[ROLE_KILLER] = {},
+			[ROLE_DETRAITOR] = {}
 		};
 
 		for k, w in pairs(weapons.GetList()) do
@@ -452,6 +453,15 @@ local function OrderEquipment(ply, cmd, args)
                 table.insert(swep_table.CanBuy, role)
             end
         end
+        -- If the player is a detraitor they should have all the weapons of a detective
+        if role == ROLE_DETRAITOR then
+            HandleRoleWeapons(role, BuyableWeapons[ROLE_DETECTIVE], swep_table, id)
+
+            -- If this weapon is still not buyable but is buyable by Detective, add this role directly
+            if not table.HasValue(swep_table.CanBuy, role) and table.HasValue(swep_table.CanBuy, ROLE_DETECTIVE) then
+                table.insert(swep_table.CanBuy, role)
+            end
+        end
 	end
 
 	-- some weapons can only be bought once per player per round, this used to be
@@ -642,7 +652,7 @@ end
 -- non-cheat developer commands can reveal precaching the first time equipment
 -- is bought, so trigger it at the start of a round instead
 function WEPS.ForcePrecache()
-	for k, w in ipairs(weapons.GetList()) do
+	for _, w in ipairs(weapons.GetList()) do
 		if w.WorldModel then
 			util.PrecacheModel(w.WorldModel)
 		end
